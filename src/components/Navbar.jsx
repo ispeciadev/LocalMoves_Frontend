@@ -471,13 +471,13 @@ const Navbar = () => {
                         <User size={16} /> Login
                       </Link>
 
-                      <Link
+                      {/* <Link
                         to="/register"
                         onClick={() => setMenuOpen(false)}
                         className={linkClasses("/register")}
                       >
                         <User size={16} /> Register User
-                      </Link>
+                      </Link> */}
                     </>
                   ) : (
                     <button

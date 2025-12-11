@@ -1027,27 +1027,62 @@ const renderViewMode = () => {
       </div>
 
       {/* PRICING */}
-      <div className="bg-gray-50 border rounded-xl p-6 shadow-sm">
-        <h4 className="font-semibold text-pink-600 mb-4 text-lg flex items-center gap-2">
-          <FaMoneyBillWave /> Pricing Summary
-        </h4>
+     {/* PRICING SUMMARY (MATCHED TO REGISTER PAGE) */}
+<div className="border rounded-2xl p-4 space-y-4 border-gray-200 bg-gray-50 mt-4">
+  <div className="flex items-center justify-between">
+    <span className="font-semibold flex items-center gap-2 text-pink-600">
+      <FaMoneyBillWave /> Pricing Summary
+    </span>
+  </div>
 
-        <div className="grid sm:grid-cols-3 gap-4 text-sm">
-          {[
-            ["Loading per m³", formData.loading_cost_per_m3],
-            ["Packing per box", formData.packing_cost_per_box],
-            ["Assembly", formData.assembly_cost_per_item],
-            ["Disassembly", formData.disassembly_cost_per_item],
-            ["Cost/mile ≤25 miles", formData.cost_per_mile_under_25],
-            ["Cost/mile >25 miles", formData.cost_per_mile_over_25],
-          ].map(([title, value], idx) => (
-            <div key={idx} className="p-4 border bg-white rounded-lg shadow-sm">
-              <div className="text-xs text-gray-500">{title}</div>
-              <div className="font-semibold text-gray-900">£{value}</div>
-            </div>
-          ))}
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+    {/* Loading */}
+    <div className="border rounded-xl p-3 space-y-2 border-gray-200 bg-white w-full">
+      <h4 className="font-semibold text-sm text-pink-600 flex items-center gap-2">
+        <FaMoneyBillWave className="w-4 h-4" /> Loading – Price per m³
+      </h4>
+      <div className="text-gray-800 font-semibold text-lg">
+        £{formData.loading_cost_per_m3 || 0}
+      </div>
+    </div>
+
+    {/* Packing */}
+    <div className="border rounded-xl p-3 space-y-2 border-gray-200 bg-white w-full">
+      <h4 className="font-semibold text-sm text-pink-600 flex items-center gap-2">
+        <FaBoxes className="w-4 h-4" /> Packing – Price per box
+      </h4>
+      <div className="text-gray-800 font-semibold text-lg">
+        £{formData.packing_cost_per_box || 0}
+      </div>
+    </div>
+
+    {/* Furniture Assembly */}
+    <div className="border rounded-xl p-3 space-y-2 md:col-span-2 border-gray-200 bg-white w-full">
+      <h4 className="font-semibold text-sm text-pink-600 flex items-center gap-2">
+        <FaCouch className="w-4 h-4" /> Furniture Assembly
+      </h4>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="bg-gray-50 border rounded-lg p-3">
+          <div className="text-xs text-gray-600">Assembly Price (£)</div>
+          <div className="text-lg font-semibold text-gray-800">
+            £{formData.assembly_cost_per_item || 0}
+          </div>
+        </div>
+
+        <div className="bg-gray-50 border rounded-lg p-3">
+          <div className="text-xs text-gray-600">Dismantling Price (£)</div>
+          <div className="text-lg font-semibold text-gray-800">
+            £{formData.disassembly_cost_per_item || 0}
+          </div>
         </div>
       </div>
+    </div>
+
+  </div>
+</div>
+
     </div>
   );
 };
@@ -1350,54 +1385,6 @@ const renderViewMode = () => {
     </div>
   </div>
 </div>
-
-{/* DISTANCE COST */}
-<div className="border rounded-2xl p-4 space-y-4 border-gray-200 bg-gray-50 mt-4">
-  <h4 className="font-semibold text-sm text-pink-600 flex items-center gap-2">
-    <FaMoneyBillWave className="w-4 h-4" /> Distance Cost (Per Mile)
-  </h4>
-
-  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
-    {/* <25 miles */}
-    <div className="border rounded-xl p-3 space-y-2 border-gray-200 bg-white w-full">
-      <h5 className="text-xs font-medium text-gray-700">Distance &lt; 25 Miles</h5>
-
-      <div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full">
-        <span className="text-xs w-32 text-gray-600 shrink-0">Cost Per Mile (£)</span>
-        <input
-          type="number"
-          step="0.01"
-          min="0"
-          name="cost_per_mile_under_25"
-          value={formData.cost_per_mile_under_25}
-          onChange={handleChange}
-          className="flex-1 border rounded-lg px-3 py-1.5 text-sm border-gray-300 bg-white text-gray-900 w-full"
-          placeholder="0.20"
-        />
-      </div>
-    </div>
-
-    {/* >25 miles */}
-    <div className="border rounded-xl p-3 space-y-2 border-gray-200 bg-white w-full">
-      <h5 className="text-xs font-medium text-gray-700">Distance &gt; 25 Miles</h5>
-
-      <div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full">
-        <span className="text-xs w-32 text-gray-600 shrink-0">Cost Per Mile (£)</span>
-        <input
-          type="number"
-          step="0.01"
-          min="0"
-          name="cost_per_mile_over_25"
-          value={formData.cost_per_mile_over_25}
-          onChange={handleChange}
-          className="flex-1 border rounded-lg px-3 py-1.5 text-sm border-gray-300 bg-white text-gray-900 w-full"
-          placeholder="0.30"
-        />
-      </div>
-    </div>
-  </div>
-</div>
-
 
         {/* CHECKBOXES + SUMMARY (RegisterCompany style) */}
         <div className="border rounded-2xl overflow-hidden shadow-sm border-gray-200 bg-white">

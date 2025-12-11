@@ -8,7 +8,7 @@ import { useAuthStore } from "../../stores/useAuthStore";
 
 // ⭐ Allowed Status Options
 const STATUS_OPTIONS = [
-  "Pending",
+  // "Pending",
   "Assigned",
   "Accepted",
   "In Progress",
@@ -17,11 +17,11 @@ const STATUS_OPTIONS = [
 
 // ⭐ Status index for progress calculation
 const STATUS_INDEX = {
-  Pending: 0,
-  Assigned: 1,
-  Accepted: 2,
-  "In Progress": 3,
-  Completed: 4,
+  // Pending: 0,
+  Assigned: 0,
+  Accepted: 1,
+  "In Progress": 2,
+  Completed: 3,
 };
 
 // ⭐ Status Colors
@@ -191,6 +191,14 @@ const ReviewPopup = ({ isOpen, onClose, onReviewClick }) => {
   );
 };
 
+// Helper function to format assessment values
+const formatAssessmentValue = (value) => {
+  if (!value || value === "N/A" || value === "null" || value === "undefined") {
+    return ""; // Return empty string instead of "N/A"
+  }
+  return value;
+};
+
 const RequestDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -339,6 +347,7 @@ const RequestDetails = () => {
     priority,
     distance_miles,
     rating,
+    remaining_amount,
     review_comment,
   } = request;
 
@@ -524,9 +533,9 @@ const RequestDetails = () => {
                 </div>
                 <div className="pt-3 border-t">
                   <DetailItem label="Item Description" value={pretty(item_description)} />
-                  {special_instructions && (
+                  {/* {special_instructions && (
                     <DetailItem label="Special Instructions" value={pretty(special_instructions)} className="mt-2" />
-                  )}
+                  )} */}
                 </div>
               </DetailCard>
             </div>
@@ -547,22 +556,30 @@ const RequestDetails = () => {
                     <div className="pt-3 border-t">
                       <div className="text-xs font-medium text-gray-500 uppercase mb-2">Assessment</div>
                       <div className="grid grid-cols-2 gap-3">
-                        <div>
-                          <div className="text-xs text-gray-500">Parking</div>
-                          <div className="text-sm font-medium">{pretty(collection_assessment.parking)}</div>
-                        </div>
-                        <div>
-                          <div className="text-xs text-gray-500">Distance</div>
-                          <div className="text-sm font-medium">{pretty(collection_assessment.parking_distance)}</div>
-                        </div>
-                        <div>
-                          <div className="text-xs text-gray-500">Floor Level</div>
-                          <div className="text-sm font-medium">{pretty(collection_assessment.floor_level)}</div>
-                        </div>
-                        <div>
-                          <div className="text-xs text-gray-500">Access</div>
-                          <div className="text-sm font-medium">{pretty(collection_assessment.internal_access)}</div>
-                        </div>
+                        {formatAssessmentValue(collection_assessment.parking) && (
+                          <div>
+                            <div className="text-xs text-gray-500">Parking</div>
+                            <div className="text-sm font-medium">{formatAssessmentValue(collection_assessment.parking)}</div>
+                          </div>
+                        )}
+                        {formatAssessmentValue(collection_assessment.parking_distance) && (
+                          <div>
+                            <div className="text-xs text-gray-500">Distance</div>
+                            <div className="text-sm font-medium">{formatAssessmentValue(collection_assessment.parking_distance)}</div>
+                          </div>
+                        )}
+                        {formatAssessmentValue(collection_assessment.floor_level) && (
+                          <div>
+                            <div className="text-xs text-gray-500">Floor Level</div>
+                            <div className="text-sm font-medium">{formatAssessmentValue(collection_assessment.floor_level)}</div>
+                          </div>
+                        )}
+                        {formatAssessmentValue(collection_assessment.internal_access) && (
+                          <div>
+                            <div className="text-xs text-gray-500">Access</div>
+                            <div className="text-sm font-medium">{formatAssessmentValue(collection_assessment.internal_access)}</div>
+                          </div>
+                        )}
                       </div>
                     </div>
                   )}
@@ -583,22 +600,30 @@ const RequestDetails = () => {
                     <div className="pt-3 border-t">
                       <div className="text-xs font-medium text-gray-500 uppercase mb-2">Assessment</div>
                       <div className="grid grid-cols-2 gap-3">
-                        <div>
-                          <div className="text-xs text-gray-500">Parking</div>
-                          <div className="text-sm font-medium">{pretty(delivery_assessment.parking)}</div>
-                        </div>
-                        <div>
-                          <div className="text-xs text-gray-500">Distance</div>
-                          <div className="text-sm font-medium">{pretty(delivery_assessment.parking_distance)}</div>
-                        </div>
-                        <div>
-                          <div className="text-xs text-gray-500">Floor Level</div>
-                          <div className="text-sm font-medium">{pretty(delivery_assessment.floor_level)}</div>
-                        </div>
-                        <div>
-                          <div className="text-xs text-gray-500">Access</div>
-                          <div className="text-sm font-medium">{pretty(delivery_assessment.internal_access)}</div>
-                        </div>
+                        {formatAssessmentValue(delivery_assessment.parking) && (
+                          <div>
+                            <div className="text-xs text-gray-500">Parking</div>
+                            <div className="text-sm font-medium">{formatAssessmentValue(delivery_assessment.parking)}</div>
+                          </div>
+                        )}
+                        {formatAssessmentValue(delivery_assessment.parking_distance) && (
+                          <div>
+                            <div className="text-xs text-gray-500">Distance</div>
+                            <div className="text-sm font-medium">{formatAssessmentValue(delivery_assessment.parking_distance)}</div>
+                          </div>
+                        )}
+                        {formatAssessmentValue(delivery_assessment.floor_level) && (
+                          <div>
+                            <div className="text-xs text-gray-500">Floor Level</div>
+                            <div className="text-sm font-medium">{formatAssessmentValue(delivery_assessment.floor_level)}</div>
+                          </div>
+                        )}
+                        {formatAssessmentValue(delivery_assessment.internal_access) && (
+                          <div>
+                            <div className="text-xs text-gray-500">Access</div>
+                            <div className="text-sm font-medium">{formatAssessmentValue(delivery_assessment.internal_access)}</div>
+                          </div>
+                        )}
                       </div>
                     </div>
                   )}
@@ -616,16 +641,11 @@ const RequestDetails = () => {
                   </div>
                   <div className="pt-3 border-t">
                     <div className="flex justify-between items-center">
-                      <div>
+                      {/* <div>
                         <div className="text-sm text-gray-500">Estimated Cost</div>
                         <div className="text-xl font-semibold text-gray-900">{money(estimated_cost)}</div>
                       </div>
-                      {actual_cost && (
-                        <div className="text-right">
-                          <div className="text-sm text-gray-500">Actual Cost</div>
-                          <div className="text-lg font-semibold text-green-600">{money(actual_cost)}</div>
-                        </div>
-                      )}
+                       */}
                     </div>
                   </div>
                 </div>
@@ -699,10 +719,6 @@ const RequestDetails = () => {
                       <div className="text-xs text-gray-500">Quantity</div>
                       <div className="text-sm font-medium">{pretty(pricing_data.quantity)}</div>
                     </div>
-                    <div>
-                      <div className="text-xs text-gray-500">Volume</div>
-                      <div className="text-sm font-medium">{pretty(pricing_data.packing_volume_m3)} m³</div>
-                    </div>
                   </div>
                 </div>
               </DetailCard>
@@ -735,19 +751,19 @@ const RequestDetails = () => {
               <DetailCard icon={DollarSign} title="Price Breakdown">
                 <div className="space-y-3">
                   <div className="space-y-2">
-                    <div className="flex justify-between">
+                    {/* <div className="flex justify-between">
                       <span className="text-sm text-gray-600">Total Volume</span>
                       <span className="text-sm font-medium">{pretty(price_breakdown.total_volume_m3)} m³</span>
-                    </div>
+                    </div> */}
                     <div className="flex justify-between">
                       <span className="text-sm text-gray-600">Distance</span>
                       <span className="text-sm font-medium">{pretty(price_breakdown.distance_miles)} miles</span>
                     </div>
-                    <div className="flex justify-between">
+                    {/* <div className="flex justify-between">
                       <span className="text-sm text-gray-600">Base Loading</span>
                       <span className="text-sm font-medium">{money(price_breakdown.base_loading_cost)}</span>
-                    </div>
-                    <div className="flex justify-between">
+                    </div> */}
+                    {/* <div className="flex justify-between">
                       <span className="text-sm text-gray-600">Mileage Cost</span>
                       <span className="text-sm font-medium">{money(price_breakdown.mileage_cost)}</span>
                     </div>
@@ -756,15 +772,25 @@ const RequestDetails = () => {
                         <span className="text-sm text-gray-600">Optional Extras</span>
                         <span className="text-sm font-medium">{money(price_breakdown.optional_extras.total)}</span>
                       </div>
-                    )}
+                    )} */}
                     <div className="pt-2 border-t">
-                      <div className="flex justify-between">
-                        <span className="text-sm font-semibold text-gray-900">Final Total</span>
-                        <span className="text-base font-bold text-pink-600">
-                          {money(price_breakdown.final_total)}
-                        </span>
-                      </div>
-                    </div>
+  <div className="flex justify-between">
+    <span className="text-sm font-semibold text-gray-900">Final Total</span>
+
+    {userRole === "Logistics Manager" ? (
+      // 👉 Show Remaining Amount for Logistics Manager
+      <span className="text-base font-bold text-pink-600">
+        {money(pretty(remaining_amount))}
+      </span>
+    ) : (
+      // 👉 Show Final Total for Normal User
+      <span className="text-base font-bold text-pink-600">
+        {money(price_breakdown.final_total)}
+      </span>
+    )}
+  </div>
+</div>
+
                   </div>
                 </div>
               </DetailCard>

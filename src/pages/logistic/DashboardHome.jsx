@@ -34,7 +34,7 @@ const DashboardHome = () => {
 
   // METRICS
   const [pending, setPending] = useState(0);
-  const [completed, setCompleted] = useState(0); // FIXED HERE
+  const [completed, setCompleted] = useState(0); 
   const [avgPrice, setAvgPrice] = useState(0);
   const [totalRequests, setTotalRequests] = useState(0);
 
@@ -53,7 +53,7 @@ const DashboardHome = () => {
 
       const list = msg.visible_requests?.data || [];
 
-      // Apply sorting → latest first (as you requested earlier)
+      // Latest first
       const sorted = [...list].sort(
         (a, b) => new Date(b.created_at) - new Date(a.created_at)
       );
@@ -62,16 +62,19 @@ const DashboardHome = () => {
       setSubscriptionInfo(msg.subscription_info || null);
 
       const stats = msg.statistics || {};
-      setPending(stats.pending_count || 0);
       setAvgPrice(stats.overall_avg_remaining || 0);
       setTotalRequests(stats.total_requests || 0);
 
-      // ⭐ FIX: Calculate Confirmed count on frontend
+      // ✔ Confirmed = Accepted + In Progress + Completed
       const frontendConfirmed = sorted.filter((r) =>
-        ["Assigned", "Accepted", "Completed"].includes(r.status)
+        ["Accepted", "In Progress", "Completed"].includes(r.status)
       ).length;
 
       setCompleted(frontendConfirmed);
+
+      // ✔ Assigned = Assigned only
+      const frontendAssigned = sorted.filter((r) => r.status === "Assigned").length;
+      setPending(frontendAssigned);
 
     } catch (err) {
       console.error("❌ Error loading dashboard:", err);
@@ -106,13 +109,21 @@ const DashboardHome = () => {
 
   const isFreeUser = plan === "Free";
 
-  // Filter based on card selection
+  // ✔ Correct Status Flow Filtering
   const filteredRequests = activeFilter
     ? requests.filter((req) => {
+        const status = req.status?.trim().toLowerCase();
+
         if (activeFilter === "All") return true;
-        if (activeFilter === "Pending") return req.status === "Pending";
+
+        // Assigned → Only Assigned
+        if (activeFilter === "Assigned")
+          return status === "assigned";
+
+        // Confirmed → Accepted + In Progress + Completed
         if (activeFilter === "Confirmed")
-          return ["Assigned", "Accepted", "Completed"].includes(req.status);
+          return ["accepted", "in progress", "completed"].includes(status);
+
         return false;
       })
     : [];
@@ -126,16 +137,17 @@ const DashboardHome = () => {
 
       {/* CARDS */}
       <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-4">
+
         <CardClickable
-          title="Pending"
+          title="Assigned"
           value={pending}
           icon={ExclamationCircleIcon}
-          onClick={() => setActiveFilter("Pending")}
+          onClick={() => setActiveFilter("Assigned")}
         />
 
         <CardClickable
           title="Confirmed"
-          value={completed} // FIXED
+          value={completed}
           icon={CheckCircleIcon}
           onClick={() => setActiveFilter("Confirmed")}
         />
@@ -195,6 +207,10 @@ const DashboardHome = () => {
                   <p className="text-xs text-gray-500 mt-1">
                     {formatTime(req.created_at)}
                   </p>
+
+                  <p className="text-xs text-gray-500 mt-1 font-bold">
+                    Total Final Cost : {req.remaining_amount ? req.remaining_amount : ""}
+                  </p>
                 </div>
 
                 <button
@@ -253,6 +269,10 @@ const DashboardHome = () => {
 
                 <p className="text-xs text-gray-500 mt-1">
                   {req.created_at ? formatTime(req.created_at) : ""}
+                </p>
+
+                <p className="text-xs text-gray-500 mt-1 font-bold">
+                  Total Final Cost : {req.remaining_amount ? req.remaining_amount : ""}
                 </p>
               </div>
 

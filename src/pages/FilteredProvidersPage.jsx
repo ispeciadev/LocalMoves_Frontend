@@ -1,455 +1,379 @@
-// src/pages/FilteredProvidersPage.jsx
 import React, { useState, useEffect } from "react";
-import {
-  Check,
-  Image as ImageIcon,
-  MapPin,
-  ChevronDown,
-  Star,
-} from "lucide-react";
+import { Check, MapPin, ChevronDown, Star } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
-import api from "../api/axios";
-import { useAuthStore } from "../stores/useAuthStore";
-import { toast } from "react-toastify";
 
-const FALLBACK_IMAGE =
-  "https://dummyimage.com/200x150/e5e7eb/000&text=No+Image";
+const FALLBACK_IMAGE = "https://dummyimage.com/200x150/e5e7eb/000&text=No+Image";
+const FALLBACK_LOGO = "https://dummyimage.com/80x80/e5e7eb/000&text=Logo";
 
-const FALLBACK_LOGO =
-  "https://dummyimage.com/80x80/e5e7eb/000&text=Logo";
+const ITEM_VOLUME_MAP = {
+  "Single Bed": 1.0, "Double Bed": 1.5, "KingSize Bed": 2.0,
+  "Mattress Single": 0.6, "Mattress Double": 0.8, "Mattress KingSize": 1.0,
+  "Wardrobe Double": 1.5, "Wardrobe Triple": 2.0,
+  "Chest Of 4 Drawers": 0.7, "Bedside Table": 0.3,
+  "3 Seater Sofa": 2.0, "2 Seater Sofa": 1.5, Armchair: 1.0,
+  "Coffee Table": 0.3, 'TV up to 75"': 0.2, "TV Stand": 0.3,
+  "Bookcase Large": 0.8, "Cabinet Large": 1.0,
+  "Dining Table 6 Seater": 1.5, "Dining Chair": 0.15,
+  "Fridge Freezer Upright": 0.7, "Washing Machine": 0.6,
+  Dishwasher: 0.6, "Cooker Standard": 0.5, "Desk Large": 0.75,
+  "Misc Chairs Bedroom": 0.25, "Bookcase Small Bedroom": 0.5,
+  "Plant Small LR": 0.05, "Ornaments Fragile LR": 0.1, Suitcases: 0.2,
+};
 
-const resolveImage = (img) => {
-  if (!img) return FALLBACK_IMAGE;
-  if (img.startsWith("blob:")) return FALLBACK_IMAGE;
-  if (img.trim() === "") return FALLBACK_IMAGE;
-  return img;
+const calculateTotalVolume = (selectedItems = {}, propertySize, additionalSpaces = []) => {
+  let total = 0;
+  Object.entries(selectedItems).forEach(([item, qty]) => {
+    const vol = ITEM_VOLUME_MAP[item] || 0;
+    total += vol * qty;
+  });
+  const sizeEst = { studio: 300, "1_bed": 500, "2_bed": 800, "3_bed": 1200, "4_bed": 1600, "5_bed": 2000 };
+  if (total === 0 && sizeEst[propertySize]) total = sizeEst[propertySize];
+  total += additionalSpaces.length * 200;
+  return Math.round(total);
+};
+
+const resolveImage = (img) => (!img || img.startsWith("blob:") || img.trim() === "" ? FALLBACK_IMAGE : img);
+
+const RenderList = ({ title, list }) => {
+  console.log(`RenderList - ${title}:`, list);
+  return (
+    <div>
+      <h4 className="font-bold text-pink-600 text-[15px] mb-2">{title}:</h4>
+      {list?.length > 0 ? (
+        <ul className="space-y-1">
+          {list.map((item, index) => (
+            <li key={index} className="text-gray-700 text-[14px] flex items-center gap-2">
+              <Check className="h-4 w-4 text-green-500" />
+              {item}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="text-gray-400 text-[13px]">No items listed</p>
+      )}
+    </div>
+  );
 };
 
 const FilteredProvidersPage = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
-  const { user, isAuthenticated } = useAuthStore();
 
-  const pickupPincode = state?.pickupPincode || "";
-  const dropoffPincode = state?.dropoffPincode || "";
-  const distanceKm = state?.distanceKm || null;
-  const distanceMilesExact = distanceKm
-    ? (distanceKm * 0.621371).toFixed(1)
-    : null;
+  const {
+    pickupPincode = "", dropoffPincode = "", propertySize = "", distanceKm = null,
+    serviceType = "", quantity = "everything", additionalSpaces = [],
+    selectedItems = {}, dismantleItems = {}, collectionParking = "",
+    deliveryParking = "", collectionAccess = "", deliveryAccess = "",
+    moveDay = "", noticePeriod = "", collectionTime = "",
+    user_details = {}, providers = [], companiesWithPricing = [], pricingForm = {},
+  } = state || {};
 
-  const providersRaw = state?.providers;
+  const distanceMilesExact = distanceKm ? parseFloat((distanceKm * 0.621371).toFixed(1)) : null;
+  const totalVolume = calculateTotalVolume(selectedItems, propertySize, additionalSpaces);
+  const apiProviders = companiesWithPricing.length ? companiesWithPricing : providers;
 
-  const apiProviders = Array.isArray(providersRaw)
-    ? providersRaw
-    : Array.isArray(providersRaw?.data)
-    ? providersRaw.data
-    : [];
-
-  // ⭐ SUBSCRIPTION FILTER ADDED — NOTHING ELSE CHANGED
-  const subscribedProviders = apiProviders.filter(
-    (company) =>
-      company.subscription_plan &&
-      company.subscription_plan.toLowerCase() !== "free"
-  );
-
-  const searchParams = providersRaw?.search_parameters || {};
-  const pickupCity = state?.pickup || "Your Area";
-  const displayCity = pickupCity.split(",")[0];
-
-  const companiesList = subscribedProviders.map((company) => {
-    const galleryArray = company.company_gallery?.length
-      ? company.company_gallery
-      : [];
-
-    return {
-      name: company.company_name,
-      logo:
-        resolveImage(company.company_gallery?.[0]) || FALLBACK_LOGO,
-
-      distanceMiles:
-        distanceMilesExact !== null
-          ? `${distanceMilesExact} miles`
-          : `${searchParams.distance_miles || 0} miles`,
-
-      distanceText: "From Collection Address",
-      price: company.cost_calculation?.removal_price || 0,
-      packing: `£${company.cost_calculation?.add_packing || 0}`,
-      insurance: `£${company.cost_calculation?.assembly_cost || 0}`,
-
-      features: [
-        ...(company.includes || []),
-        ...(company.protection || []),
-        ...(company.material || []),
-        ...(company.furniture || []),
-        ...(company.appliances || []),
-      ].slice(0, 5),
-
-      gallery:
-        galleryArray.length > 0
-          ? galleryArray.map((g) => resolveImage(g))
-          : [FALLBACK_IMAGE, FALLBACK_IMAGE, FALLBACK_IMAGE],
-
-      original: company,
-    };
-  });
-
-  const [companies, setCompanies] = useState(companiesList);
+  const [companies, setCompanies] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [sortOrder, setSortOrder] = useState("low-to-high");
+  const [ratings] = useState({});
   const [openGallery, setOpenGallery] = useState({});
-  const [ratings, setRatings] = useState({});
 
-  const toggleGallery = (idx) =>
-    setOpenGallery((prev) => ({ ...prev, [idx]: !prev[idx] }));
+  const toggleGallery = (key) => setOpenGallery((prev) => ({ ...prev, [key]: !prev[key] }));
 
-  const fetchCompanyRatings = async (companyName) => {
-    try {
-      const res = await api.post(
-        "localmoves.api.rating_review.get_company_ratings_and_reviews",
-        { company_name: companyName }
-      );
-
-      const msg = res.data?.message;
-
-      if (!msg?.success) {
-        return { avg: 0, total: 0 };
+  const processCompanies = (list) => {
+    if (!Array.isArray(list)) {
+      console.error("❌ processCompanies received non-array:", typeof list);
+      return [];
+    }
+    
+    console.log("📦 Processing", list.length, "companies");
+    
+    return list.map((company, index) => {
+      if (!company || typeof company !== 'object') {
+        console.warn(`⚠️ Invalid company at index ${index}`);
+        return null;
       }
 
-      return {
-        avg: msg.rating_summary?.average_rating || 0,
-        total: msg.rating_summary?.total_ratings || 0,
+      if (index === 0) {
+        console.log("🔍 RAW DATA (first company):", {
+          name: company.company_name,
+          hasProtection: !!company.protection,
+          protection: company.protection,
+          hasMaterial: !!company.material,
+          material: company.material,
+          hasFurniture: !!company.furniture,
+          furniture: company.furniture,
+          hasAppliances: !!company.appliances,
+          appliances: company.appliances,
+          hasIncludes: !!company.includes,
+          includes: company.includes
+        });
+      }
+
+      const pricing = company.exact_pricing || {};
+      const breakdown = pricing.breakdown || {};
+
+      const processed = {
+        name: company.company_name || company.name || 'Unknown Company',
+        phone: company.phone || '',
+        address: company.address || '',
+        location: company.location || '',
+        subscription_plan: company.subscription_plan || company.subscription_info?.plan || 'Free',
+        total_carrying_capacity: company.total_carrying_capacity || 0,
+        logo: company.company_gallery?.[0] || FALLBACK_LOGO,
+        final_total: pricing.final_total || 0,
+        packing_cost: breakdown.packing || 0,
+        dismantling_cost: breakdown.dismantling || 0,
+        reassembly_cost: breakdown.reassembly || 0,
+        loading_cost: breakdown.loading || 0,
+        mileage_cost: breakdown.mileage || 0,
+        date_adjustment: breakdown.date_adjustment || 0,
+        
+        original: {
+          includes: Array.isArray(company.includes) ? company.includes : [],
+          protection: Array.isArray(company.protection) ? company.protection : [],
+          material: Array.isArray(company.material) ? company.material : [],
+          furniture: Array.isArray(company.furniture) ? company.furniture : [],
+          appliances: Array.isArray(company.appliances) ? company.appliances : [],
+          areas_covered: Array.isArray(company.areas_covered) ? company.areas_covered : [],
+          description: company.description || '',
+        },
+        
+        gallery: company.company_gallery?.length 
+          ? company.company_gallery.map(resolveImage) 
+          : [FALLBACK_IMAGE],
+        distanceMiles: distanceMilesExact ? `${distanceMilesExact} miles` : "N/A",
+        distanceText: "From Collection Address",
       };
-    } catch {
-      return { avg: 0, total: 0 };
-    }
+
+      if (index === 0) {
+        console.log("✅ PROCESSED DATA (first company):", {
+          name: processed.name,
+          'original.includes': processed.original.includes,
+          'original.protection': processed.original.protection,
+          'original.material': processed.original.material,
+          'original.furniture': processed.original.furniture,
+          'original.appliances': processed.original.appliances,
+        });
+      }
+
+      return processed;
+    }).filter(Boolean);
   };
 
   useEffect(() => {
-    const loadRatings = async () => {
-      const result = {};
-
-      for (let c of companiesList) {
-        const ratingData = await fetchCompanyRatings(c.name);
-        result[c.name] = ratingData;
+    const loadData = () => {
+      try {
+        console.log("🚀 useEffect running - Loading data...");
+        let dataToProcess = apiProviders;
+        
+        console.log("📥 Data from state:", {
+          length: dataToProcess?.length || 0,
+          firstCompanyName: dataToProcess?.[0]?.company_name,
+          firstCompanyProtection: dataToProcess?.[0]?.protection,
+          firstCompanyMaterial: dataToProcess?.[0]?.material
+        });
+        
+        if (!dataToProcess || dataToProcess.length === 0) {
+          const savedData = localStorage.getItem('filteredProviders');
+          if (savedData) {
+            const parsed = JSON.parse(savedData);
+            dataToProcess = parsed.providers || [];
+            console.log("✅ Loaded from localStorage:", dataToProcess.length);
+          }
+        }
+        
+        if (dataToProcess && dataToProcess.length > 0) {
+          const processed = processCompanies(dataToProcess);
+          console.log("✅ Setting state with", processed.length, "companies");
+          setCompanies(processed);
+        } else {
+          console.log("⚠️ No data to process");
+          setCompanies([]);
+        }
+        
+        setLoading(false);
+      } catch (e) {
+        console.error("❌ Error loading data:", e);
+        setCompanies([]);
+        setLoading(false);
       }
-
-      setRatings(result);
     };
-
-    loadRatings();
-  }, [companiesList]);
+    loadData();
+  }, []);
 
   const handleSort = () => {
-    let sorted = [...companies];
-
-    if (sortOrder === "low-to-high") {
-      sorted.sort((a, b) => a.price - b.price);
-      setSortOrder("high-to-high");
-    } else {
-      sorted.sort((a, b) => b.price - a.price);
-      setSortOrder("low-to-high");
-    }
-
+    const sorted = [...companies].sort((a, b) =>
+      sortOrder === "low-to-high" ? a.final_total - b.final_total : b.final_total - a.final_total
+    );
     setCompanies(sorted);
+    setSortOrder(sortOrder === "low-to-high" ? "high-to-low" : "low-to-high");
   };
+
+  if (loading) {
+    return (
+      <div className="p-10 text-center">
+        <div className="text-lg text-pink-600 mb-4">Loading providers...</div>
+        <div className="text-sm text-gray-500">Processing {apiProviders?.length || 0} companies</div>
+      </div>
+    );
+  }
+
+  if (!loading && companies.length === 0) {
+    return (
+      <div className="p-10 text-center">
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 max-w-2xl mx-auto">
+          <h2 className="text-xl font-bold text-yellow-800 mb-3">No Providers Data</h2>
+          <p className="text-yellow-700 mb-4">We couldn't find any provider data.</p>
+          <div className="flex gap-3 justify-center">
+            <button onClick={() => navigate(-1)} className="px-4 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700">
+              Go Back & Try Again
+            </button>
+            <button
+              onClick={() => { localStorage.removeItem('filteredProviders'); window.location.reload(); }}
+              className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700"
+            >
+              Clear Cache & Reload
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <section className="bg-[#fffefe] min-h-screen pt-6 pb-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
-        {/* TITLE */}
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6 gap-4">
           <div>
-            <h1 className="text-[26px] sm:text-[30px] lg:text-[34px] leading-tight font-extrabold text-pink-600">
-              Filter Removal Providers In{" "}
-              <span className="text-black">{displayCity}</span>
+            <h1 className="text-[26px] sm:text-[30px] lg:text-[34px] font-extrabold text-pink-600">
+              Filter Removal Providers
             </h1>
-
             <p className="text-gray-600 text-sm mt-1">
               From <b>{pickupPincode}</b> to <b>{dropoffPincode}</b>
             </p>
+            {totalVolume > 0 && (
+              <p className="text-gray-600 text-sm mt-1">
+                Estimated Volume: <b>{totalVolume} cubic feet</b>
+              </p>
+            )}
           </div>
-
-          <button
-            onClick={handleSort}
-            className="flex items-center gap-2 px-4 py-2 rounded-full border border-pink-500 bg-white text-pink-600 text-sm font-semibold hover:bg-pink-50 transition"
-          >
-            {sortOrder === "low-to-high"
-              ? "Price (Low to High)"
-              : "Price (High to Low)"}
-            <ChevronDown className="h-4 w-4" />
-          </button>
+          <div className="flex flex-col sm:flex-row items-center gap-3">
+            <div className="bg-pink-50 text-pink-700 px-3 py-2 rounded-lg text-sm font-medium">
+              <span className="font-bold">{companies.length}</span> companies found
+            </div>
+            <button onClick={handleSort} className="flex items-center gap-2 px-4 py-2 rounded-full border border-pink-500 bg-white text-pink-600 text-sm font-semibold hover:bg-pink-50 transition">
+              {sortOrder === "low-to-high" ? "Price (Low to High)" : "Price (High to Low)"}
+              <ChevronDown className="h-4 w-4" />
+            </button>
+          </div>
         </div>
 
-        {/* HEADERS */}
-        <div className="hidden lg:flex bg-white border border-gray-200 px-6 py-4 rounded-xl items-center justify-between">
-          <span className="w-[22%] font-bold text-[#333]">Removal Company</span>
-          <div className="w-[15%] text-center">
-            <span className="font-bold text-[#333]">Removal Price</span>
-            <span className="text-[11px] text-gray-500 block">Fixed Rate</span>
-          </div>
-          <span className="w-[12%] font-bold text-[#333] text-center">
-            Add Packing
-          </span>
-          <span className="w-[15%] font-bold text-[#333] text-center">
-            Assembly Price
-          </span>
-          <span className="w-[18%] font-bold text-[#333] text-right">
-            Action
-          </span>
-        </div>
-
-        {/* COMPANY CARDS */}
-        {companies.map((p, index) => {
-          const rating = ratings[p.name] || { avg: 0, total: 0 };
-
-          return (
-            <div
-              key={index}
-              className="bg-white rounded-xl shadow-md mt-6 border border-gray-200"
-            >
-              <div className="px-4 sm:px-6 pt-6 pb-4 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-
-                {/* COMPANY DETAILS */}
-                <div className="w-full lg:w-[22%] flex items-center gap-4">
-                  <img
-                    src={p.logo}
-                    alt={p.name}
-                    className="w-14 h-14 sm:w-16 sm:h-16 rounded-md object-cover border"
-                  />
-
-                  <div className="flex flex-col">
-                    <p className="text-[16px] sm:text-[18px] font-semibold">
-                      {p.name}
-                    </p>
-
-                    <div className="flex items-center gap-1 mt-1">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <Star
-                          key={star}
-                          className={`h-4 w-4 ${
-                            star <= Math.round(rating.avg)
-                              ? "text-yellow-400"
-                              : "text-gray-300"
-                          }`}
-                          fill={
-                            star <= Math.round(rating.avg)
-                              ? "#facc15"
-                              : "none"
-                          }
-                        />
-                      ))}
-                      <span className="ml-2 text-sm text-gray-600">
-                        {rating.total > 0 ? `(${rating.total})` : "No Ratings"}
-                      </span>
-                    </div>
-
-                    <div className="flex items-center gap-1 mt-1">
-                      <MapPin className="h-3 w-3 text-gray-400" />
-                      <span className="text-[12px] font-semibold text-pink-600">
-                        {p.distanceMiles}
-                      </span>
-                      <span className="text-[12px] text-gray-500">
-                        {p.distanceText}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* PRICE */}
-                <div className="w-full lg:w-[15%] text-pink-600 font-bold text-[20px] text-center">
-                  £{p.price}
-                </div>
-
-                {/* PACKING */}
-                <div className="w-full lg:w-[12%] text-center text-[16px] font-semibold">
-                  {p.packing}
-                </div>
-
-                {/* ASSEMBLY */}
-                <div className="w-full lg:w-[15%] text-center text-[16px] font-semibold">
-                  {p.insurance}
-                </div>
-
-                {/* BOOK SERVICE BUTTON — FIXED */}
-                <div className="w-full lg:w-[18%] flex justify-center lg:justify-end">
-                  <button
-                    onClick={() => {
-                      if (
-                        !isAuthenticated ||
-                        ["Admin", "Administrator", "System Manager", "Logistics Manager"].includes(user?.role)
-                      ) {
-                        toast.error(
-                          "Only users can book service. Please login as a user to continue."
-                        );
-                        return;
-                      }
-navigate("/book-service", {
-  state: {
-    provider: p.original,
-    companyName: p.name,
-    pickupPincode,
-    dropoffPincode,
-    distanceMiles: distanceMilesExact,
-    distanceKm,
-    pickup: state?.pickup,
-    dropoff: state?.dropoff,
-    pickupCoords: state?.pickupCoords,
-    dropoffCoords: state?.dropoffCoords,
-    routeGeometry: state?.routeGeometry,
-
-    // ⭐ NEW VALUES YOU WANT
-    totalVolume: p.original.cost_calculation?.total_volume_m3,
-    assemblyItems: p.original.cost_calculation?.assembly_items,
-  },
-});
-
-                    }}
-                    className="px-7 py-2 bg-pink-600 text-white font-semibold rounded-full shadow hover:bg-pink-700 transition w-full lg:w-auto"
-                  >
-                    Book Service
-                  </button>
-                </div>
-              </div>
-
-              {/* INCLUDED SECTION */}
-              <div className="mt-2 pt-3">
-                <button
-                  onClick={() => toggleGallery("inc-" + index)}
-                  className="w-full flex items-center justify-between bg-pink-600 hover:bg-pink-700 transition text-white px-5 py-3 rounded-xl font-semibold shadow-sm"
-                >
-                  <span className="text-[15px]">What's Included?</span>
-                  <ChevronDown
-                    className={`h-5 w-5 transition-transform duration-300 ${
-                      openGallery["inc-" + index] ? "rotate-180" : ""
-                    }`}
-                  />
-                </button>
-
-                {openGallery["inc-" + index] && (
-                  <div className="bg-white p-6 border border-gray-200 rounded-xl mt-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-6">
-
-                    {/* Includes */}
-                    <div>
-                      <h4 className="font-bold text-pink-600 text-[15px] mb-2">
-                        Includes:
-                      </h4>
-                      <ul className="space-y-2">
-                        {(p.original.includes || []).map((i, idx) => (
-                          <li key={idx} className="flex items-start gap-2 text-gray-700">
-                            <Check className="h-4 w-4 text-pink-600 mt-0.5 " />
-                            <span>{i}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    {/* Protection */}
-                    <div>
-                      <h4 className="font-bold text-pink-600 text-[15px] mb-2">
-                        Protection:
-                      </h4>
-                      <ul className="space-y-2">
-                        {(p.original.protection || []).map((i, idx) => (
-                          <li key={idx} className="flex items-start gap-2 text-gray-700">
-                            <Check className="h-4 w-4 text-pink-600 mt-0.5" />
-                            <span>{i}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    {/* Materials */}
-                    <div>
-                      <h4 className="font-bold text-pink-600 text-[15px] mb-2">
-                        Materials:
-                      </h4>
-                      <ul className="space-y-2">
-                        {(p.original.material || []).map((i, idx) => (
-                          <li key={idx} className="flex items-start gap-2 text-gray-700">
-                            <Check className="h-4 w-4 text-pink-600 mt-0.5" />
-                            <span>{i}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    {/* Furniture */}
-                    <div>
-                      <h4 className="font-bold text-pink-600 text-[15px] mb-2">
-                        Furniture:
-                      </h4>
-                      <ul className="space-y-2">
-                        {(p.original.furniture || []).map((i, idx) => (
-                          <li key={idx} className="flex items-start gap-2 text-gray-700">
-                            <Check className="h-4 w-4 text-pink-600  mt-0.5" />
-                            <span>{i}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    {/* Appliances */}
-                    <div>
-                      <h4 className="font-bold text-pink-600 text-[15px] mb-2">
-                        Appliances:
-                      </h4>
-                      <ul className="space-y-2">
-                        {(p.original.appliances || []).map((i, idx) => (
-                          <li key={idx} className="flex items-start gap-2 text-gray-700">
-                            <Check className="h-4 w-4 text-pink-600 mt-0.5" />
-                            <span>{i}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    {/* Summary */}
-                    <div>
-                      <h4 className="font-bold text-pink-600 text-[15px] mb-2">
-                        Summary:
-                      </h4>
-                      <p className="text-gray-700 leading-relaxed text-[14px]">
-                        {p.original.summary?.trim()
-                          ? p.original.summary
-                          : p.original.description?.trim()
-                          ? p.original.description
-                          : p.original.company_description?.trim()
-                          ? p.original.company_description
-                          : "Summary not provided"}
-                      </p>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* GALLERY SECTION */}
-              <div className="px-4 sm:px-6 py-4 flex flex-col gap-4">
-                <div className="flex items-center justify-between">
-                  <button
-                    onClick={() => toggleGallery(index)}
-                    className="flex items-center gap-2 text-pink-600 font-semibold hover:underline"
-                  >
-                    <ImageIcon className="h-4 w-4" />
-                    Gallery
-                  </button>
-                </div>
-
-                {openGallery[index] && (
-                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-                    {p.gallery.map((img, i) => (
-                      <img
-                        key={i}
-                        src={img}
-                        className="rounded-lg border object-cover w-full h-28 sm:h-32 lg:h-36"
-                        alt="company"
-                      />
+        {companies.map((p, index) => (
+          <div key={index} className="bg-white rounded-xl shadow-md mt-6 border border-gray-200">
+            <div className="px-4 sm:px-6 pt-6 pb-4 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+              <div className="w-full lg:w-[24%] flex items-center gap-4">
+                <img src={p.logo} className="w-16 h-16 rounded-md object-cover border" alt={p.name} />
+                <div>
+                  <p className="text-[18px] font-semibold">{p.name}</p>
+                  <div className="flex items-center gap-1 mt-1">
+                    {[1,2,3,4,5].map((star) => (
+                      <Star key={star} className={`h-4 w-4 ${star <= Math.round(ratings[p.name]?.avg || 0) ? "text-yellow-400" : "text-gray-300"}`}
+                        fill={star <= Math.round(ratings[p.name]?.avg || 0) ? "#facc15" : "none"} />
                     ))}
+                    <span className="ml-2 text-sm text-gray-600">({ratings[p.name]?.total || 0} reviews)</span>
                   </div>
-                )}
+                  <div className="flex items-center gap-1 mt-1">
+                    <MapPin className="h-3 w-3 text-gray-400" />
+                    <span className="text-[12px] font-semibold text-pink-600">{p.distanceMiles}</span>
+                    <span className="text-[12px] text-gray-500">{p.distanceText}</span>
+                  </div>
+                  {/* {p.phone && <p className="text-[12px] mt-1 text-gray-600">📞 {p.phone}</p>} */}
+                </div>
+              </div>
+              <div className="w-full lg:w-[13%] text-center">
+                <div className="text-pink-600 font-bold text-[20px]">£{p.final_total.toFixed(2)}</div>
+                <div className="text-[11px] text-gray-500 mt-1">All inclusive</div>
+                {/* <div className="text-[11px] text-gray-500">Capacity: {p.total_carrying_capacity} m³</div> */}
+              </div>
+              <div className="w-full lg:w-[11%] text-center">
+                <div className="text-[16px] font-semibold">£{p.packing_cost.toFixed(2)}</div>
+                <div className="text-[11px] text-gray-500 mt-1">Packing</div>
+              </div>
+              <div className="w-full lg:w-[13%] text-center">
+                <div className="text-[16px] font-semibold">£{p.dismantling_cost.toFixed(2)}</div>
+                <div className="text-[11px] text-gray-500 mt-1">Dismantling</div>
+              </div>
+              <div className="w-full lg:w-[13%] text-center">
+                <div className="text-[16px] font-semibold">£{p.reassembly_cost.toFixed(2)}</div>
+                <div className="text-[11px] text-gray-500 mt-1">Reassembly</div>
+              </div>
+              <div className="w-full lg:w-[18%] flex justify-center lg:justify-end">
+                <button
+                  onClick={() => navigate("/book-service", {
+                    state: {
+                      user_details, full_name: user_details.full_name, email: user_details.email, phone: user_details.phone,
+                      company_name: p.name, provider: p.original, company_logo: p.logo,
+                      company_phone: p.phone, company_address: p.address,
+                      pickup_address: pricingForm?.pickup_address, pickup_city: pricingForm?.pickup_city,
+                      delivery_address: pricingForm?.delivery_address, delivery_city: pricingForm?.delivery_city,
+                      pickupPincode, dropoffPincode, property_type: serviceType, property_size: propertySize,
+                      quantity, additional_spaces: additionalSpaces, move_day: moveDay, notice_period: noticePeriod,
+                      collection_time: collectionTime, selected_items: selectedItems, dismantle_items: dismantleItems,
+                      collection_parking_distance: collectionParking, collection_internal_access: collectionAccess,
+                      delivery_parking_distance: deliveryParking, delivery_internal_access: deliveryAccess,
+                      distanceMiles: distanceMilesExact, distanceKm, finalTotal: p.final_total,
+                      packingCost: p.packing_cost, dismantlingCost: p.dismantling_cost, reassemblyCost: p.reassembly_cost,
+                      loadingCost: p.loading_cost, mileageCost: p.mileage_cost, dateAdjustment: p.date_adjustment,
+                      total_volume: totalVolume,
+                    }
+                  })}
+                  className="px-7 py-2 bg-pink-600 text-white font-semibold rounded-full shadow hover:bg-pink-700 transition w-full lg:w-auto"
+                >
+                  Book Service
+                </button>
               </div>
             </div>
-          );
-        })}
+            <div className="mt-2 pt-3">
+              <button onClick={() => toggleGallery("inc-" + index)}
+                className="w-full flex items-center justify-between bg-pink-600 text-white px-5 py-3 rounded-xl font-semibold">
+                <span className="text-[15px]">What's Included?</span>
+                <ChevronDown className={`h-5 w-5 transition-transform duration-300 ${openGallery["inc-" + index] ? "rotate-180" : ""}`} />
+              </button>
+              {openGallery["inc-" + index] && (
+                <div className="bg-white p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-6 border border-gray-200 rounded-xl mt-3">
+                  <RenderList title="Includes" list={p.original.includes} />
+                  <RenderList title="Protection" list={p.original.protection} />
+                  <RenderList title="Materials" list={p.original.material} />
+                  <RenderList title="Furniture" list={p.original.furniture} />
+                  <RenderList title="Appliances" list={p.original.appliances} />
+                  <div>
+                    <h4 className="font-bold text-pink-600 text-[15px] mb-2">Summary:</h4>
+                    <p className="text-gray-700 text-[14px] leading-relaxed">
+                      {p.original.description || "Professional moving services with competitive pricing."}
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+            <div className="px-4 sm:px-6 py-4">
+              <button onClick={() => toggleGallery(index)} className="flex items-center gap-2 text-pink-600 font-semibold hover:underline">
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                Gallery ({p.gallery.length} images)
+              </button>
+              {openGallery[index] && (
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mt-4">
+                  {p.gallery.map((img, i) => (
+                    <img key={i} src={img} alt={`Gallery ${i + 1}`} className="rounded-lg border object-cover w-full h-28"
+                      onError={(e) => { e.target.src = FALLBACK_IMAGE; }} />
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
       </div>
     </section>
   );

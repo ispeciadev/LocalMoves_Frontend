@@ -71,6 +71,15 @@ const LoginPage = () => {
         localStorage.setItem("user", JSON.stringify(result.user));
         localStorage.setItem("user_email", result.user.email);
 
+        // ⭐ ADD THESE THREE LINES (THE FIX)
+        localStorage.setItem("user_full_name", result.user.full_name || "");
+        localStorage.setItem("user_phone", result.user.phone || "");
+        localStorage.setItem("user_email", result.user.email || "");
+
+        // Your backend does NOT provide name/phone, so store safe fallback values
+localStorage.setItem("user_full_name", result.user.full_name || result.user.name || "");
+localStorage.setItem("user_phone", result.user.phone || "");
+
         window.dispatchEvent(new Event("subscription-updated"));
 
         const role = result.user?.role;

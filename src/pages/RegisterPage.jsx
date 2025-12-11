@@ -116,7 +116,7 @@ const RegisterPage = () => {
 
       if (result.success) {
         toast.success("Signup successful!");
-        navigate("/login");
+        navigate("/");
       } else {
         toast.error(result.message || "Signup failed.");
       }
