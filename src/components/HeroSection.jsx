@@ -228,7 +228,7 @@ const HeroSection = () => {
     try {
       setLoadingCount(true);
       const res = await axios.post(
-        `${env.API_BASE_URL} localmoves.api.company.search_number_of_companies_by_pincode`,
+        `${env.API_BASE_URL}localmoves.api.company.search_number_of_companies_by_pincode`,
         { pincode }
       );
       const msg = res.data?.message;
