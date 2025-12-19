@@ -4,7 +4,12 @@ import env from "../config/env";
 
 const api = axios.create({
   baseURL: env.API_BASE_URL,
-  headers: { "Content-Type": "application/json" },
+  headers: {
+    "Content-Type": "application/json",
+    "Expect": "" // Disable Expect header to prevent 417 errors
+  },
+  maxBodyLength: Infinity,
+  maxContentLength: Infinity,
 });
 
 // Public (no token needed)
