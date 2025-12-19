@@ -7,6 +7,7 @@ import axios from "axios";
 import { useAuthStore } from "../stores/useAuthStore";
 import { toast } from "react-toastify";
 import MoveDetailsModal from "../components/MoveDetailsModal";
+import env from "../config/env";
 
 // Vehicle Icon Components (matching HeroSection)
 const SwbIcon = (props) => <span {...props} style={{ fontSize: '1.2rem', lineHeight: 1 }}>🚐</span>;
@@ -575,7 +576,7 @@ const ComparePage = () => {
         console.log("🚀 ComparePage API Payload:", payload);
 
         const res = await axios.post(
-          "http://127.0.0.1:8000/api/method/localmoves.api.company.search_companies_by_pincode",
+          `${env.API_BASE_URL}localmoves.api.company.search_companies_by_pincode`,
           payload,
           { headers: { "Content-Type": "application/json" } }
         );

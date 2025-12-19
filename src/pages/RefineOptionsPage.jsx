@@ -5,6 +5,7 @@ import CustomIconSelect from "../components/CustomIconSelect";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import api from "../api/axios";
+import env from "../config/env";
 
 // --------------------------------------------------------------
 //  LEAFLET MAP BUILDER (unchanged)
@@ -840,7 +841,7 @@ const RefineOptionsPage = () => {
         };
 
         const response = await axios.post(
-          "http://127.0.0.1:8000/api/method/localmoves.api.company.search_companies_with_cost",
+          `${env.API_BASE_URL}localmoves.api.company.search_companies_with_cost`,
           pricingPayload,
           { headers: { "Content-Type": "application/json" }, timeout: 30000 }
         );
@@ -1434,7 +1435,7 @@ const RefineOptionsPage = () => {
 
     try {
       const response = await axios.post(
-        "http://127.0.0.1:8000/api/method/localmoves.api.company.search_companies_with_cost",
+        `${env.API_BASE_URL}localmoves.api.company.search_companies_with_cost`,
         pricingPayload,
         {
           headers: {
