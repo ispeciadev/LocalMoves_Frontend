@@ -18,6 +18,16 @@ const PUBLIC_ROUTES = [
   "auth.signup",
 ];
 
+// Remove Expect header from all requests (fixes 417 error)
+api.interceptors.request.use(
+  (config) => {
+    delete config.headers['Expect'];
+    delete config.headers['expect'];
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
 api.interceptors.request.use(
   (config) => {
     const url = config.url || "";
