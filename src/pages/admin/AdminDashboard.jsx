@@ -99,7 +99,7 @@ function StatCard({ label, value, highlight, isDarkMode }) {
             : "bg-gray-100 text-gray-500"
           }`}
       >
-        <Icon className="text-lg md:text-xl" />
+        {/* Icon removed - was causing crash */}
       </div>
     </div>
   );
