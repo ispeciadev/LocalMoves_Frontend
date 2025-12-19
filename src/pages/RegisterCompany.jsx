@@ -891,7 +891,7 @@ const RegisterCompany = () => {
             localStorage.setItem("user", JSON.stringify(updatedUser));
             updateUser({ company_registered: true, company_name: formData.companyName });
             window.dispatchEvent(new Event("subscription-updated"));
-          } catch (uerr) {
+          } catch {
             // ignore local update failures
           }
 

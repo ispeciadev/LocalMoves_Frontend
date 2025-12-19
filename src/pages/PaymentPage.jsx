@@ -18,18 +18,12 @@ export default function PaymentPage() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const originalAmount = location.state?.amount || 0;
-  
-  // Get total amount and calculate 10% deposit correctly
-  const totalAmount = location.state?.moveDetails?.total_price || 
-                      location.state?.paymentData?.total_amount || 
-                      0;
-  
-  // CORRECTED: Calculate 10% of total amount
-  const depositAmount = parseFloat((totalAmount * 0.10).toFixed(2));
-  
-  // Use depositAmount for display, not originalAmount
-  const amount = depositAmount > 0 ? depositAmount : (originalAmount * 0.10);
+  const _originalAmount = location.state?.amount || 0;
+
+  // Get total amount
+  const totalAmount = location.state?.moveDetails?.total_price ||
+    location.state?.paymentData?.total_amount ||
+    0;
 
   const companyName = location.state?.companyName || "";
   const bookingPayload = location.state?.payload || null;
@@ -38,12 +32,52 @@ export default function PaymentPage() {
 
   const [loading, setLoading] = useState(true);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [depositPercentage, setDepositPercentage] = useState(null); // New state
+  const [depositAmount, setDepositAmount] = useState(0); // New state
 
   const scriptLoaded = useRef(false);
   const buttonRendered = useRef(false);
 
+  // Fetch deposit percentage on component mount
+  useEffect(() => {
+    const fetchDepositData = async () => {
+      try {
+        const token = JSON.parse(localStorage.getItem("user"))?.token || "";
+        const response = await axios.get(
+          "http://127.0.0.1:8000/api/method/localmoves.api.dashboard.get_current_deposit_percentage",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (response.data.message?.success) {
+          const percentage = response.data.message.deposit_percentage;
+          setDepositPercentage(percentage);
+
+          // Calculate deposit amount
+          const deposit = parseFloat((totalAmount * (percentage / 100)).toFixed(2));
+          setDepositAmount(deposit);
+        } else {
+          // Fallback to 10% if API fails
+          setDepositPercentage(10.0);
+          setDepositAmount(parseFloat((totalAmount * 0.10).toFixed(2)));
+        }
+      } catch (_error) {
+        console.error("Failed to fetch deposit percentage:", _error);
+        // Fallback to 10% if API fails
+        setDepositPercentage(10.0);
+        setDepositAmount(parseFloat((totalAmount * 0.10).toFixed(2)));
+      }
+    };
+
+    if (totalAmount > 0) {
+      fetchDepositData();
+    }
+  }, [totalAmount]);
+
   const convertGBPtoUSD = (gbp) => {
-    // Assuming 1 GBP = 1.25 USD (approximate conversion rate)
     const GBP_TO_USD_RATE = 1.25;
     return (Number(gbp || 0) * GBP_TO_USD_RATE).toFixed(2);
   };
@@ -60,6 +94,7 @@ export default function PaymentPage() {
   };
 
   // Build proper payload matching the example structure EXACTLY
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const buildCompletePayload = (paymentDetails) => {
     if (!bookingPayload) return null;
 
@@ -79,8 +114,8 @@ export default function PaymentPage() {
       dismantling: parseFloat(pricing_data.dismantling_volume_m3 || 0) * 20 || 66,
       reassembly: parseFloat(pricing_data.reassembly_volume_m3 || 0) * 40 || 132,
       total: (parseFloat(pricing_data.packing_volume_m3 || 0) * 50 || 10) +
-             (parseFloat(pricing_data.dismantling_volume_m3 || 0) * 20 || 66) +
-             (parseFloat(pricing_data.reassembly_volume_m3 || 0) * 40 || 132)
+        (parseFloat(pricing_data.dismantling_volume_m3 || 0) * 20 || 66) +
+        (parseFloat(pricing_data.reassembly_volume_m3 || 0) * 40 || 132)
     };
 
     // Ensure breakdown has all required fields
@@ -98,10 +133,10 @@ export default function PaymentPage() {
       notice_period: parseFloat(price_breakdown.multipliers?.notice_period || 1),
       move_day: parseFloat(price_breakdown.multipliers?.move_day || 1),
       collection_time: parseFloat(price_breakdown.multipliers?.collection_time || 1),
-      property_collection: parseFloat(price_breakdown.multipliers?.property_collection || 
-                                     price_breakdown.collection_multiplier || 1),
-      property_delivery: parseFloat(price_breakdown.multipliers?.property_delivery || 
-                                   price_breakdown.delivery_multiplier || 1)
+      property_collection: parseFloat(price_breakdown.multipliers?.property_collection ||
+        price_breakdown.collection_multiplier || 1),
+      property_delivery: parseFloat(price_breakdown.multipliers?.property_delivery ||
+        price_breakdown.delivery_multiplier || 1)
     };
 
     // Build complete payload matching example structure EXACTLY
@@ -202,7 +237,7 @@ export default function PaymentPage() {
       payment_method: "PayPal",
       process_deposit: true,
       transaction_ref: paymentDetails.id || `txn_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      
+
       payment_gateway_response: {
         payment_intent_id: paymentDetails.id || "",
         status: paymentDetails.status === "COMPLETED" ? "succeeded" : paymentDetails.status || "succeeded",
@@ -238,6 +273,7 @@ export default function PaymentPage() {
 
       request_type: "full_move",
       booking_status: "pending_payment",
+      deposit_percentage: depositPercentage, // Add this field
       deposit_amount: parseFloat(depositAmount),
       total_amount: parseFloat(totalAmount || moveDetails.total_price || price_breakdown.final_total || 7914.62),
       payment_status: "pending",
@@ -247,9 +283,13 @@ export default function PaymentPage() {
     };
   };
 
-  // ⭐ MOVED TO TOP (fixes ReferenceError)
+  // PayPal button render function
   const renderPayPalButton = useCallback(() => {
-    // Use correct USD conversion for GBP
+    if (!depositAmount || depositAmount <= 0) {
+      toast.error("Invalid deposit amount");
+      return;
+    }
+
     const usdAmount = convertGBPtoUSD(depositAmount);
 
     window.paypal
@@ -258,11 +298,11 @@ export default function PaymentPage() {
           return actions.order.create({
             purchase_units: [
               {
-                amount: { 
+                amount: {
                   value: usdAmount,
-                  currency_code: PAYPAL_CONFIG.CURRENCY 
+                  currency_code: PAYPAL_CONFIG.CURRENCY
                 },
-                description: `Move Booking Deposit (10%) with ${companyName}`,
+                description: `Move Booking Deposit (${depositPercentage || 10}%) with ${companyName}`,
               },
             ],
           });
@@ -276,7 +316,7 @@ export default function PaymentPage() {
             try {
               // Build complete payload matching API requirements
               const payloadToSend = buildCompletePayload(paymentDetails);
-              
+
               if (!payloadToSend) {
                 throw new Error("Failed to build payload");
               }
@@ -298,12 +338,13 @@ export default function PaymentPage() {
 
               if (response.data?.message?.success === true) {
                 toast.success("Booking created successfully!");
-                
+
                 // Store booking info for reference
                 localStorage.setItem("lastBooking", JSON.stringify({
                   id: response.data.message.booking_id || paymentDetails.id,
                   date: new Date().toISOString(),
                   deposit_amount: depositAmount,
+                  deposit_percentage: depositPercentage,
                   total_amount: totalAmount,
                   company: companyName,
                   payload: payloadToSend,
@@ -317,9 +358,9 @@ export default function PaymentPage() {
                 response: err.response?.data,
                 status: err.response?.status,
               });
-              
+
               toast.error(`Server error: ${err.response?.data?.message?.message || err.message}`);
-              
+
               // Still show success for payment
               setTimeout(() => {
                 toast.warning("Payment was successful but booking creation failed. Please contact support.");
@@ -345,13 +386,11 @@ export default function PaymentPage() {
       })
       .render("#paypal-container")
       .then(() => setLoading(false));
-  }, [depositAmount, totalAmount, companyName, userDetails, moveDetails, bookingPayload, navigate]);
+  }, [depositAmount, depositPercentage, totalAmount, companyName, navigate, buildCompletePayload]);
 
-  // ⭐ useEffect AFTER the function exists
+  // Initialize PayPal when deposit amount is calculated
   useEffect(() => {
-    if (!totalAmount || !companyName || !bookingPayload) {
-      toast.error("Missing payment data.");
-      navigate(-1);
+    if (!totalAmount || !companyName || !bookingPayload || !depositAmount) {
       return;
     }
 
@@ -378,9 +417,22 @@ export default function PaymentPage() {
     totalAmount,
     companyName,
     bookingPayload,
+    depositAmount,
     navigate,
     renderPayPalButton,
   ]);
+
+  // Show loading while fetching deposit percentage
+  if (depositPercentage === null) {
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-gray-50">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-pink-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="mt-4 text-gray-600">Fetching deposit information...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-50 p-6 relative">
@@ -399,7 +451,7 @@ export default function PaymentPage() {
               Total Move Cost: £{parseFloat(totalAmount).toFixed(2)}
             </p>
             <p className="text-sm text-gray-600 mt-1">
-              (10% deposit required to secure booking)
+              ({depositPercentage}% deposit required to secure booking)
             </p>
           </div>
           <p className="text-xl font-semibold mt-3 text-pink-600">

@@ -50,7 +50,7 @@ const ContactPage = () => {
           data.message?.error || "Something went wrong. Please try again."
         );
       }
-    } catch (error) {
+    } catch {
       toast.error("Server error. Please try again later.");
     } finally {
       setLoading(false);
@@ -196,11 +196,10 @@ const ContactPage = () => {
             <button
               type="submit"
               disabled={loading}
-              className={`flex items-center justify-center gap-2 px-6 py-2.5 rounded-full text-white font-semibold transition ${
-                loading
-                  ? "bg-pink-400 cursor-not-allowed"
-                  : "bg-pink-600 hover:bg-pink-700"
-              }`}
+              className={`flex items-center justify-center gap-2 px-6 py-2.5 rounded-full text-white font-semibold transition ${loading
+                ? "bg-pink-400 cursor-not-allowed"
+                : "bg-pink-600 hover:bg-pink-700"
+                }`}
             >
               <Send size={16} />
               {loading ? "Sending..." : "Send Message"}

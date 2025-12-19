@@ -49,11 +49,10 @@ const UserDashboard = () => {
 
               <li
                 onClick={() => setActiveSection("home")}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer transition-all duration-200 ${
-                  activeSection === "home"
+                className={`flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer transition-all duration-200 ${activeSection === "home"
                     ? "bg-white text-pink-600 shadow-md"
                     : "hover:bg-pink-500/80"
-                }`}
+                  }`}
               >
                 <FaHome />
                 <span className="font-medium">Home / My Requests</span>
@@ -61,11 +60,10 @@ const UserDashboard = () => {
 
               <li
                 onClick={() => setActiveSection("profile")}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer transition-all duration-200 ${
-                  activeSection === "profile"
+                className={`flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer transition-all duration-200 ${activeSection === "profile"
                     ? "bg-white text-pink-600 shadow-md"
                     : "hover:bg-pink-500/80"
-                }`}
+                  }`}
               >
                 <FaUserCog />
                 <span className="font-medium">Profile Settings</span>
@@ -73,11 +71,10 @@ const UserDashboard = () => {
 
               <li
                 onClick={() => setActiveSection("reviews")}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer transition-all duration-200 ${
-                  activeSection === "reviews"
+                className={`flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer transition-all duration-200 ${activeSection === "reviews"
                     ? "bg-white text-pink-600 shadow-md"
                     : "hover:bg-pink-500/80"
-                }`}
+                  }`}
               >
                 ⭐
                 <span className="font-medium">My Reviews</span>
@@ -293,12 +290,8 @@ const ProfileSettings = () => {
       } else {
         toast.error(msg?.message || "Failed to update profile");
       }
-    } catch (err) {
-      toast.error(
-        err?.response?.data?.message ||
-          err?.message ||
-          "Failed to update profile"
-      );
+    } catch {
+      toast.error("Failed to update profile");
     }
   };
 
@@ -390,7 +383,7 @@ const ProfileSettings = () => {
 /* ---------------------------  USER REVIEWS SECTION  --------------------------- */
 const UserReviews = () => {
   const [requests, setRequests] = useState([]);
-  const [myRatings, setMyRatings] = useState([]); 
+  const [myRatings, setMyRatings] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const [ratings, setRatings] = useState({});
@@ -433,7 +426,7 @@ const UserReviews = () => {
             [r.request_id]: r.review_comment || "",
           }));
         });
-      } catch (err) {
+      } catch {
         toast.error("Failed to load reviews");
       } finally {
         setLoading(false);
@@ -531,22 +524,20 @@ const UserReviews = () => {
       <div className="flex gap-4 mb-8">
         <button
           onClick={() => setActiveTab("pending")}
-          className={`px-6 py-3 text-sm font-medium rounded-lg ${
-            activeTab === "pending"
+          className={`px-6 py-3 text-sm font-medium rounded-lg ${activeTab === "pending"
               ? "bg-pink-600 text-white shadow"
               : "bg-pink-100 text-pink-600"
-          }`}
+            }`}
         >
           Pending Reviews ({pending.length})
         </button>
 
         <button
           onClick={() => setActiveTab("submitted")}
-          className={`px-6 py-3 text-sm font-medium rounded-lg ${
-            activeTab === "submitted"
+          className={`px-6 py-3 text-sm font-medium rounded-lg ${activeTab === "submitted"
               ? "bg-pink-600 text-white shadow"
               : "bg-pink-100 text-pink-600"
-          }`}
+            }`}
         >
           My Submitted Reviews ({submitted.length})
         </button>
@@ -579,11 +570,10 @@ const UserReviews = () => {
                       onClick={() =>
                         setRatings((p) => ({ ...p, [req.name]: s }))
                       }
-                      className={`cursor-pointer text-3xl ${
-                        s <= (ratings[req.name] || 0)
+                      className={`cursor-pointer text-3xl ${s <= (ratings[req.name] || 0)
                           ? "text-yellow-400"
                           : "text-gray-300 hover:text-yellow-300"
-                      }`}
+                        }`}
                     >
                       ★
                     </span>
@@ -651,11 +641,10 @@ const UserReviews = () => {
                       onClick={() =>
                         setRatings((p) => ({ ...p, [req.name]: s }))
                       }
-                      className={`cursor-pointer text-3xl ${
-                        s <= (ratings[req.name] || 0)
+                      className={`cursor-pointer text-3xl ${s <= (ratings[req.name] || 0)
                           ? "text-yellow-400"
                           : "text-gray-300 hover:text-yellow-300"
-                      }`}
+                        }`}
                     >
                       ★
                     </span>

@@ -42,11 +42,9 @@ function UserFormModal({
     email: "",
     phone: "",
     role: "User",
-    city: "",
-    state: "",
     is_active: true,
-    password: "",
   });
+
 
   useEffect(() => {
     if (isOpen) {
@@ -56,22 +54,18 @@ function UserFormModal({
           email: initialData.email || "",
           phone: initialData.phone || "",
           role: initialData.role || "User",
-          city: initialData.city || "",
-          state: initialData.state || "",
           is_active: Boolean(initialData.is_active),
-          password: "",
         });
+
       } else {
         setForm({
           full_name: "",
           email: "",
           phone: "",
           role: "User",
-          city: "",
-          state: "",
           is_active: true,
-          password: "",
         });
+
       }
     }
   }, [isOpen, mode, initialData]);
@@ -94,28 +88,25 @@ function UserFormModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 px-2">
       <div
-        className={`w-full max-w-lg rounded-2xl p-5 shadow-xl border transition-colors ${
-          isDarkMode
+        className={`w-full max-w-lg rounded-2xl p-5 shadow-xl border transition-colors ${isDarkMode
             ? "bg-slate-800/95 border-slate-700"
             : "bg-white/95 border-pink-100"
-        }`}
+          }`}
       >
         <div className="flex items-center justify-between mb-3">
           <h2
-            className={`text-base md:text-lg font-semibold transition-colors ${
-              isDarkMode ? "text-slate-100" : "text-gray-800"
-            }`}
+            className={`text-base md:text-lg font-semibold transition-colors ${isDarkMode ? "text-slate-100" : "text-gray-800"
+              }`}
           >
             {mode === "create" ? "Add New User" : "Edit User"}
           </h2>
           <button
             type="button"
             onClick={onClose}
-            className={`text-xs transition-colors ${
-              isDarkMode
+            className={`text-xs transition-colors ${isDarkMode
                 ? "text-slate-400 hover:text-slate-300"
                 : "text-gray-500 hover:text-gray-700"
-            }`}
+              }`}
           >
             Close
           </button>
@@ -125,9 +116,8 @@ function UserFormModal({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
               <label
-                className={`block text-[11px] font-medium mb-1 transition-colors ${
-                  isDarkMode ? "text-slate-300" : "text-gray-600"
-                }`}
+                className={`block text-[11px] font-medium mb-1 transition-colors ${isDarkMode ? "text-slate-300" : "text-gray-600"
+                  }`}
               >
                 Full Name
               </label>
@@ -137,20 +127,18 @@ function UserFormModal({
                 value={form.full_name}
                 onChange={handleChange}
                 required
-                className={`w-full rounded-xl border px-3 py-2 text-xs outline-none focus:ring-2 focus:ring-pink-100 transition-colors ${
-                  isDarkMode
+                className={`w-full rounded-xl border px-3 py-2 text-xs outline-none focus:ring-2 focus:ring-pink-100 transition-colors ${isDarkMode
                     ? "border-slate-600 bg-slate-700 text-slate-100 placeholder-slate-400 focus:border-pink-500"
                     : "border-pink-100 bg-white text-gray-900 placeholder-gray-400 focus:border-pink-400"
-                }`}
+                  }`}
                 placeholder="Enter full name"
               />
             </div>
 
             <div>
               <label
-                className={`block text-[11px] font-medium mb-1 transition-colors ${
-                  isDarkMode ? "text-slate-300" : "text-gray-600"
-                }`}
+                className={`block text-[11px] font-medium mb-1 transition-colors ${isDarkMode ? "text-slate-300" : "text-gray-600"
+                  }`}
               >
                 Email (User ID)
               </label>
@@ -161,15 +149,14 @@ function UserFormModal({
                 onChange={handleChange}
                 required
                 disabled={mode === "edit"}
-                className={`w-full rounded-xl border px-3 py-2 text-xs outline-none focus:ring-2 transition-colors ${
-                  mode === "edit"
+                className={`w-full rounded-xl border px-3 py-2 text-xs outline-none focus:ring-2 transition-colors ${mode === "edit"
                     ? isDarkMode
                       ? "bg-slate-600 border-slate-600 text-slate-400 cursor-not-allowed"
                       : "bg-gray-100 border-gray-200 text-gray-500 cursor-not-allowed"
                     : isDarkMode
-                    ? "border-slate-600 bg-slate-700 text-slate-100 placeholder-slate-400 focus:border-pink-500 focus:ring-pink-100"
-                    : "border-pink-100 bg-white text-gray-900 placeholder-gray-400 focus:border-pink-400 focus:ring-pink-100"
-                }`}
+                      ? "border-slate-600 bg-slate-700 text-slate-100 placeholder-slate-400 focus:border-pink-500 focus:ring-pink-100"
+                      : "border-pink-100 bg-white text-gray-900 placeholder-gray-400 focus:border-pink-400 focus:ring-pink-100"
+                  }`}
                 placeholder="user@example.com"
               />
             </div>
@@ -178,9 +165,8 @@ function UserFormModal({
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <div>
               <label
-                className={`block text-[11px] font-medium mb-1 transition-colors ${
-                  isDarkMode ? "text-slate-300" : "text-gray-600"
-                }`}
+                className={`block text-[11px] font-medium mb-1 transition-colors ${isDarkMode ? "text-slate-300" : "text-gray-600"
+                  }`}
               >
                 Phone
               </label>
@@ -189,20 +175,18 @@ function UserFormModal({
                 name="phone"
                 value={form.phone}
                 onChange={handleChange}
-                className={`w-full rounded-xl border px-3 py-2 text-xs outline-none focus:ring-2 focus:ring-pink-100 transition-colors ${
-                  isDarkMode
+                className={`w-full rounded-xl border px-3 py-2 text-xs outline-none focus:ring-2 focus:ring-pink-100 transition-colors ${isDarkMode
                     ? "border-slate-600 bg-slate-700 text-slate-100 placeholder-slate-400 focus:border-pink-500"
                     : "border-pink-100 bg-white text-gray-900 placeholder-gray-400 focus:border-pink-400"
-                }`}
+                  }`}
                 placeholder="10-digit phone"
               />
             </div>
 
             <div>
               <label
-                className={`block text-[11px] font-medium mb-1 transition-colors ${
-                  isDarkMode ? "text-slate-300" : "text-gray-600"
-                }`}
+                className={`block text-[11px] font-medium mb-1 transition-colors ${isDarkMode ? "text-slate-300" : "text-gray-600"
+                  }`}
               >
                 Role
               </label>
@@ -210,11 +194,10 @@ function UserFormModal({
                 name="role"
                 value={form.role}
                 onChange={handleChange}
-                className={`w-full rounded-xl border px-3 py-2 text-xs outline-none focus:ring-2 focus:ring-pink-100 transition-colors ${
-                  isDarkMode
+                className={`w-full rounded-xl border px-3 py-2 text-xs outline-none focus:ring-2 focus:ring-pink-100 transition-colors ${isDarkMode
                     ? "border-slate-600 bg-slate-700 text-slate-100 focus:border-pink-500"
                     : "border-pink-100 bg-white text-gray-900 focus:border-pink-400"
-                }`}
+                  }`}
               >
                 {ROLE_OPTIONS.map((r) => (
                   <option key={r} value={r}>
@@ -235,115 +218,38 @@ function UserFormModal({
               />
               <label
                 htmlFor="is_active"
-                className={`text-[11px] font-medium transition-colors ${
-                  isDarkMode ? "text-slate-300" : "text-gray-700"
-                }`}
+                className={`text-[11px] font-medium transition-colors ${isDarkMode ? "text-slate-300" : "text-gray-700"
+                  }`}
               >
                 Active user
               </label>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div>
-              <label
-                className={`block text-[11px] font-medium mb-1 transition-colors ${
-                  isDarkMode ? "text-slate-300" : "text-gray-600"
-                }`}
-              >
-                City
-              </label>
-              <input
-                type="text"
-                name="city"
-                value={form.city}
-                onChange={handleChange}
-                className={`w-full rounded-xl border px-3 py-2 text-xs outline-none focus:ring-2 focus:ring-pink-100 transition-colors ${
-                  isDarkMode
-                    ? "border-slate-600 bg-slate-700 text-slate-100 placeholder-slate-400 focus:border-pink-500"
-                    : "border-pink-100 bg-white text-gray-900 placeholder-gray-400 focus:border-pink-400"
-                }`}
-                placeholder="City"
-              />
-            </div>
-            <div>
-              <label
-                className={`block text-[11px] font-medium mb-1 transition-colors ${
-                  isDarkMode ? "text-slate-300" : "text-gray-600"
-                }`}
-              >
-                State
-              </label>
-              <input
-                type="text"
-                name="state"
-                value={form.state}
-                onChange={handleChange}
-                className={`w-full rounded-xl border px-3 py-2 text-xs outline-none focus:ring-2 focus:ring-pink-100 transition-colors ${
-                  isDarkMode
-                    ? "border-slate-600 bg-slate-700 text-slate-100 placeholder-slate-400 focus:border-pink-500"
-                    : "border-pink-100 bg-white text-gray-900 placeholder-gray-400 focus:border-pink-400"
-                }`}
-                placeholder="State"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label
-              className={`block text-[11px] font-medium mb-1 transition-colors ${
-                isDarkMode ? "text-slate-300" : "text-gray-600"
-              }`}
-            >
-              Temporary Password{" "}
-              <span
-                className={`transition-colors ${
-                  isDarkMode ? "text-slate-400" : "text-gray-400"
-                }`}
-              >
-                ({mode === "edit" ? "optional, to reset password" : "optional"})
-              </span>
-            </label>
-            <input
-              type="password"
-              name="password"
-              value={form.password}
-              onChange={handleChange}
-              className={`w-full rounded-xl border px-3 py-2 text-xs outline-none focus:ring-2 focus:ring-pink-100 transition-colors ${
-                isDarkMode
-                  ? "border-slate-600 bg-slate-700 text-slate-100 placeholder-slate-400 focus:border-pink-500"
-                  : "border-pink-100 bg-white text-gray-900 placeholder-gray-400 focus:border-pink-400"
-              }`}
-              placeholder="Leave empty to auto-generate / not change"
-            />
-          </div>
-
           <div className="mt-4 flex justify-end gap-2">
             <button
               type="button"
               onClick={onClose}
-              className={`rounded-full border px-4 py-2 text-xs font-medium transition-colors ${
-                isDarkMode
+              className={`rounded-full border px-4 py-2 text-xs font-medium transition-colors ${isDarkMode
                   ? "border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600"
                   : "border-gray-200 bg-white text-gray-600 hover:bg-gray-50"
-              }`}
+                }`}
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className={`inline-flex items-center rounded-full px-4 py-2 text-xs font-semibold text-white shadow transition-colors ${
-                isDarkMode
+              className={`inline-flex items-center rounded-full px-4 py-2 text-xs font-semibold text-white shadow transition-colors ${isDarkMode
                   ? "bg-pink-600 hover:bg-pink-700 disabled:opacity-70"
                   : "bg-gradient-to-r from-pink-600 to-pink-500 hover:brightness-110 disabled:opacity-70"
-              }`}
+                }`}
             >
               {loading
                 ? "Saving..."
                 : mode === "create"
-                ? "Create User"
-                : "Save Changes"}
+                  ? "Create User"
+                  : "Save Changes"}
             </button>
           </div>
         </form>
@@ -360,29 +266,25 @@ function ConfirmDeleteModal({ isOpen, user, onClose, onConfirm, loading }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 px-2">
       <div
-        className={`w-full max-w-sm rounded-2xl p-5 shadow-xl border transition-colors ${
-          isDarkMode
+        className={`w-full max-w-sm rounded-2xl p-5 shadow-xl border transition-colors ${isDarkMode
             ? "bg-slate-800/95 border-slate-700"
             : "bg-white/95 border-pink-100"
-        }`}
+          }`}
       >
         <h2
-          className={`text-sm md:text-base font-semibold mb-2 transition-colors ${
-            isDarkMode ? "text-slate-100" : "text-gray-800"
-          }`}
+          className={`text-sm md:text-base font-semibold mb-2 transition-colors ${isDarkMode ? "text-slate-100" : "text-gray-800"
+            }`}
         >
           Delete User
         </h2>
         <p
-          className={`text-xs md:text-sm mb-4 transition-colors ${
-            isDarkMode ? "text-slate-300" : "text-gray-600"
-          }`}
+          className={`text-xs md:text-sm mb-4 transition-colors ${isDarkMode ? "text-slate-300" : "text-gray-600"
+            }`}
         >
           Are you sure you want to delete{" "}
           <span
-            className={`font-semibold transition-colors ${
-              isDarkMode ? "text-slate-100" : "text-gray-900"
-            }`}
+            className={`font-semibold transition-colors ${isDarkMode ? "text-slate-100" : "text-gray-900"
+              }`}
           >
             {user.full_name || user.email}
           </span>{" "}
@@ -393,11 +295,10 @@ function ConfirmDeleteModal({ isOpen, user, onClose, onConfirm, loading }) {
           <button
             type="button"
             onClick={onClose}
-            className={`rounded-full border px-4 py-2 text-xs font-medium transition-colors ${
-              isDarkMode
+            className={`rounded-full border px-4 py-2 text-xs font-medium transition-colors ${isDarkMode
                 ? "border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600"
                 : "border-gray-200 bg-white text-gray-600 hover:bg-gray-50"
-            }`}
+              }`}
           >
             Cancel
           </button>
@@ -405,11 +306,10 @@ function ConfirmDeleteModal({ isOpen, user, onClose, onConfirm, loading }) {
             type="button"
             onClick={onConfirm}
             disabled={loading}
-            className={`inline-flex items-center rounded-full px-4 py-2 text-xs font-semibold text-white shadow transition-colors ${
-              isDarkMode
+            className={`inline-flex items-center rounded-full px-4 py-2 text-xs font-semibold text-white shadow transition-colors ${isDarkMode
                 ? "bg-red-600 hover:bg-red-700 disabled:opacity-70"
                 : "bg-red-500 hover:bg-red-600 disabled:opacity-70"
-            }`}
+              }`}
           >
             {loading ? "Deleting..." : "Delete"}
           </button>
@@ -489,17 +389,17 @@ const ManageUsers = () => {
 
       if (formMode === "create") {
         const payload = {
-          email: formData.email,
-          full_name: formData.full_name,
+          email: formData.email.toLowerCase().trim(),
+          full_name: formData.full_name.trim(),
           phone: formData.phone,
           role: formData.role,
-          city: formData.city,
-          state: formData.state,
           is_active: formData.is_active ? 1 : 0,
+
+          // REQUIRED by backend
+          password: "Temp@12345",
         };
-        if (formData.password) {
-          payload.password = formData.password;
-        }
+
+
 
         const res = await api.post(
           "localmoves.api.dashboard.create_user",
@@ -518,13 +418,8 @@ const ManageUsers = () => {
           full_name: formData.full_name,
           phone: formData.phone,
           role: formData.role,
-          city: formData.city,
-          state: formData.state,
           is_active: formData.is_active ? 1 : 0,
         };
-        if (formData.password) {
-          payload.password = formData.password;
-        }
 
         const res = await api.post(
           "localmoves.api.dashboard.update_user",
@@ -604,9 +499,8 @@ const ManageUsers = () => {
 
   return (
     <div
-      className={`space-y-4 pb-6 transition-colors ${
-        isDarkMode ? "bg-slate-950 text-slate-100" : "bg-white text-gray-900"
-      }`}
+      className={`space-y-4 pb-6 transition-colors ${isDarkMode ? "bg-slate-950 text-slate-100" : "bg-white text-gray-900"
+        }`}
     >
       {/* Local scrollbar style */}
       <style>{`
@@ -634,16 +528,14 @@ const ManageUsers = () => {
       <div className="mb-2 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div>
           <h1
-            className={`text-lg md:text-xl font-semibold transition-colors ${
-              isDarkMode ? "text-slate-100" : "text-gray-900"
-            }`}
+            className={`text-lg md:text-xl font-semibold transition-colors ${isDarkMode ? "text-slate-100" : "text-gray-900"
+              }`}
           >
             Users
           </h1>
           <p
-            className={`text-xs md:text-sm transition-colors ${
-              isDarkMode ? "text-slate-400" : "text-gray-500"
-            }`}
+            className={`text-xs md:text-sm transition-colors ${isDarkMode ? "text-slate-400" : "text-gray-500"
+              }`}
           >
             Manage all registered users on the platform.
           </p>
@@ -653,23 +545,22 @@ const ManageUsers = () => {
           <button
             type="button"
             onClick={fetchUsers}
-            className={`inline-flex items-center gap-1 rounded-full border px-3 py-1.5 text-[11px] md:text-xs font-medium transition-colors ${
-              isDarkMode
-                ? "border-slate-700 bg-slate-700/50 text-slate-300 hover:bg-slate-700"
-                : "border-pink-200 bg-pink-50 text-pink-700 hover:bg-pink-100"
-            }`}
+            className={`px-3 md:px-4 py-1.5 md:py-2 rounded-full border text-xs md:text-sm hover:transition flex items-center gap-2 transition-colors flex-shrink-0 ${isDarkMode
+                ? "bg-pink-900/20 border-pink-700/50 text-pink-300 hover:bg-pink-900/30"
+                : "bg-pink-100 border-pink-300 text-pink-900 hover:bg-pink-200"
+              }`}
           >
-            <FaSync className="h-3 w-3" />
-            Refresh
+            <span className="h-2 w-2 bg-green-400 rounded-full animate-pulse flex-shrink-0" />
+            <span className="hidden sm:inline">Refresh data</span>
+            <span className="sm:hidden">Refresh</span>
           </button>
           <button
             type="button"
             onClick={openCreateModal}
-            className={`inline-flex items-center gap-1 rounded-full px-4 py-2 text-[11px] md:text-xs font-semibold text-white shadow transition-colors ${
-              isDarkMode
+            className={`inline-flex items-center gap-1 rounded-full px-4 py-2 text-[11px] md:text-xs font-semibold text-white shadow transition-colors ${isDarkMode
                 ? "bg-pink-600 hover:bg-pink-700"
                 : "bg-gradient-to-r from-pink-600 to-pink-500 hover:brightness-110"
-            }`}
+              }`}
           >
             <FaPlus className="h-3 w-3" />
             Add New User
@@ -679,19 +570,17 @@ const ManageUsers = () => {
 
       {/* Filters card */}
       <div
-        className={`rounded-2xl border p-3 md:p-4 shadow-sm backdrop-blur transition-colors ${
-          isDarkMode
+        className={`rounded-2xl border p-3 md:p-4 shadow-sm backdrop-blur transition-colors ${isDarkMode
             ? "border-slate-700 bg-slate-800/50"
             : "border-pink-100 bg-white/80"
-        }`}
+          }`}
       >
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div className="flex flex-1 items-center gap-2">
             <div className="relative flex-1 max-w-md">
               <span
-                className={`pointer-events-none absolute inset-y-0 left-3 flex items-center transition-colors ${
-                  isDarkMode ? "text-slate-400" : "text-gray-400"
-                }`}
+                className={`pointer-events-none absolute inset-y-0 left-3 flex items-center transition-colors ${isDarkMode ? "text-slate-400" : "text-gray-400"
+                  }`}
               >
                 <FaSearch className="h-3 w-3" />
               </span>
@@ -703,11 +592,10 @@ const ManageUsers = () => {
                   setCurrentPage(1);
                 }}
                 placeholder="Search by name or email..."
-                className={`w-full rounded-full border py-2 pl-8 pr-3 text-xs outline-none focus:ring-2 transition-colors ${
-                  isDarkMode
+                className={`w-full rounded-full border py-2 pl-8 pr-3 text-xs outline-none focus:ring-2 transition-colors ${isDarkMode
                     ? "border-slate-600 bg-slate-700 text-slate-100 placeholder-slate-400 focus:border-pink-500 focus:ring-pink-500/20"
                     : "border-pink-100 bg-white text-gray-900 placeholder-gray-400 focus:border-pink-400 focus:ring-pink-100"
-                }`}
+                  }`}
               />
             </div>
           </div>
@@ -719,11 +607,10 @@ const ManageUsers = () => {
                 setRoleFilter(e.target.value);
                 setCurrentPage(1);
               }}
-              className={`rounded-full border px-3 py-2 text-[11px] outline-none focus:ring-2 transition-colors ${
-                isDarkMode
+              className={`rounded-full border px-3 py-2 text-[11px] outline-none focus:ring-2 transition-colors ${isDarkMode
                   ? "border-slate-600 bg-slate-700 text-slate-100 focus:border-pink-500 focus:ring-pink-500/20"
                   : "border-pink-100 bg-white text-gray-900 focus:border-pink-400 focus:ring-pink-100"
-              }`}
+                }`}
             >
               <option value="all">All roles</option>
               <option value="admin">Admin</option>
@@ -737,11 +624,10 @@ const ManageUsers = () => {
                 setStatusFilter(e.target.value);
                 setCurrentPage(1);
               }}
-              className={`rounded-full border px-3 py-2 text-[11px] outline-none focus:ring-2 transition-colors ${
-                isDarkMode
+              className={`rounded-full border px-3 py-2 text-[11px] outline-none focus:ring-2 transition-colors ${isDarkMode
                   ? "border-slate-600 bg-slate-700 text-slate-100 focus:border-pink-500 focus:ring-pink-500/20"
                   : "border-pink-100 bg-white text-gray-900 focus:border-pink-400 focus:ring-pink-100"
-              }`}
+                }`}
             >
               <option value="all">All statuses</option>
               <option value="active">Active</option>
@@ -749,9 +635,8 @@ const ManageUsers = () => {
             </select>
 
             <div
-              className={`rounded-full px-3 py-2 text-[11px] font-medium transition-colors ${
-                isDarkMode ? "bg-pink-900/30 text-pink-300" : "bg-pink-50 text-pink-700"
-              }`}
+              className={`rounded-full px-3 py-2 text-[11px] font-medium transition-colors ${isDarkMode ? "bg-pink-900/30 text-pink-300" : "bg-pink-50 text-pink-700"
+                }`}
             >
               Total: {count}
             </div>
@@ -762,11 +647,10 @@ const ManageUsers = () => {
       {/* Error state */}
       {!loading && error && (
         <div
-          className={`rounded-2xl border p-3 text-xs md:text-sm transition-colors ${
-            isDarkMode
+          className={`rounded-2xl border p-3 text-xs md:text-sm transition-colors ${isDarkMode
               ? "border-red-900/30 bg-red-900/20 text-red-300"
               : "border-red-200 bg-red-50 text-red-700"
-          }`}
+            }`}
         >
           {error}
         </div>
@@ -774,24 +658,21 @@ const ManageUsers = () => {
 
       {/* Table + Mobile cards */}
       <div
-        className={`rounded-2xl border p-0 shadow-sm backdrop-blur transition-colors ${
-          isDarkMode
+        className={`rounded-2xl border p-0 shadow-sm backdrop-blur transition-colors ${isDarkMode
             ? "border-slate-700 bg-slate-800/50"
             : "border-pink-100 bg-white/80"
-        }`}
+          }`}
       >
         {loading ? (
           <div className="flex h-40 items-center justify-center">
             <div className="flex flex-col items-center gap-2">
               <div
-                className={`h-7 w-7 animate-spin rounded-full border-2 border-t-transparent ${
-                  isDarkMode ? "border-pink-400" : "border-pink-400"
-                }`}
+                className={`h-7 w-7 animate-spin rounded-full border-2 border-t-transparent ${isDarkMode ? "border-pink-400" : "border-pink-400"
+                  }`}
               />
               <p
-                className={`text-xs transition-colors ${
-                  isDarkMode ? "text-slate-400" : "text-gray-400"
-                }`}
+                className={`text-xs transition-colors ${isDarkMode ? "text-slate-400" : "text-gray-400"
+                  }`}
               >
                 Loading users…
               </p>
@@ -799,9 +680,8 @@ const ManageUsers = () => {
           </div>
         ) : paginatedUsers.length === 0 ? (
           <div
-            className={`flex h-40 items-center justify-center px-4 text-center text-xs md:text-sm transition-colors ${
-              isDarkMode ? "text-slate-400" : "text-gray-400"
-            }`}
+            className={`flex h-40 items-center justify-center px-4 text-center text-xs md:text-sm transition-colors ${isDarkMode ? "text-slate-400" : "text-gray-400"
+              }`}
           >
             No users found for the selected filters.
           </div>
@@ -811,11 +691,10 @@ const ManageUsers = () => {
             <div className="hidden md:block overflow-x-auto scroll-thin-pink rounded-2xl">
               <table className="min-w-full text-xs md:text-sm">
                 <thead
-                  className={`transition-colors ${
-                    isDarkMode
+                  className={`transition-colors ${isDarkMode
                       ? "bg-slate-700/50 text-slate-300"
                       : "bg-pink-50/70 text-gray-600"
-                  }`}
+                    }`}
                 >
                   <tr>
                     <th className="py-2.5 px-3 text-left font-medium">User ID</th>
@@ -839,39 +718,33 @@ const ManageUsers = () => {
                     return (
                       <tr
                         key={u.email}
-                        className={`border-t transition-colors ${
-                          isDarkMode
-                            ? `border-slate-700 ${
-                                idx % 2 === 1
-                                  ? "bg-slate-700/30"
-                                  : "bg-slate-700/10"
-                              } hover:bg-slate-700/50`
-                            : `border-gray-100 ${
-                                idx % 2 === 1 ? "bg-gray-50/40" : "bg-white/60"
-                              } hover:bg-pink-50/80`
-                        }`}
+                        className={`border-t transition-colors ${isDarkMode
+                            ? `border-slate-700 ${idx % 2 === 1
+                              ? "bg-slate-700/30"
+                              : "bg-slate-700/10"
+                            } hover:bg-slate-700/50`
+                            : `border-gray-100 ${idx % 2 === 1 ? "bg-gray-50/40" : "bg-white/60"
+                            } hover:bg-pink-50/80`
+                          }`}
                       >
                         <td
-                          className={`py-2.5 px-3 text-[11px] md:text-xs font-medium ${
-                            isDarkMode ? "text-slate-200" : "text-gray-800"
-                          }`}
+                          className={`py-2.5 px-3 text-[11px] md:text-xs font-medium ${isDarkMode ? "text-slate-200" : "text-gray-800"
+                            }`}
                         >
                           {u.email}
                         </td>
 
                         <td
-                          className={`py-2.5 px-3 text-[11px] md:text-xs ${
-                            isDarkMode ? "text-slate-300" : "text-gray-800"
-                          }`}
+                          className={`py-2.5 px-3 text-[11px] md:text-xs ${isDarkMode ? "text-slate-300" : "text-gray-800"
+                            }`}
                         >
                           <div className="flex flex-col">
                             <span className="font-medium">
                               {u.full_name || "-"}
                             </span>
                             <span
-                              className={`text-[10px] ${
-                                isDarkMode ? "text-slate-400" : "text-gray-500"
-                              }`}
+                              className={`text-[10px] ${isDarkMode ? "text-slate-400" : "text-gray-500"
+                                }`}
                             >
                               {u.city || "-"}
                               {u.state ? `, ${u.state}` : ""}
@@ -880,20 +753,18 @@ const ManageUsers = () => {
                         </td>
 
                         <td
-                          className={`py-2.5 px-3 text-[11px] md:text-xs hidden lg:table-cell ${
-                            isDarkMode ? "text-slate-300" : "text-gray-700"
-                          }`}
+                          className={`py-2.5 px-3 text-[11px] md:text-xs hidden lg:table-cell ${isDarkMode ? "text-slate-300" : "text-gray-700"
+                            }`}
                         >
                           {u.phone || "-"}
                         </td>
 
                         <td className="py-2.5 px-3 text-[11px] md:text-xs">
                           <span
-                            className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium ${
-                              isDarkMode
+                            className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium ${isDarkMode
                                 ? "bg-pink-900/30 text-pink-300"
                                 : "bg-pink-50 text-pink-600"
-                            }`}
+                              }`}
                           >
                             {u.role || "-"}
                           </span>
@@ -901,15 +772,14 @@ const ManageUsers = () => {
 
                         <td className="py-2.5 px-3 text-[11px] md:text-xs">
                           <span
-                            className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium ${
-                              isActive
+                            className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium ${isActive
                                 ? isDarkMode
                                   ? "bg-green-900/30 text-green-300"
                                   : "bg-green-50 text-green-600"
                                 : isDarkMode
-                                ? "bg-yellow-900/30 text-yellow-300"
-                                : "bg-yellow-50 text-yellow-600"
-                            }`}
+                                  ? "bg-yellow-900/30 text-yellow-300"
+                                  : "bg-yellow-50 text-yellow-600"
+                              }`}
                           >
                             {isActive ? "Active" : "Inactive"}
                           </span>
@@ -953,49 +823,44 @@ const ManageUsers = () => {
                 return (
                   <div
                     key={u.email}
-                    className={`px-3 py-3 flex flex-col gap-2 ${
-                      isDarkMode
+                    className={`px-3 py-3 flex flex-col gap-2 ${isDarkMode
                         ? "bg-slate-900/40"
                         : "bg-white/90"
-                    }`}
+                      }`}
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div>
                         <p
-                          className={`text-[11px] font-semibold ${
-                            isDarkMode ? "text-slate-100" : "text-gray-900"
-                          } break-all`}
+                          className={`text-[11px] font-semibold ${isDarkMode ? "text-slate-100" : "text-gray-900"
+                            } break-all`}
                         >
                           {u.email}
                         </p>
                         <p
-                          className={`text-xs mt-0.5 ${
-                            isDarkMode ? "text-slate-300" : "text-gray-800"
-                          }`}
+                          className={`text-xs mt-0.5 ${isDarkMode ? "text-slate-300" : "text-gray-800"
+                            }`}
                         >
                           {u.full_name || "-"}
                         </p>
                       </div>
                       <div className="flex flex-col items-end gap-1">
                         <span
-                          className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium ${
-                            isActive
+                          className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium ${isActive
                               ? isDarkMode
                                 ? "bg-green-900/30 text-green-300"
                                 : "bg-green-50 text-green-600"
                               : isDarkMode
-                              ? "bg-yellow-900/30 text-yellow-300"
-                              : "bg-yellow-50 text-yellow-600"
-                          }`}
+                                ? "bg-yellow-900/30 text-yellow-300"
+                                : "bg-yellow-50 text-yellow-600"
+                            }`}
                         >
                           {isActive ? "Active" : "Inactive"}
                         </span>
                         <span
-                          className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium ${
-                            isDarkMode
+                          className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium ${isDarkMode
                               ? "bg-pink-900/30 text-pink-300"
                               : "bg-pink-50 text-pink-600"
-                          }`}
+                            }`}
                         >
                           {u.role || "-"}
                         </span>
@@ -1055,9 +920,8 @@ const ManageUsers = () => {
 
             {/* PAGINATION */}
             <div
-              className={`flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between px-4 py-3 text-xs ${
-                isDarkMode ? "text-slate-300" : "text-gray-600"
-              }`}
+              className={`flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between px-4 py-3 text-xs ${isDarkMode ? "text-slate-300" : "text-gray-600"
+                }`}
             >
               <div>
                 Showing{" "}
@@ -1072,11 +936,10 @@ const ManageUsers = () => {
                 <button
                   onClick={() => goToPage(currentPage - 1)}
                   disabled={currentPage === 1}
-                  className={`px-2 py-1 rounded border text-[11px] ${
-                    isDarkMode
+                  className={`px-2 py-1 rounded border text-[11px] ${isDarkMode
                       ? "border-slate-700 bg-slate-800 disabled:opacity-50"
                       : "border-pink-200 bg-white disabled:opacity-50"
-                  }`}
+                    }`}
                 >
                   Prev
                 </button>
@@ -1085,15 +948,14 @@ const ManageUsers = () => {
                   <button
                     key={i}
                     onClick={() => goToPage(i + 1)}
-                    className={`px-2 py-1 rounded border text-[11px] ${
-                      currentPage === i + 1
+                    className={`px-2 py-1 rounded border text-[11px] ${currentPage === i + 1
                         ? isDarkMode
                           ? "bg-pink-700 text-white border-pink-700"
                           : "bg-pink-600 text-white border-pink-600"
                         : isDarkMode
-                        ? "border-slate-700 bg-slate-800 text-slate-300"
-                        : "border-pink-200 bg-white text-gray-700"
-                    }`}
+                          ? "border-slate-700 bg-slate-800 text-slate-300"
+                          : "border-pink-200 bg-white text-gray-700"
+                      }`}
                   >
                     {i + 1}
                   </button>
@@ -1102,11 +964,10 @@ const ManageUsers = () => {
                 <button
                   onClick={() => goToPage(currentPage + 1)}
                   disabled={currentPage === totalPages}
-                  className={`px-2 py-1 rounded border text-[11px] ${
-                    isDarkMode
+                  className={`px-2 py-1 rounded border text-[11px] ${isDarkMode
                       ? "border-slate-700 bg-slate-800 disabled:opacity-50"
                       : "border-pink-200 bg-white disabled:opacity-50"
-                  }`}
+                    }`}
                 >
                   Next
                 </button>

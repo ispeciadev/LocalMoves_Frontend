@@ -1,5 +1,4 @@
 // src/pages/BookServicePage.jsx
-// src/pages/BookServicePage.jsx
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -26,11 +25,11 @@ export default function BookServicePage() {
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
-  const [loadingCalc, setLoadingCalc] = useState(false);
   const [storedResponse, setStoredResponse] = useState(null);
   const [selectedCompany, setSelectedCompany] = useState(null);
-  const [priceResult, setPriceResult] = useState(null);
-  const [priceSimulated, setPriceSimulated] = useState(false);
+  const [priceResult] = useState(null);
+  const [depositPercentage, setDepositPercentage] = useState(null); // New state
+  const [depositAmount, setDepositAmount] = useState(0); // New state
 
   // User details - only these come from user input or API
   const [userDetails, setUserDetails] = useState({
@@ -43,6 +42,7 @@ export default function BookServicePage() {
   const [moveDetails, setMoveDetails] = useState({
     totalVolume: 0,
     distanceMiles: 0,
+    distanceKm: 0,
     property_type: "",
     property_size: "",
     move_day: "",
@@ -52,18 +52,131 @@ export default function BookServicePage() {
     pickupPincode: "",
     delivery_address: "",
     delivery_city: "",
-    dropoffPincode: "", // This is what we need to fix
+    dropoffPincode: "",
     quantity: "everything",
     additional_spaces: [],
     selected_items: {},
     dismantle_items: {},
+    reassemble_items: {},
+
+    // Collection assessment details
+    collection_parking: "",
     collection_parking_distance: "less_than_5m",
     collection_internal_access: "ground_first",
+    collection_is_standard_house: false,
+    collection_is_bungalow: false,
+    collection_is_town_house: false,
+    collection_has_lift: false,
+    collection_stairs_only: false,
+
+    // Delivery assessment details
+    delivery_property_type: "",
+    delivery_parking: "",
     delivery_parking_distance: "less_than_5m",
     delivery_internal_access: "ground_first",
+    delivery_is_standard_house: false,
+    delivery_is_bungalow: false,
+    delivery_is_town_house: false,
+    delivery_has_lift: false,
+    delivery_stairs_only: false,
+
+    // Move date details
     notice_period: "flexible",
     collection_time: "flexible",
+
+    // Optional extras
+    include_packing: true,
+    packing_volume_m3: "",
+    include_dismantling: false,
+    dismantling_items: 0,
+    include_reassembly: false,
+    reassembly_items: 0,
   });
+
+  // Fetch deposit percentage from backend
+  useEffect(() => {
+    const fetchDepositData = async () => {
+      try {
+        const token = JSON.parse(localStorage.getItem("user"))?.token || "";
+        const response = await axios.get(
+          "http://127.0.0.1:8000/api/method/localmoves.api.dashboard.get_current_deposit_percentage",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (response.data.message?.success) {
+          const percentage = response.data.message.deposit_percentage;
+          setDepositPercentage(percentage);
+
+          // Calculate deposit amount based on total and percentage
+          const deposit = parseFloat((moveDetails.finalTotal * (percentage / 100)).toFixed(2));
+          setDepositAmount(deposit);
+        } else {
+          // Fallback to 10% if API fails
+          setDepositPercentage(10.0);
+          const deposit = parseFloat((moveDetails.finalTotal * 0.10).toFixed(2));
+          setDepositAmount(deposit);
+        }
+      } catch (error) {
+        console.error("Failed to fetch deposit percentage:", error);
+        // Fallback to 10% if API fails
+        setDepositPercentage(10.0);
+        const deposit = parseFloat((moveDetails.finalTotal * 0.10).toFixed(2));
+        setDepositAmount(deposit);
+      }
+    };
+
+    if (moveDetails.finalTotal > 0) {
+      fetchDepositData();
+    }
+  }, [moveDetails.finalTotal]);
+
+  // Recalculate deposit amount when total or percentage changes
+  useEffect(() => {
+    if (depositPercentage !== null && moveDetails.finalTotal > 0) {
+      const deposit = parseFloat((moveDetails.finalTotal * (depositPercentage / 100)).toFixed(2));
+      setDepositAmount(deposit);
+    }
+  }, [moveDetails.finalTotal, depositPercentage]);
+
+  // Fetch user details from login token - This is the main change
+  useEffect(() => {
+    const fetchUserFromToken = async () => {
+      try {
+        // Get the token from localStorage
+        const userData = JSON.parse(localStorage.getItem("user"));
+        const token = userData?.token;
+
+        if (token) {
+          const response = await axios.get(
+            "http://127.0.0.1:8000/api/method/localmoves.api.auth.get_current_user_info",
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+
+          if (response.data?.message?.data) {
+            const userInfo = response.data.message.data;
+            setUserDetails(prev => ({
+              ...prev,
+              full_name: userInfo.full_name || userInfo.name || prev.full_name || "",
+              email: userInfo.email || prev.email || "",
+              phone: userInfo.phone || prev.phone || "",
+            }));
+          }
+        }
+      } catch {
+        console.log("Could not fetch user info from token (user might not be logged in)");
+      }
+    };
+
+    fetchUserFromToken();
+  }, []); // Empty dependency array - run once on mount
 
   // Initialize - Load data from localStorage
   useEffect(() => {
@@ -72,7 +185,7 @@ export default function BookServicePage() {
         // 1) Load API response from localStorage
         const storedKey = localStorage.getItem("BookServiceResponse") ? "BookServiceResponse" : "filteredProvidersResponse";
         const apiResponse = JSON.parse(localStorage.getItem(storedKey));
-        
+
         console.log("📦 Loading localStorage data:", {
           storedKey,
           hasData: !!apiResponse,
@@ -81,10 +194,10 @@ export default function BookServicePage() {
           pickupPincodeInResponse: apiResponse?.pickupPincode,
           searchParameters: apiResponse?.search_parameters
         });
-        
+
         if (apiResponse) {
           setStoredResponse(apiResponse);
-          
+
           // 2) Find selected company by name from navigation state
           let company = null;
           if (state?.company_name) {
@@ -92,25 +205,23 @@ export default function BookServicePage() {
               (c) => c.name === state.company_name || c.company_name === state.company_name
             );
           }
-          
+
           // Fallback to first company
           if (!company && apiResponse.data?.length > 0) {
             company = apiResponse.data[0];
           }
-          
+
           if (company) {
             setSelectedCompany(company);
-            
+
             // 3) Extract data from company's exact_pricing
             const exactPricing = company.exact_pricing || {};
-            const autoVolumes = exactPricing.auto_calculated_volumes || {};
-            
+
             // 4) Extract search_parameters from API response
             const searchParams = apiResponse.search_parameters || {};
             const moveDate = searchParams.move_date || {};
-            const optionalExtras = searchParams.optional_extras || {};
             const itemDetails = searchParams.item_details || [];
-            
+
             // 5) Convert item_details array to selected_items object
             const selected_items = {};
             itemDetails.forEach(item => {
@@ -118,24 +229,24 @@ export default function BookServicePage() {
                 selected_items[item.item_name] = item.quantity;
               }
             });
-            
+
             // 6) Get the delivery pincode - THIS IS THE FIX
             // Check multiple possible locations for the delivery pincode
-            const deliveryPincode = 
+            const deliveryPincode =
               apiResponse.deliveryPincode || // From our saveToLocalStorage function
               searchParams.delivery_pincode || // From API search_parameters
               searchParams.delivery_pincode || // Alternative spelling
               state?.dropoffPincode || // From navigation state
               "";
-              
+
             // Get pickup pincode from multiple possible locations
-            const pickupPincode = 
+            const pickupPincode =
               apiResponse.pickupPincode || // From our saveToLocalStorage function
               searchParams.pincode || // From API search_parameters
               searchParams.pickup_pincode || // Alternative
               state?.pickupPincode || // From navigation state
               "";
-            
+
             console.log("📍 Pincode debugging:", {
               apiResponseDeliveryPincode: apiResponse.deliveryPincode,
               searchParamsDeliveryPincode: searchParams.delivery_pincode,
@@ -143,7 +254,7 @@ export default function BookServicePage() {
               finalDeliveryPincode: deliveryPincode,
               pickupPincode
             });
-            
+
             // 7) Set all move details from API response with proper fallbacks
             setMoveDetails({
               totalVolume: exactPricing.total_volume_m3 || parseFloat(searchParams.total_volume_m3) || 0,
@@ -152,7 +263,7 @@ export default function BookServicePage() {
               property_size: searchParams.property_size || "",
               move_day: moveDate.move_day || "flexible",
               finalTotal: exactPricing.final_total || 0,
-              
+
               // Addresses from search_parameters with fallbacks
               pickup_address: searchParams.pickup_address || state?.pickup_address || "",
               pickup_city: searchParams.pickup_city || state?.pickup_city || "",
@@ -160,21 +271,21 @@ export default function BookServicePage() {
               delivery_address: searchParams.delivery_address || state?.delivery_address || "",
               delivery_city: searchParams.delivery_city || state?.delivery_city || "",
               dropoffPincode: deliveryPincode, // This is now properly set
-              
+
               // Pricing data
               quantity: searchParams.quantity || "everything",
               additional_spaces: searchParams.additional_spaces || [],
-              
+
               // Items - converted from array to object
               selected_items: selected_items,
               dismantle_items: {}, // Default empty - will be filled by user if needed
-              
+
               // Assessments - default values since API doesn't provide these
               collection_parking_distance: state?.collection_parking_distance || "less_than_5m",
               collection_internal_access: state?.collection_internal_access || "ground_first",
               delivery_parking_distance: state?.delivery_parking_distance || "less_than_5m",
               delivery_internal_access: state?.delivery_internal_access || "ground_first",
-              
+
               // Date data
               notice_period: moveDate.notice_period || state?.notice_period || "flexible",
               collection_time: moveDate.collection_time || state?.collection_time || "flexible",
@@ -182,24 +293,88 @@ export default function BookServicePage() {
           }
         }
 
-        // 8) Load user details - try API first
-        try {
-          const uRes = await axios.get(
-            "http://127.0.0.1:8000/api/method/localmoves.api.auth.get_current_user_info"
-          );
-          if (uRes?.data?.message?.data) {
-            const ud = uRes.data.message.data;
-            setUserDetails({
-              full_name: ud.full_name || "",
-              email: ud.email || "",
-              phone: ud.phone || "",
-            });
+        // 8) Load user details - This is now handled by the separate useEffect above
+        // We only fetch from localStorage as fallback if token fetch fails
+
+        // 9) Load RefineOptionsPage data from localStorage
+        const refineData = JSON.parse(localStorage.getItem("move_refineData"));
+        console.log("📋 RefineOptionsPage data:", refineData);
+
+        if (refineData) {
+          const refinePricing = refineData.pricingForm || {};
+
+          // Update moveDetails with all RefineOptionsPage data
+          setMoveDetails(prev => ({
+            ...prev,
+            // Addresses
+            pickup_address: refinePricing.pickup_address || prev.pickup_address,
+            pickup_city: refinePricing.pickup_city || prev.pickup_city,
+            pickupPincode: refineData.pickupPincode || prev.pickupPincode,
+            delivery_address: refinePricing.delivery_address || prev.delivery_address,
+            delivery_city: refinePricing.delivery_city || prev.delivery_city,
+            dropoffPincode: refineData.dropoffPincode || prev.dropoffPincode,
+
+            // Property details
+            property_type: refinePricing.property_type || prev.property_type,
+            property_size: refinePricing.house_size || prev.property_size,
+            quantity: refinePricing.quantity || prev.quantity,
+            additional_spaces: refinePricing.additional_spaces || prev.additional_spaces,
+
+            // Items from RefineOptionsPage
+            selected_items: refineData.itemQuantities || prev.selected_items,
+            dismantle_items: refineData.dismantleItems || prev.dismantle_items,
+            reassemble_items: refineData.reassembleItems || {},
+
+            // Collection assessment
+            collection_parking: refinePricing.collection_parking || prev.collection_parking,
+            collection_parking_distance: refinePricing.collection_parking_distance || prev.collection_parking_distance,
+            collection_internal_access: refinePricing.collection_internal_access || refinePricing.collection_flat_internal_access || prev.collection_internal_access,
+            collection_is_standard_house: refinePricing.collection_is_standard_house || false,
+            collection_is_bungalow: refinePricing.collection_is_bungalow || false,
+            collection_is_town_house: refinePricing.collection_is_town_house || false,
+            collection_has_lift: refinePricing.collection_has_lift || false,
+            collection_stairs_only: refinePricing.collection_stairs_only || false,
+
+            // Delivery assessment
+            delivery_property_type: refinePricing.delivery_property_type || prev.delivery_property_type,
+            delivery_parking: refinePricing.delivery_parking || prev.delivery_parking,
+            delivery_parking_distance: refinePricing.delivery_parking_distance || prev.delivery_parking_distance,
+            delivery_internal_access: refinePricing.delivery_internal_access || refinePricing.delivery_flat_internal_access || prev.delivery_internal_access,
+            delivery_is_standard_house: refinePricing.delivery_is_standard_house || false,
+            delivery_is_bungalow: refinePricing.delivery_is_bungalow || false,
+            delivery_is_town_house: refinePricing.delivery_is_town_house || false,
+            delivery_has_lift: refinePricing.delivery_has_lift || false,
+            delivery_stairs_only: refinePricing.delivery_stairs_only || false,
+
+            // Move date details
+            notice_period: refinePricing.notice_period || prev.notice_period,
+            move_day: refinePricing.move_day || prev.move_day,
+            collection_time: refinePricing.collection_time || prev.collection_time,
+
+            // Optional extras
+            include_packing: refinePricing.include_packing,
+            packing_volume_m3: refinePricing.packing_volume_m3 || prev.packing_volume_m3,
+            include_dismantling: refinePricing.include_dismantling,
+            dismantling_items: refinePricing.dismantling_items || 0,
+            include_reassembly: refinePricing.include_reassembly,
+            reassembly_items: refinePricing.reassembly_items || 0,
+
+            // Distance
+            distanceMiles: refineData.distanceMiles || prev.distanceMiles,
+            distanceKm: refineData.distanceKm || prev.distanceKm,
+          }));
+
+          // Update user details if present in refine form (but don't override token data)
+          if (refinePricing.user_details) {
+            setUserDetails(prev => ({
+              full_name: prev.full_name || refinePricing.user_details.full_name || "",
+              email: prev.email || refinePricing.user_details.email || "",
+              phone: prev.phone || refinePricing.user_details.phone || "",
+            }));
           }
-        } catch (e) {
-          console.info("Could not fetch current user (non-fatal)");
         }
 
-        // 9) Fallback to localStorage for user details
+        // 10) Fallback to localStorage for user details (only if not already set from token)
         const savedUser = JSON.parse(localStorage.getItem("moveUserDetails"));
         if (savedUser) {
           setUserDetails((prev) => ({
@@ -209,22 +384,17 @@ export default function BookServicePage() {
           }));
         }
 
-        // 10) Restore user details from navigation state
-if (state?.full_name || state?.email || state?.phone) {
-  setUserDetails(prev => ({
-    full_name: state.full_name || prev.full_name,
-    email: state.email || prev.email,
-    phone: state.phone || prev.phone,
-  }));
-}
+        // 11) Restore user details from navigation state (don't override token data)
+        if (state?.full_name || state?.email || state?.phone) {
+          setUserDetails(prev => ({
+            full_name: prev.full_name || state.full_name || "",
+            email: prev.email || state.email || "",
+            phone: prev.phone || state.phone || "",
+          }));
+        }
 
-
-        // 10) Override with navigation state if provided
+        // 12) Override with navigation state if provided
         if (state) {
-          // if (state.full_name) setUserDetails(prev => ({ ...prev, full_name: state.full_name }));
-          // if (state.email) setUserDetails(prev => ({ ...prev, email: state.email }));
-          // if (state.phone) setUserDetails(prev => ({ ...prev, phone: state.phone }));
-          
           // Also check if state has pincode data
           if (state.dropoffPincode && !moveDetails.dropoffPincode) {
             setMoveDetails(prev => ({ ...prev, dropoffPincode: state.dropoffPincode }));
@@ -239,6 +409,7 @@ if (state?.full_name || state?.email || state?.phone) {
     };
 
     init();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state]);
 
   // The rest of your component remains the same...
@@ -272,14 +443,16 @@ if (state?.full_name || state?.email || state?.phone) {
       case "within_month":
         target.setMonth(today.getMonth() + 1);
         break;
-      case "sun_to_thurs":
+      case "sun_to_thurs": {
         const daysUntilSunday = (7 - today.getDay()) % 7 || 7;
         target.setDate(today.getDate() + daysUntilSunday);
         break;
-      case "fri_sat":
+      }
+      case "fri_sat": {
         const daysUntilFriday = (5 - today.getDay() + 7) % 7 || 7;
         target.setDate(today.getDate() + daysUntilFriday);
         break;
+      }
       default:
         target.setDate(today.getDate() + 7);
     }
@@ -305,11 +478,11 @@ if (state?.full_name || state?.email || state?.phone) {
     // Get the search parameters for item conversion
     const searchParams = storedResponse?.search_parameters || {};
     const itemDetails = searchParams.item_details || [];
-    
+
     // Convert item_details array to selected_items object
     const selected_items = {};
     const dismantle_items = {};
-    
+
     itemDetails.forEach(item => {
       if (item.item_name && item.quantity) {
         selected_items[item.item_name] = item.quantity;
@@ -398,7 +571,8 @@ if (state?.full_name || state?.email || state?.phone) {
 
       request_type: "full_move",
       booking_status: "pending_payment",
-      deposit_amount: (safeNumber(finalPricing.final_total || moveDetails.finalTotal) * 0.1).toFixed(2),
+      deposit_percentage: depositPercentage || 10.0, // Add dynamic deposit percentage
+      deposit_amount: parseFloat(depositAmount) || (safeNumber(finalPricing.final_total || moveDetails.finalTotal) * 0.1).toFixed(2),
       total_amount: safeNumber(finalPricing.final_total || moveDetails.finalTotal),
       payment_status: "pending",
       source: "web_booking",
@@ -411,58 +585,7 @@ if (state?.full_name || state?.email || state?.phone) {
     return payload;
   };
 
-  // Price verification
-  const handleCalculate = async () => {
-    if (!selectedCompany) {
-      toast.error("Please select a provider/company before verifying price.");
-      return;
-    }
 
-    setLoadingCalc(true);
-    setPriceResult(null);
-    setPriceSimulated(false);
-
-    const payload = buildPayload({ simulate: true });
-    if (!payload) {
-      toast.error("Failed to build pricing request.");
-      setLoadingCalc(false);
-      return;
-    }
-
-    try {
-      const url = "http://127.0.0.1:8000/api/method/localmoves.api.request_pricing.calculate_detailed_price";
-      const res = await axios.post(url, payload);
-      const data = res?.data;
-
-      let result = null;
-      if (data?.message && typeof data.message === "object") {
-        result = data.message.data || data.message;
-      } else {
-        result = data;
-      }
-
-      const priceBreak = result?.price_breakdown || result?.calculation || result;
-
-      if (priceBreak && priceBreak.final_total) {
-        setPriceResult(priceBreak);
-        setPriceSimulated(true);
-        toast.success("Price verified — you can now proceed to payment.");
-      } else {
-        const currentTotal = selectedCompany.exact_pricing?.final_total || moveDetails.finalTotal;
-        setPriceResult({ final_total: currentTotal });
-        setPriceSimulated(true);
-        toast.info("Using company's quoted price.");
-      }
-    } catch (err) {
-      console.error("Price calculation error:", err);
-      toast.error("Failed to verify price. Using company's quoted price.");
-      const currentTotal = selectedCompany.exact_pricing?.final_total || moveDetails.finalTotal;
-      setPriceResult({ final_total: currentTotal });
-      setPriceSimulated(false);
-    } finally {
-      setLoadingCalc(false);
-    }
-  };
 
   // Handle submit function
   const handleSubmit = async () => {
@@ -478,11 +601,17 @@ if (state?.full_name || state?.email || state?.phone) {
       return;
     }
 
+    // Wait for deposit percentage to load
+    if (depositPercentage === null) {
+      toast.warning("Loading deposit information...");
+      return;
+    }
+
     setLoading(true);
 
     try {
       const finalTotal = moveDetails.finalTotal || 0;
-      
+
       // Build the complete payload for payment page
       const payload = buildPayload({
         payment_gateway_response: {}, // Will be filled by PaymentPage after successful payment
@@ -495,7 +624,7 @@ if (state?.full_name || state?.email || state?.phone) {
       }
 
       const companyName = selectedCompany?.name || selectedCompany?.company_name || "";
-      const depositAmount = Number((finalTotal * 0.1).toFixed(2));
+      const depositAmountToUse = depositAmount || parseFloat((finalTotal * (depositPercentage / 100)).toFixed(2));
 
       // Save user details
       localStorage.setItem("moveUserDetails", JSON.stringify({
@@ -509,7 +638,7 @@ if (state?.full_name || state?.email || state?.phone) {
       // Navigate to payment page with complete payload
       navigate("/payment", {
         state: {
-          amount: depositAmount,
+          amount: depositAmountToUse,
           companyName,
           payload, // Complete payload - PaymentPage will call create_request_with_payment after payment
           storedResponse,
@@ -532,7 +661,7 @@ if (state?.full_name || state?.email || state?.phone) {
             total_price: finalTotal,
           },
           paymentData: {
-            deposit_amount: depositAmount,
+            deposit_amount: depositAmountToUse,
             total_amount: finalTotal,
             currency: "GBP",
             description: `Move booking with ${companyName}`,
@@ -554,13 +683,7 @@ if (state?.full_name || state?.email || state?.phone) {
     }
   };
 
-  // UI helpers
-  const getTotalFromPriceResult = (pr) => {
-    if (!pr) return moveDetails.finalTotal || 0;
-    if (pr.final_total !== undefined && pr.final_total !== null) return pr.final_total;
-    if (pr.total !== undefined && pr.total !== null) return pr.total;
-    return moveDetails.finalTotal || 0;
-  };
+
 
   const formatCurrency = (n) => {
     if (n === null || n === undefined || Number.isNaN(Number(n))) return "-";
@@ -572,11 +695,26 @@ if (state?.full_name || state?.email || state?.phone) {
   };
 
   const displayTotal = moveDetails.finalTotal || 0;
-  const displayDeposit = displayTotal > 0 ? (displayTotal * 0.1).toFixed(2) : "0.00";
+  const displayDeposit = depositAmount > 0 ? depositAmount : (displayTotal * (depositPercentage || 10) / 100).toFixed(2);
 
   const handleUserDetailChange = (field, value) => {
     setUserDetails((prev) => ({ ...prev, [field]: value }));
   };
+
+  // Show loading while fetching deposit percentage
+  if (depositPercentage === null) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-6">
+        <div className="bg-white rounded-2xl shadow-lg border border-blue-100 p-8 max-w-md text-center">
+          <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+          </div>
+          <h2 className="text-2xl font-bold text-blue-600 mb-2">Loading Deposit Information</h2>
+          <p className="text-gray-600 mb-6">Please wait while we fetch the latest deposit percentage...</p>
+        </div>
+      </div>
+    );
+  }
 
   // Guard for missing data
   const companyName = selectedCompany?.name || selectedCompany?.company_name || "";
@@ -670,7 +808,6 @@ if (state?.full_name || state?.email || state?.phone) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <DetailCard icon={<Calendar size={20} />} label="Move Day" value={formatMoveDay(moveDetails.move_day)} bgColor="bg-purple-50" />
                 <DetailCard icon={<Home size={20} />} label="Property Type" value={formatPropertyType(moveDetails.property_type)} bgColor="bg-purple-50" />
-                {/* <DetailCard icon={<Package size={20} />} label="Total Volume" value={`${safeNumber(moveDetails.totalVolume).toFixed(1)} m³`} bgColor="bg-purple-50" /> */}
                 <DetailCard icon={<Truck size={20} />} label="Distance" value={`${safeNumber(moveDetails.distanceMiles).toFixed(1)} miles`} bgColor="bg-purple-50" />
               </div>
             </div>
@@ -679,13 +816,12 @@ if (state?.full_name || state?.email || state?.phone) {
             <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-8">
               <div className="space-y-6">
                 <div className="flex flex-col md:flex-row gap-4 justify-center">
-                  
+
                   <button
                     onClick={handleSubmit}
                     disabled={loading || !companyName}
-                    className={`w-full md:w-auto px-8 py-4 rounded-xl font-bold text-lg transition-all shadow-lg hover:shadow-xl flex items-center justify-center space-x-3 ${
-                      loading ? "opacity-50 cursor-not-allowed" : ""
-                    } bg-gradient-to-r from-pink-600 to-pink-700 hover:from-pink-700 hover:to-pink-800 text-white`}
+                    className={`w-full md:w-auto px-8 py-4 rounded-xl font-bold text-lg transition-all shadow-lg hover:shadow-xl flex items-center justify-center space-x-3 ${loading ? "opacity-50 cursor-not-allowed" : ""
+                      } bg-gradient-to-r from-pink-600 to-pink-700 hover:from-pink-700 hover:to-pink-800 text-white`}
                   >
                     {loading ? (
                       <>
@@ -729,10 +865,6 @@ if (state?.full_name || state?.email || state?.phone) {
 
                   <div className="bg-gray-50 rounded-xl p-4">
                     <div className="grid grid-cols-2 gap-4">
-                      {/* <div className="text-center">
-                        <div className="text-sm text-gray-500 mb-1">Total Volume</div>
-                        <div className="text-lg font-bold text-gray-900">{safeNumber(moveDetails.totalVolume).toFixed(1)} m³</div>
-                      </div> */}
                       <div className="text-center">
                         <div className="text-sm text-gray-500 mb-1">Distance</div>
                         <div className="text-lg font-bold text-gray-900">{safeNumber(moveDetails.distanceMiles).toFixed(1)} miles</div>
@@ -770,7 +902,7 @@ if (state?.full_name || state?.email || state?.phone) {
                     <div className="inline-flex items-center justify-center w-12 h-12 bg-pink-100 rounded-full mb-3">
                       <CreditCard className="text-pink-600" size={24} />
                     </div>
-                    <h3 className="text-lg font-semibold text-pink-700 mb-2">10% Deposit Required</h3>
+                    <h3 className="text-lg font-semibold text-pink-700 mb-2">{depositPercentage}% Deposit Required</h3>
                     <div className="text-4xl font-bold text-pink-600 mb-2">{formatCurrency(displayDeposit)}</div>
                     <p className="text-pink-700 text-sm">Pay deposit now to secure your booking</p>
                   </div>
@@ -783,7 +915,7 @@ if (state?.full_name || state?.email || state?.phone) {
                     <div className="flex justify-between items-center">
                       <div className="flex items-center">
                         <div className="w-3 h-3 bg-pink-500 rounded-full mr-2"></div>
-                        <span className="text-sm">Today - Deposit</span>
+                        <span className="text-sm">Today - Deposit ({depositPercentage}%)</span>
                       </div>
                       <span className="font-semibold">{formatCurrency(displayDeposit)}</span>
                     </div>
@@ -833,7 +965,7 @@ if (state?.full_name || state?.email || state?.phone) {
             </div>
           </div>
         </div>
-      </div> 
+      </div>
     </div>
   );
 }
@@ -851,9 +983,8 @@ function InputField({ label, value, onChange, type = "text", readOnly, icon }) {
           value={value || ""}
           readOnly={readOnly}
           onChange={(e) => onChange && onChange(e.target.value)}
-          className={`w-full rounded-xl p-4 border-2 transition-all ${
-            readOnly ? "bg-gray-50 border-gray-200 text-gray-500" : "bg-white border-gray-300 focus:border-pink-500 focus:ring-2 focus:ring-pink-200 focus:outline-none"
-          } ${icon ? "pl-12" : ""}`}
+          className={`w-full rounded-xl p-4 border-2 transition-all ${readOnly ? "bg-gray-50 border-gray-200 text-gray-500" : "bg-white border-gray-300 focus:border-pink-500 focus:ring-2 focus:ring-pink-200 focus:outline-none"
+            } ${icon ? "pl-12" : ""}`}
         />
       </div>
     </div>

@@ -123,6 +123,7 @@ const PaymentSuccess = () => {
     }
 
     updateLocalSubscription();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   //  Update ONLY local storage (backend already updated in PaymentPage)
@@ -142,7 +143,7 @@ const PaymentSuccess = () => {
       // Notify router
       localStorage.setItem("hasSubscription", "true");
       window.dispatchEvent(new Event("subscription-updated"));
-      
+
     } catch (error) {
       console.error("Local subscription update failed:", error);
       toast.error("Subscription updated failed locally. Try refresh.");

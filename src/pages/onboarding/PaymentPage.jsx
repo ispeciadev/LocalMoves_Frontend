@@ -27,8 +27,8 @@ const PaymentPage = () => {
   const plan = location.state?.plan;
 
   const [companyName, setCompanyName] = useState("");
-  const [loading, setLoading] = useState(true);
-  const scriptLoaded = useRef(false);
+  const [_loading, setLoading] = useState(true);
+  const _scriptLoaded = useRef(false);
   const buttonRendered = useRef(false);
 
   // Get company name — SAME as dashboard logic
@@ -51,7 +51,7 @@ const PaymentPage = () => {
         } else {
           toast.error("Company not found.");
         }
-      } catch (err) {
+      } catch {
         toast.error("Failed to load company info.");
       } finally {
         setLoading(false);
@@ -59,6 +59,7 @@ const PaymentPage = () => {
     };
 
     fetchCompany();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Load PayPal script when ready
@@ -76,6 +77,7 @@ const PaymentPage = () => {
     };
 
     loadScript().then(() => renderPayPalButton());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [plan, companyName]);
 
   // Convert INR → USD

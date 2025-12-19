@@ -11,7 +11,7 @@ function AdminLayout() {
 
   return (
     <div
-      className={`flex h-screen w-screen overflow-hidden transition-colors ${
+      className={`flex h-screen w-screen overflow-x-hidden overflow-y-hidden transition-colors ${
         isDarkMode ? "bg-slate-950" : "bg-gray-50"
       }`}
     >
@@ -28,7 +28,7 @@ function AdminLayout() {
 
         {/* MAIN CONTENT — ONLY THIS SHOULD SCROLL */}
         <main
-          className={`flex-1 overflow-y-auto p-4 md:p-6 transition-colors ${
+          className={`flex-1 overflow-y-auto overflow-x-hidden p-4 md:p-6 transition-colors ${
             isDarkMode ? "bg-slate-950" : "bg-gray-50"
           }`}
         >

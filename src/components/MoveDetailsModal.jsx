@@ -1,6 +1,5 @@
 // src/components/MoveDetailsModal.jsx
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { 
   ChevronRight, 
   Search, 
@@ -22,14 +21,12 @@ import axios from "axios";
 
 const MoveDetailsModal = ({ isOpen, onClose, onSubmit, companyCount = 0 }) => {
   const { login, register } = useAuthStore();
-  const navigate = useNavigate();
 
   const [isRegisterMode, setIsRegisterMode] = useState(true); // Changed to true to show register first
   const [showPassword, setShowPassword] = useState(false);
   const [otp, setOtp] = useState("");
   const [otpStep, setOtpStep] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
-  const [showDropdown, setShowDropdown] = useState(false);
 
   const [form, setForm] = useState({
     name: "",
@@ -126,18 +123,18 @@ const MoveDetailsModal = ({ isOpen, onClose, onSubmit, companyCount = 0 }) => {
       toast.error("Please enter a password with at least 6 characters.");
       return false;
     }
-    if (!form.pincode.trim() || form.pincode.length !== 6) {
-      toast.error("Please enter a valid 6-digit pincode.");
-      return false;
-    }
-    if (!form.city.trim()) {
-      toast.error("Please enter your city.");
-      return false;
-    }
-    if (!form.state.trim()) {
-      toast.error("Please enter your state.");
-      return false;
-    }
+    // if (!form.pincode.trim() || form.pincode.length !== 6) {
+    //   toast.error("Please enter a valid 6-digit pincode.");
+    //   return false;
+    // }
+    // if (!form.city.trim()) {
+    //   toast.error("Please enter your city.");
+    //   return false;
+    // }
+    // if (!form.state.trim()) {
+    //   toast.error("Please enter your state.");
+    //   return false;
+    // }
     if (!isVerified) {
       toast.error("Please verify your phone number with OTP.");
       return false;
@@ -179,10 +176,10 @@ const MoveDetailsModal = ({ isOpen, onClose, onSubmit, companyCount = 0 }) => {
       email: form.email,
       password: form.password,
       phone: form.phone,
-      pincode: form.pincode,
-      city: form.city,
-      state: form.state,
-      userType: form.userType,
+      // pincode: form.pincode,
+      // city: form.city,
+      // state: form.state,
+      // userType: form.userType,
       otp: otp
     };
 
@@ -465,7 +462,7 @@ const MoveDetailsModal = ({ isOpen, onClose, onSubmit, companyCount = 0 }) => {
                 </div>
 
                 {/* Pincode */}
-                <div className="flex flex-col">
+                {/* <div className="flex flex-col">
                   <label className="text-[11px] sm:text-[12px] font-medium text-gray-700 mb-1 flex items-center gap-1">
                     <MapPin size={13} className="text-pink-600" /> Pincode
                   </label>
@@ -478,10 +475,10 @@ const MoveDetailsModal = ({ isOpen, onClose, onSubmit, companyCount = 0 }) => {
                     className="w-full border border-gray-200 rounded-lg px-3 py-2 text-[12px] sm:text-[13px] focus:ring-2 focus:ring-pink-500 outline-none"
                     required
                   />
-                </div>
+                </div> */}
 
                 {/* City */}
-                <div className="flex flex-col">
+                {/* <div className="flex flex-col">
                   <label className="text-[11px] sm:text-[12px] font-medium text-gray-700 mb-1 flex items-center gap-1">
                     <Building size={13} className="text-pink-600" /> City
                   </label>
@@ -494,10 +491,10 @@ const MoveDetailsModal = ({ isOpen, onClose, onSubmit, companyCount = 0 }) => {
                     className="w-full border border-gray-200 rounded-lg px-3 py-2 text-[12px] sm:text-[13px] focus:ring-2 focus:ring-pink-500 outline-none"
                     required
                   />
-                </div>
+                </div> */}
 
                 {/* State */}
-                <div className="flex flex-col">
+                {/* <div className="flex flex-col">
                   <label className="text-[11px] sm:text-[12px] font-medium text-gray-700 mb-1 flex items-center gap-1">
                     <MapPin size={13} className="text-pink-600" /> State
                   </label>
@@ -510,10 +507,10 @@ const MoveDetailsModal = ({ isOpen, onClose, onSubmit, companyCount = 0 }) => {
                     className="w-full border border-gray-200 rounded-lg px-3 py-2 text-[12px] sm:text-[13px] focus:ring-2 focus:ring-pink-500 outline-none"
                     required
                   />
-                </div>
+                </div> */}
 
                 {/* Account Type */}
-                <div className="flex flex-col relative">
+                {/* <div className="flex flex-col relative">
                   <label className="text-[11px] sm:text-[12px] font-medium text-gray-700 mb-1 flex items-center gap-1">
                     <User size={13} className="text-pink-600" /> Account Type
                   </label>
@@ -538,7 +535,7 @@ const MoveDetailsModal = ({ isOpen, onClose, onSubmit, companyCount = 0 }) => {
                       </div>
                     </div>
                   )}
-                </div>
+                </div> */}
 
                 {/* Register Button */}
                 <button

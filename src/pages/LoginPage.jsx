@@ -44,7 +44,7 @@ const LoginPage = () => {
       } else {
         toast.error("Unable to send reset link.");
       }
-    } catch (error) {
+    } catch {
       toast.error("Something went wrong. Try again.");
     } finally {
       setSending(false);
@@ -77,8 +77,8 @@ const LoginPage = () => {
         localStorage.setItem("user_email", result.user.email || "");
 
         // Your backend does NOT provide name/phone, so store safe fallback values
-localStorage.setItem("user_full_name", result.user.full_name || result.user.name || "");
-localStorage.setItem("user_phone", result.user.phone || "");
+        localStorage.setItem("user_full_name", result.user.full_name || result.user.name || "");
+        localStorage.setItem("user_phone", result.user.phone || "");
 
         window.dispatchEvent(new Event("subscription-updated"));
 
@@ -150,11 +150,10 @@ localStorage.setItem("user_phone", result.user.phone || "");
               <button
                 type="submit"
                 disabled={sending}
-                className={`w-full py-2.5 rounded-lg font-semibold ${
-                  sending
-                    ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-pink-600 hover:bg-pink-700 text-white shadow-md"
-                }`}
+                className={`w-full py-2.5 rounded-lg font-semibold ${sending
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-pink-600 hover:bg-pink-700 text-white shadow-md"
+                  }`}
               >
                 {sending ? "Sending..." : "Send Reset Link"}
               </button>
@@ -244,11 +243,10 @@ localStorage.setItem("user_phone", result.user.phone || "");
               <button
                 type="submit"
                 disabled={loading}
-                className={`w-full py-2.5 rounded-lg font-semibold ${
-                  loading
-                    ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-pink-600 hover:bg-pink-700 text-white shadow-md"
-                }`}
+                className={`w-full py-2.5 rounded-lg font-semibold ${loading
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-pink-600 hover:bg-pink-700 text-white shadow-md"
+                  }`}
               >
                 {loading ? "Logging in..." : "Log In"}
               </button>

@@ -39,7 +39,7 @@ const ResetPassword = () => {
       } else {
         toast.error("Unable to reset password.");
       }
-    } catch (err) {
+    } catch {
       toast.error("Something went wrong. Try again.");
     } finally {
       setLoading(false);

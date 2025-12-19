@@ -50,7 +50,7 @@ const getUserData = () => {
       const user = JSON.parse(userStr);
       return user;
     }
-    
+
     // Fallback: try other possible keys
     const authToken = localStorage.getItem("authToken");
     if (authToken) {
@@ -58,7 +58,7 @@ const getUserData = () => {
       const payload = JSON.parse(atob(authToken.split('.')[1]));
       return payload;
     }
-    
+
     return null;
   } catch (error) {
     console.error("Error parsing user data:", error);
@@ -86,7 +86,7 @@ const PaymentPage = ({ setActivePlan }) => {
   useEffect(() => {
     const userData = getUserData();
     console.log("👤 User Data:", userData);
-    
+
     if (!userData) {
       toast.error("User not authenticated. Please login again.");
       navigate("/login");
@@ -95,12 +95,12 @@ const PaymentPage = ({ setActivePlan }) => {
 
     // Get company name from user data
     // Adjust the field name based on your actual user object structure
-    const company = userData.company_name || 
-                    userData.companyName || 
-                    userData.company ||
-                    userData.Company ||
-                    "";
-    
+    const company = userData.company_name ||
+      userData.companyName ||
+      userData.company ||
+      userData.Company ||
+      "";
+
     if (!company) {
       toast.error("Company not found. Please complete your profile.");
       setError("Company information missing");
@@ -138,6 +138,7 @@ const PaymentPage = ({ setActivePlan }) => {
     return () => {
       mounted = false;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [plan, companyName]);
 
   const loadPayPalScript = () => {

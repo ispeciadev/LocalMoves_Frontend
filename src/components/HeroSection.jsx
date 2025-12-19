@@ -1,22 +1,22 @@
+
+
 // HeroSection.jsx (CLEANED VERSION - DEBUGGERS REMOVED)
 import React, { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion as Motion } from "framer-motion";
-import { MapPin, Check, Truck, Route } from "lucide-react";
+import { MapPin, Check, Truck, Route, Boxes, Layers, Package, Home, Briefcase, Building2 } from "lucide-react";
 import axios from "axios";
+import CustomIconSelect from "./CustomIconSelect";
+
+// Emoji Icon Wrappers
+const SwbIcon = (props) => <span {...props} style={{ fontSize: '1.2rem', lineHeight: 1 }}>🚐</span>;
+const TruckIconEmoji = (props) => <span {...props} style={{ fontSize: '1.2rem', lineHeight: 1 }}>🚚</span>;
+const LorryIconEmoji = (props) => <span {...props} style={{ fontSize: '1.2rem', lineHeight: 1 }}>🚛</span>;
 
 const HeroSection = () => {
   const navigate = useNavigate();
 
-  // Load initial state from localStorage (but we won't use it for initial values)
-  const loadFromStorage = (key, defaultValue) => {
-    try {
-      const stored = localStorage.getItem(`move_${key}`);
-      return stored ? JSON.parse(stored) : defaultValue;
-    } catch {
-      return defaultValue;
-    }
-  };
+
 
   // STATES - Start with empty values instead of loading from localStorage
   const [pickupPincode, setPickupPincode] = useState("");
@@ -40,7 +40,7 @@ const HeroSection = () => {
   const distanceMiles = distanceKm ? (distanceKm * 0.621371).toFixed(1) : null;
 
   // Company count state
-  const [loadingCount, setLoadingCount] = useState(false);
+  const [_loadingCount, setLoadingCount] = useState(false);
   const [companyCount, setCompanyCount] = useState(null);
 
   // Save to localStorage helper
@@ -53,7 +53,7 @@ const HeroSection = () => {
   };
 
   // Save all form data to localStorage
-  const saveFormData = () => {
+  const saveFormData = useCallback(() => {
     const formData = {
       pickupPincode,
       pickupCity,
@@ -66,13 +66,13 @@ const HeroSection = () => {
       distanceKm,
       distanceMiles
     };
-    
+
     try {
       localStorage.setItem("move_formData", JSON.stringify(formData));
     } catch (error) {
       console.error("Error saving form data to localStorage:", error);
     }
-  };
+  }, [pickupPincode, pickupCity, dropoffPincode, dropoffCity, serviceType, propertySize, quantity, additionalSpaces, distanceKm, distanceMiles]);
 
   // Save individual fields to localStorage when they change
   useEffect(() => {
@@ -107,36 +107,36 @@ const HeroSection = () => {
     saveToStorage("additionalSpaces", additionalSpaces);
   }, [additionalSpaces]);
 
-  // Property type configurations (unchanged)
+  // Property type configurations
   const propertyConfigs = {
     "a_few_items": {
       label: "A few items",
       sizes: [
-        { value: "swb_van", label: "SWB Van" },
-        { value: "mwb_van", label: "MWB Van" },
-        { value: "lwb_van", label: "LWB Van" }
+        { value: "swb_van", label: "SWB Van", icon: SwbIcon, iconClass: "text-blue-500" },
+        { value: "mwb_van", label: "MWB Van", icon: SwbIcon, iconClass: "text-indigo-500" },
+        { value: "lwb_van", label: "LWB Van", icon: SwbIcon, iconClass: "text-purple-500" }
       ],
       quantities: [
-        { value: "some_things", label: "Quarter Van" },
-        { value: "half_contents", label: "Half Van" },
-        { value: "most_things", label: "3/4 Van" },
-        { value: "everything", label: "Whole Van" }
+        { value: "quarter_van", label: "Quarter Van", icon: Package, iconClass: "text-amber-500" },
+        { value: "half_van", label: "Half Van", icon: Layers, iconClass: "text-orange-500" },
+        { value: "three_quarter_van", label: "3/4 Van", icon: Boxes, iconClass: "text-red-500" },
+        { value: "whole_van", label: "Whole Van", icon: Truck, iconClass: "text-blue-600" }
       ]
     },
     "house": {
       label: "House",
       sizes: [
-        { value: "2_bed", label: "2 Bed" },
-        { value: "3_bed", label: "3 Bed" },
-        { value: "4_bed", label: "4 Bed" },
-        { value: "5_bed", label: "5 Bed" },
-        { value: "6_bed", label: "6 Bed" }
+        { value: "2_bed", label: "2 Bed", icon: Home, iconClass: "text-green-500" },
+        { value: "3_bed", label: "3 Bed", icon: Home, iconClass: "text-green-600" },
+        { value: "4_bed", label: "4 Bed", icon: Home, iconClass: "text-green-700" },
+        { value: "5_bed", label: "5 Bed", icon: Home, iconClass: "text-green-800" },
+        { value: "6_bed", label: "6 Bed", icon: Home, iconClass: "text-emerald-900" }
       ],
       quantities: [
-        { value: "some_things", label: "Some Things" },
-        { value: "half_contents", label: "Half the Contents" },
-        { value: "most_things", label: "3/4 Most Things" },
-        { value: "everything", label: "Everything" }
+        { value: "some_things", label: "Some Things", icon: Package, iconClass: "text-amber-500" },
+        { value: "half_contents", label: "Half the Contents", icon: Layers, iconClass: "text-orange-500" },
+        { value: "most_things", label: "3/4 Most Things", icon: Boxes, iconClass: "text-red-500" },
+        { value: "everything", label: "Everything", icon: Truck, iconClass: "text-blue-600" }
       ],
       additionalSpaces: [
         { value: "shed", label: "Shed" },
@@ -149,36 +149,43 @@ const HeroSection = () => {
     "flat": {
       label: "Flat",
       sizes: [
-        { value: "studio", label: "Studio" },
-        { value: "1_bed", label: "1 Bed" },
-        { value: "2_bed", label: "2 Bed" },
-        { value: "3_bed", label: "3 Bed" },
-        { value: "4_bed", label: "4 Bed" }
+        { value: "studio", label: "Studio", icon: Building2, iconClass: "text-cyan-500" },
+        { value: "1_bed", label: "1 Bed", icon: Building2, iconClass: "text-cyan-600" },
+        { value: "2_bed", label: "2 Bed", icon: Building2, iconClass: "text-cyan-700" },
+        { value: "3_bed", label: "3 Bed", icon: Building2, iconClass: "text-cyan-800" },
+        { value: "4_bed", label: "4 Bed", icon: Building2, iconClass: "text-blue-900" }
       ],
       quantities: [
-        { value: "some_things", label: "Some Things" },
-        { value: "half_contents", label: "Half the Contents" },
-        { value: "most_things", label: "3/4 Most Things" },
-        { value: "everything", label: "Everything" }
+        { value: "some_things", label: "Some Things", icon: Package, iconClass: "text-amber-500" },
+        { value: "half_contents", label: "Half the Contents", icon: Layers, iconClass: "text-orange-500" },
+        { value: "three_quarter", label: "3/4 Most Things", icon: Boxes, iconClass: "text-red-500" },
+        { value: "everything", label: "Everything", icon: Truck, iconClass: "text-blue-600" }
       ]
     },
     "office": {
       label: "Office",
       sizes: [
-        { value: "2_workstations", label: "2 Workstations" },
-        { value: "4_workstations", label: "4 Workstations" },
-        { value: "8_workstations", label: "8 Workstations" },
-        { value: "15_workstations", label: "15 Workstations" },
-        { value: "25_workstations", label: "25 Workstations" }
+        { value: "2_workstations", label: "2 Workstations", icon: Briefcase, iconClass: "text-purple-500" },
+        { value: "4_workstations", label: "4 Workstations", icon: Briefcase, iconClass: "text-purple-600" },
+        { value: "8_workstations", label: "8 Workstations", icon: Briefcase, iconClass: "text-purple-700" },
+        { value: "15_workstations", label: "15 Workstations", icon: Briefcase, iconClass: "text-fuchsia-600" },
+        { value: "25_workstations", label: "25 Workstations", icon: Briefcase, iconClass: "text-fuchsia-700" }
       ],
       quantities: [
-        { value: "some_things", label: "Some Things" },
-        { value: "half_contents", label: "Half the Contents" },
-        { value: "most_things", label: "3/4 Most Things" },
-        { value: "everything", label: "Everything" }
+        { value: "some_things", label: "Some Things", icon: Package, iconClass: "text-amber-500" },
+        { value: "half_contents", label: "Half the Contents", icon: Layers, iconClass: "text-orange-500" },
+        { value: "three_quarter", label: "3/4 Most Things", icon: Boxes, iconClass: "text-red-500" },
+        { value: "everything", label: "Everything", icon: Truck, iconClass: "text-blue-600" }
       ]
     }
   };
+
+  const PROPERTY_TYPE_OPTIONS = [
+    { value: "a_few_items", label: "A Few Items", icon: Package, iconClass: "text-orange-500" },
+    { value: "flat", label: "Flat", icon: Building2, iconClass: "text-cyan-600" },
+    { value: "house", label: "House", icon: Home, iconClass: "text-green-600" },
+    { value: "office", label: "Office", icon: Briefcase, iconClass: "text-purple-600" },
+  ];
 
   // Toast notification function (unchanged)
   const showToast = (message, type = "error") => {
@@ -230,7 +237,7 @@ const HeroSection = () => {
       } else {
         setCompanyCount(0);
       }
-    } catch (error) {
+    } catch {
       setCompanyCount(0);
     } finally {
       setLoadingCount(false);
@@ -267,57 +274,81 @@ const HeroSection = () => {
       }
 
       return null;
-    } catch (error) {
+    } catch {
       return null;
     }
   };
 
-  // Route API - FIXED VERSION
+  // Route API - Gets actual road distance
   const getRoute = async (pickup, dropoff) => {
     try {
-      const response = await fetch(
-        `https://router.project-osrm.org/route/v1/driving/${pickup.lon},${pickup.lat};${dropoff.lon},${dropoff.lat}?overview=full&geometries=geojson`
+      // Try OSRM first (European routing)
+      const osrmResponse = await fetch(
+        `https://router.project-osrm.org/route/v1/driving/${pickup.lon},${pickup.lat};${dropoff.lon},${dropoff.lat}?overview=full&geometries=geojson&steps=true`
       );
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const data = await response.json();
 
-      if (data.routes && data.routes.length > 0 && data.routes[0].distance) {
-        const distanceInKm = (data.routes[0].distance / 1000).toFixed(1);
-        setDistanceKm(distanceInKm);
-        return data.routes[0].geometry;
-      } else {
-        // If OSRM fails, calculate Haversine distance
-        return calculateHaversineDistance(pickup, dropoff);
+      if (osrmResponse.ok) {
+        const osrmData = await osrmResponse.json();
+        if (osrmData.routes && osrmData.routes.length > 0 && osrmData.routes[0].distance) {
+          const distanceInKm = (osrmData.routes[0].distance / 1000).toFixed(1);
+          setDistanceKm(distanceInKm);
+          console.log("OSRM Road Distance:", distanceInKm, "km");
+          return osrmData.routes[0].geometry;
+        }
       }
+
+      // If OSRM fails, try OpenRouteService API (alternative routing service)
+      const orsResponse = await fetch(
+        `https://api.openrouteservice.org/v2/directions/driving-car?start=${pickup.lon},${pickup.lat}&end=${dropoff.lon},${dropoff.lat}`,
+        {
+          headers: {
+            'Accept': 'application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8',
+          }
+        }
+      );
+
+      if (orsResponse.ok) {
+        const orsData = await orsResponse.json();
+        if (orsData.features && orsData.features.length > 0) {
+          const distanceInMeters = orsData.features[0].properties.segments[0].distance;
+          const distanceInKm = (distanceInMeters / 1000).toFixed(1);
+          setDistanceKm(distanceInKm);
+          console.log("ORS Road Distance:", distanceInKm, "km");
+          return orsData.features[0].geometry;
+        }
+      }
+
+      // Last resort: calculate straight-line distance
+      console.warn("All routing APIs failed, using straight line distance");
+      return calculateHaversineDistance(pickup, dropoff);
     } catch (error) {
-      console.warn("OSRM route API failed, using straight line distance:", error);
+      console.error("Route calculation error:", error);
       // Fallback to Haversine distance calculation
       return calculateHaversineDistance(pickup, dropoff);
     }
   };
 
-  // Haversine distance calculation (accurate straight-line distance)
+  // Haversine distance calculation (straight-line distance as fallback)
   const calculateHaversineDistance = (coord1, coord2) => {
     if (!coord1 || !coord2) return null;
-    
+
     const R = 6371; // Earth's radius in kilometers
     const lat1 = coord1.lat * Math.PI / 180;
     const lat2 = coord2.lat * Math.PI / 180;
     const deltaLat = (coord2.lat - coord1.lat) * Math.PI / 180;
     const deltaLon = (coord2.lon - coord1.lon) * Math.PI / 180;
 
-    const a = Math.sin(deltaLat/2) * Math.sin(deltaLat/2) +
-              Math.cos(lat1) * Math.cos(lat2) *
-              Math.sin(deltaLon/2) * Math.sin(deltaLon/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    const a = Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
+      Math.cos(lat1) * Math.cos(lat2) *
+      Math.sin(deltaLon / 2) * Math.sin(deltaLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     const distance = R * c; // Distance in km
-    
-    setDistanceKm(distance.toFixed(1));
-    
+
+    // Add 20% to approximate road distance from straight-line distance
+    const approximateRoadDistance = (distance * 1.2).toFixed(1);
+    setDistanceKm(approximateRoadDistance);
+    console.log("Approximate road distance (straight-line + 20%):", approximateRoadDistance, "km");
+
     // Create a simple straight line geometry for display
     return {
       type: "LineString",
@@ -341,14 +372,14 @@ const HeroSection = () => {
             <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
             <style>
                 body { margin: 0; padding: 0; }
-                #map { height: 350px; width: 100%; }
+                #map { height: 100vh; width: 100%; }
             </style>
         </head>
         <body>
             <div id="map"></div>
             <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
             <script>
-                var map = L.map('map').setView([20.5937, 78.9629], 5);
+                var map = L.map('map').setView([54.5, -2.5], 6);
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     attribution: '© OpenStreetMap contributors'
                 }).addTo(map);
@@ -423,7 +454,7 @@ const HeroSection = () => {
           <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
           <style>
               body { margin: 0; padding: 0; }
-              #map { height: 350px; width: 100%; }
+              #map { height: 100vh; width: 100%; }
           </style>
       </head>
       <body>
@@ -437,17 +468,16 @@ const HeroSection = () => {
               }).addTo(map);
 
               ${markers
-                .map(
-                  (marker) => `
+        .map(
+          (marker) => `
                 L.marker([${marker.lat}, ${marker.lon}])
                   .addTo(map)
                   .bindPopup('${marker.text}')`
-                )
-                .join("")}
+        )
+        .join("")}
 
-              ${
-                polyline
-                  ? `
+              ${polyline
+        ? `
                 var pinkRoute = L.polyline(${JSON.stringify(polyline)}, {
                   color: '#ec4899',
                   weight: 6,
@@ -457,8 +487,8 @@ const HeroSection = () => {
                 }).addTo(map);
 
                 map.fitBounds(pinkRoute.getBounds());`
-                  : ""
-              }
+        : ""
+      }
           </script>
       </body>
       </html>`;
@@ -489,8 +519,8 @@ const HeroSection = () => {
         const res = await axios.post(
           "http://127.0.0.1:8000/api/method/localmoves.api.company.search_companies_by_pincode",
           payload,
-          { 
-            headers: { 
+          {
+            headers: {
               "Content-Type": "application/json",
               "Accept": "application/json"
             },
@@ -527,7 +557,7 @@ const HeroSection = () => {
         await fetchCompaniesByPincode(pickupPincode);
       }
     };
-    
+
     fetchIfReady();
   }, [pickupPincode, serviceType, propertySize, quantity, fetchCompaniesByPincode]);
 
@@ -591,7 +621,7 @@ const HeroSection = () => {
         else setDropoffCoords(null);
         showToast("Please enter a valid pincode.");
       }
-    } catch (err) {
+    } catch {
       setCity("");
       if (isPickup) setPickupCoords(null);
       else setDropoffCoords(null);
@@ -607,7 +637,7 @@ const HeroSection = () => {
       const newSpaces = prev.includes(space)
         ? prev.filter(s => s !== space)
         : [...prev, space];
-      
+
       return newSpaces;
     });
   };
@@ -624,18 +654,18 @@ const HeroSection = () => {
   // Handle property size change
   const handlePropertySizeChange = (value) => {
     setPropertySize(value);
-    
+
     if (serviceType && propertyConfigs[serviceType]?.quantities?.length > 0) {
       setQuantity(propertyConfigs[serviceType].quantities[0].value);
     }
-    
+
     setCompanies([]);
   };
 
   // Handle quantity change
   const handleQuantityChange = (value) => {
     setQuantity(value);
-    
+
     if (pickupPincode && serviceType && propertySize) {
       setTimeout(() => {
         fetchCompaniesByPincode(pickupPincode);
@@ -705,458 +735,322 @@ const HeroSection = () => {
       routeGeometry,
       distanceKm,
       distanceMiles,
+      saveFormData,
     ]
   );
 
-  // Clear form data function (optional, can be called if needed)
-  const clearFormData = () => {
-    localStorage.removeItem("move_pickupPincode");
-    localStorage.removeItem("move_pickupCity");
-    localStorage.removeItem("move_dropoffPincode");
-    localStorage.removeItem("move_dropoffCity");
-    localStorage.removeItem("move_serviceType");
-    localStorage.removeItem("move_propertySize");
-    localStorage.removeItem("move_quantity");
-    localStorage.removeItem("move_additionalSpaces");
-    localStorage.removeItem("move_formData");
-    
-    // Reset states
-    setPickupPincode("");
-    setPickupCity("");
-    setDropoffPincode("");
-    setDropoffCity("");
-    setServiceType("");
-    setPropertySize("");
-    setQuantity("");
-    setAdditionalSpaces([]);
-    setCompanies([]);
-    setPickupCoords(null);
-    setDropoffCoords(null);
-    setRouteGeometry(null);
-    setDistanceKm(null);
-    setCompanyCount(null);
-  };
+
 
   return (
-    <section className="relative flex flex-col lg:flex-row items-center justify-between bg-white overflow-hidden pt-6 md:pt-10 lg:pt-14 pb-16 px-6 md:px-16 lg:px-20">
-      <div className="absolute top-0 left-0 w-[260px] h-[260px] bg-pink-300 opacity-30 blur-3xl rounded-full pointer-events-none"></div>
-      <div className="absolute bottom-0 right-0 w-[260px] h-[260px] bg-pink-300 opacity-30 blur-3xl rounded-full pointer-events-none"></div>
+    <section className={`relative bg-white overflow-hidden transition-all duration-500 ${distanceKm ? 'min-h-screen' : 'min-h-[70vh]'}`}>
+      {/* Background decorative blobs */}
+      <div className="absolute top-0 left-0 w-[350px] h-[350px] bg-pink-200 opacity-40 blur-3xl rounded-full pointer-events-none"></div>
+      <div className="absolute bottom-0 left-[10%] w-[400px] h-[400px] bg-pink-300 opacity-30 blur-3xl rounded-full pointer-events-none"></div>
 
-      {/* LEFT SIDE */}
+      {/* Map Background - Positioned on right side, behind everything */}
       <Motion.div
-        className="lg:w-[55%] w-full space-y-6 relative z-10 flex flex-col order-1 lg:pr-0"
-        initial={{ opacity: 0, x: -50 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
+        className="absolute right-0 top-0 bottom-0 w-full lg:w-[60%] h-full"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1, ease: "easeOut" }}
       >
-        <div className="text-center lg:text-left">
-          <h1 className="text-4xl sm:text-5xl font-extrabold leading-tight text-pink-600">
-            The Complete <br /> Moving Service
-          </h1>
-          <p className="text-gray-700 text-lg mt-2">
-            Compare Removal Providers In{" "}
-            <span className="text-pink-500 font-semibold">
-              {pickupCity || "Your Area"}
-            </span>
-          </p>
-        </div>
+        <div className="relative w-full h-full">
+          {/* Map iframe */}
+          <iframe
+            srcDoc={generateCustomMap()}
+            width="100%"
+            height="100%"
+            style={{ border: 0, position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+            title="Move Route Map"
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+          ></iframe>
 
-        <Motion.form
-          onSubmit={handleCompare}
-          className="relative bg-white border border-gray-200 rounded-2xl shadow-lg px-8 py-6 z-10 w-full max-w-2xl mt-8"
+          {/* Left side fade overlay - makes map fade out toward the form */}
+          <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-white pointer-events-none"></div>
+        </div>
+      </Motion.div>
+
+      {/* Content Container */}
+      <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between pt-6 md:pt-10 lg:pt-14 pb-16 px-6 md:px-16 lg:px-20">
+        {/* LEFT SIDE - Form Card */}
+        <Motion.div
+          className="lg:w-[50%] w-full space-y-6 relative flex flex-col order-1 lg:pr-8"
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
         >
-          <div className="absolute -top-7 -left-7 w-32 h-32 bg-pink-300 opacity-30 blur-2xl rounded-full pointer-events-none"></div>
-          <div className="absolute -bottom-7 -right-7 w-32 h-32 bg-pink-300 opacity-30 blur-2xl rounded-full pointer-events-none"></div>
+          <div className="text-center lg:text-left">
+            <h1 className="text-4xl sm:text-5xl font-extrabold leading-tight text-pink-600">
+              The Complete <br /> Moving Service
+            </h1>
+            <p className="text-gray-700 text-lg mt-2">
+              Compare Removal Providers In{" "}
+              <span className="text-pink-500 font-semibold">
+                {pickupCity || "Your Area"}
+              </span>
+            </p>
+          </div>
 
-          <h3 className="font-semibold text-gray-800 mb-5 text-center lg:text-left">
-            Search for Moving Services
-          </h3>
+          <Motion.form
+            onSubmit={handleCompare}
+            className="relative bg-white border border-gray-200 rounded-2xl shadow-lg px-8 py-6 z-10 w-full max-w-2xl mt-8"
+          >
+            <div className="absolute -top-7 -left-7 w-32 h-32 bg-pink-200 opacity-20 blur-2xl rounded-full pointer-events-none"></div>
+            <div className="absolute -bottom-7 -right-7 w-32 h-32 bg-pink-200 opacity-20 blur-2xl rounded-full pointer-events-none"></div>
 
-          <div className="grid md:grid-cols-2 gap-5">
-            {/* PICKUP */}
-            <div>
-              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-                <MapPin className="text-pink-600 h-4 w-4" /> Pickup Pincode
-              </label>
+            <h3 className="font-semibold text-gray-800 mb-5 text-center lg:text-left">
+              Search for Moving Services
+            </h3>
 
-              <input
-                type="text"
-                placeholder="Enter Pickup Pincode"
-                value={pickupPincode}
-                onChange={(e) => {
-                  const val = e.target.value.trim();
-                  setPickupPincode(val);
-
-                  if (val.length >= 3) {
-                    fetchCityFromPincode(
-                      val,
-                      setPickupCity,
-                      setLoadingPickup,
-                      true
-                    );
-                    fetchCompanyCount(val);
-                  } else {
-                    setPickupCity("");
-                    setPickupCoords(null);
-                    setCompanies([]);
-                    setRouteGeometry(null);
-                    setDistanceKm(null);
-                    setCompanyCount(null);
-                  }
-                }}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 
-                focus:border-pink-500 focus:ring-2 focus:ring-pink-200 outline-none transition-all"
-                required
-              />
-
-              <p className="text-xs text-gray-600 mt-1 h-5">
-                {loadingPickup
-                  ? "Fetching city..."
-                  : pickupCity && `📍 ${pickupCity}`}
-              </p>
-
-              <div className="mt-2 text-sm text-gray-700">
-                {loadingCompanies ? (
-                  <div className="flex items-center gap-2 text-pink-600">
-                    <Truck size={16} /> Fetching available companies...
-                  </div>
-                ) : /^[1-9][0-9]{5}$/.test(pickupPincode) ? (
-                  companyCount > 0 ? (
-                    <div className="flex items-center gap-2 text-green-600">
-                      <Truck size={16} /> {companyCount} companies found near
-                      you!
-                    </div>
-                  ) : (
-                    <div className="text-gray-500 flex items-center gap-2">
-                      <Truck size={16} /> No companies found in this area.
-                    </div>
-                  )
-                ) : null}
-              </div>
-            </div>
-
-            {/* PROPERTY TYPE */}
-            <div>
-              <label className="text-sm font-medium text-gray-700 mb-2 block">
-                Property Type
-              </label>
-
-              <select
-                className="w-full border border-gray-300 rounded-md px-3 py-2 bg-white
-                  focus:border-pink-500 focus:ring-2 focus:ring-pink-300 outline-none transition-all
-                  text-gray-700 cursor-pointer"
-                value={serviceType}
-                onChange={(e) => handleServiceTypeChange(e.target.value)}
-                required
-              >
-                <option value="" disabled className="text-gray-700">
-                  Choose Property Type
-                </option>
-                <option value="a_few_items">A Few Items</option>
-                <option value="flat">Flat</option>
-                <option value="house">House</option>
-                <option value="office">Office</option>
-              </select>
-            </div>
-
-            {/* PROPERTY SIZE */}
-            <div>
-              <label className="text-sm font-medium text-gray-700 mb-2 block">
-                Property Size
-              </label>
-
-              <select
-                className="w-full border border-gray-300 rounded-md px-3 py-2 
-                  focus:border-pink-500 focus:ring-2 focus:ring-pink-200 outline-none transition-all"
-                value={propertySize}
-                onChange={(e) => handlePropertySizeChange(e.target.value)}
-                required
-                disabled={!serviceType}
-              >
-                <option value="" disabled className="text-gray-400">
-                  {serviceType ? "Choose Property Size" : "Select Property Type First"}
-                </option>
-                {serviceType && propertyConfigs[serviceType]?.sizes.map((size) => (
-                  <option key={size.value} value={size.value}>
-                    {size.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* QUANTITY */}
-            <div>
-              <label className="text-sm font-medium text-gray-700 mb-2 block">
-                Quantity (How much to move)
-              </label>
-
-              <select
-                className="w-full border border-gray-300 rounded-md px-3 py-2 
-                  focus:border-pink-500 focus:ring-2 focus:ring-pink-200 outline-none transition-all"
-                value={quantity}
-                onChange={(e) => handleQuantityChange(e.target.value)}
-                required
-                disabled={!serviceType}
-              >
-                <option value="" disabled className="text-gray-400">
-                  {serviceType ? "Choose Quantity" : "Select Property Type First"}
-                </option>
-                {serviceType && propertyConfigs[serviceType]?.quantities.map((qty) => (
-                  <option key={qty.value} value={qty.value}>
-                    {qty.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* DISTANCE */}
-            <div>
-              <label className="text-sm font-medium text-gray-700 mb-2 block">
-                Distance (miles)
-              </label>
-
-              <input
-                type="text"
-                value={distanceMiles || ""}
-                readOnly
-                className="w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-100 
-                  text-gray-600 cursor-not-allowed outline-none"
-                placeholder="Distance auto-calculated"
-              />
-            </div>
-
-            {/* DROPOFF */}
-            <div>
-              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-                <MapPin className="text-gray-400 h-4 w-4" /> Dropoff Pincode
-              </label>
-
-              <input
-                type="text"
-                placeholder="Enter Destination Pincode"
-                value={dropoffPincode}
-                onChange={(e) => {
-                  const val = e.target.value.trim();
-                  setDropoffPincode(val);
-
-                  if (val.length >= 3) {
-                    fetchCityFromPincode(
-                      val,
-                      setDropoffCity,
-                      setLoadingDrop,
-                      false
-                    );
-                  } else {
-                    setDropoffCity("");
-                    setDropoffCoords(null);
-                    setRouteGeometry(null);
-                    setDistanceKm(null);
-                  }
-                }}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 
-                focus:border-pink-500 focus:ring-2 focus:ring-pink-200 outline-none transition-all"
-                required
-              />
-
-              <p className="text-xs text-gray-600 mt-1 h-5">
-                {loadingDrop
-                  ? "Fetching city..."
-                  : dropoffCity && `📍 ${dropoffCity}`}
-              </p>
-            </div>
-
-            {/* ADDITIONAL SPACES (Only for House) */}
-            {serviceType === "house" && (
-              <div className="md:col-span-2">
-                <label className="text-sm font-medium text-gray-700 mb-2 block">
-                  Additional Spaces (Select all that apply)
+            <div className="grid md:grid-cols-2 gap-5">
+              {/* PICKUP */}
+              <div>
+                <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                  <MapPin className="text-pink-600 h-4 w-4" /> Pickup Pincode
                 </label>
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
-                  {propertyConfigs.house.additionalSpaces.map((space) => (
-                    <div key={space.value} className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        id={`space-${space.value}`}
-                        checked={additionalSpaces.includes(space.value)}
-                        onChange={() => handleAdditionalSpaceChange(space.value)}
-                        className="h-4 w-4 text-pink-600 focus:ring-pink-500 border-gray-300 rounded"
-                      />
-                      <label
-                        htmlFor={`space-${space.value}`}
-                        className="text-sm text-gray-700 cursor-pointer"
-                      >
-                        {space.label}
-                      </label>
+
+                <input
+                  type="text"
+                  placeholder="Enter Pickup Pincode"
+                  value={pickupPincode}
+                  onChange={(e) => {
+                    const val = e.target.value.trim();
+                    setPickupPincode(val);
+
+                    if (val.length >= 3) {
+                      fetchCityFromPincode(
+                        val,
+                        setPickupCity,
+                        setLoadingPickup,
+                        true
+                      );
+                      fetchCompanyCount(val);
+                    } else {
+                      setPickupCity("");
+                      setPickupCoords(null);
+                      setCompanies([]);
+                      setRouteGeometry(null);
+                      setDistanceKm(null);
+                      setCompanyCount(null);
+                    }
+                  }}
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 
+                focus:border-pink-500 focus:ring-2 focus:ring-pink-200 outline-none transition-all"
+                  required
+                />
+
+                <p className="text-xs text-gray-600 mt-1 h-5">
+                  {loadingPickup
+                    ? "Fetching city..."
+                    : pickupCity && `📍 ${pickupCity}`}
+                </p>
+
+                <div className="mt-2 text-sm text-gray-700">
+                  {loadingCompanies ? (
+                    <div className="flex items-center gap-2 text-pink-600">
+                      <Truck size={16} /> Fetching available companies...
                     </div>
-                  ))}
+                  ) : /^[1-9][0-9]{5}$/.test(pickupPincode) ? (
+                    companyCount > 0 ? (
+                      <div className="flex items-center gap-2 text-green-600">
+                        <Truck size={16} /> {companyCount} companies found near
+                        you!
+                      </div>
+                    ) : (
+                      <div className="text-gray-500 flex items-center gap-2">
+                        <Truck size={16} /> No companies found in this area.
+                      </div>
+                    )
+                  ) : null}
                 </div>
-                {additionalSpaces.length > 0 && (
-                  <p className="text-xs text-gray-500 mt-2">
-                    Selected: {additionalSpaces.map(s => 
-                      propertyConfigs.house.additionalSpaces.find(as => as.value === s)?.label
-                    ).join(", ")}
-                  </p>
-                )}
               </div>
-            )}
-          </div>
 
-          <div className="mt-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-            <ul className="space-y-1 text-sm text-gray-700">
-              {[
-                "Instant Prices",
-                "On Screen Comparison",
-                "Dedicated Move Manager",
-              ].map((f) => (
-                <li key={f} className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-pink-600" /> {f}
-                </li>
-              ))}
-            </ul>
+              {/* DROPOFF */}
+              <div>
+                <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                  <MapPin className="text-gray-400 h-4 w-4" /> Dropoff Pincode
+                </label>
 
-            <Motion.button
-              type="submit"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="bg-pink-600 hover:bg-pink-700 text-white rounded-full px-8 py-3 font-semibold flex items-center gap-2 shadow-md transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={!quantity || loadingCompanies}
-            >
-              {loadingCompanies ? (
-                <>
-                  <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Loading...
-                </>
-              ) : (
-                "Compare Prices →"
-              )}
-            </Motion.button>
-          </div>
-        </Motion.form>
-      </Motion.div>
+                <input
+                  type="text"
+                  placeholder="Enter Destination Pincode"
+                  value={dropoffPincode}
+                  onChange={(e) => {
+                    const val = e.target.value.trim();
+                    setDropoffPincode(val);
 
-      {/* RIGHT SIDE MAP */}
-      <Motion.div
-        className="lg:w-[45%] w-full justify-center mt-10 lg:mt-0 flex order-2 relative"
-        initial={{ opacity: 0, x: 80 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.8, ease: "easeOut", delay: 0.4 }}
-      >
-        <div className="absolute -top-7 -right-7 w-32 h-32 bg-pink-300 opacity-30 blur-2xl rounded-full pointer-events-none"></div>
-        <div className="absolute -bottom-7 -left-7 w-32 h-32 bg-pink-300 opacity-30 blur-2xl rounded-full pointer-events-none"></div>
+                    if (val.length >= 3) {
+                      fetchCityFromPincode(
+                        val,
+                        setDropoffCity,
+                        setLoadingDrop,
+                        false
+                      );
+                    } else {
+                      setDropoffCity("");
+                      setDropoffCoords(null);
+                      setRouteGeometry(null);
+                      setDistanceKm(null);
+                    }
+                  }}
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 
+                focus:border-pink-500 focus:ring-2 focus:ring-pink-200 outline-none transition-all"
+                  required
+                />
 
-        <div className="w-full max-w-2xl rounded-xl overflow-hidden shadow-lg lg:-ml-8 border border-gray-200 bg-white">
-          <div className="bg-pink-600 text-white p-4">
-            <div className="flex items-center gap-2">
-              <Route className="h-5 w-5" />
-              <h3 className="font-semibold text-lg">Move Route</h3>
-            </div>
+                <p className="text-xs text-gray-600 mt-1 h-5">
+                  {loadingDrop
+                    ? "Fetching city..."
+                    : dropoffCity && `📍 ${dropoffCity}`}
+                </p>
+              </div>
 
-            <div className="mt-2 text-sm space-y-1">
-              {pickupCity && dropoffCity ? (
-                <div className="flex items-center justify-between">
-                  <span className="truncate flex items-center gap-1">
-                    <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                    {pickupCity.split(",")[0]}
-                  </span>
-                  <span className="mx-2 text-pink-300">━━━━━━●</span>
-                  <span className="truncate flex items-center gap-1">
-                    <div className="w-2 h-2 bg-red-400 rounded-full"></div>
-                    {dropoffCity.split(",")[0]}
-                  </span>
-                </div>
-              ) : pickupCity ? (
-                <span className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                  Pickup: {pickupCity.split(",")[0]}
-                </span>
-              ) : (
-                <span>Enter pincodes to see route</span>
-              )}
-
+              {/* Show additional fields only when distance is calculated */}
               {distanceKm && (
-                <div className="text-pink-200 text-xs flex items-center gap-2">
-                  <div className="w-3 h-1 bg-white/80 rounded-full"></div>
-                  <span>
-                    <strong>
-                      {distanceMiles} miles ({distanceKm} km)
-                    </strong>
-                  </span>
+                <>
+                  {/* PROPERTY TYPE */}
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-2 block">
+                      What are you moving?
+                    </label>
+
+                    <CustomIconSelect
+                      value={serviceType}
+                      onChange={(val) => handleServiceTypeChange(val)}
+                      options={PROPERTY_TYPE_OPTIONS}
+                      placeholder="Choose Property Type"
+                    />
+                  </div>
+
+                  {/* PROPERTY SIZE */}
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                      {serviceType === "a_few_items" ? (
+                        <>
+                          <Truck className="h-4 w-4 text-pink-600" />
+                          What size vehicle will you need?
+                        </>
+                      ) : (
+                        "Property Size"
+                      )}
+                    </label>
+
+                    <CustomIconSelect
+                      value={propertySize}
+                      onChange={(val) => handlePropertySizeChange(val)}
+                      options={serviceType ? propertyConfigs[serviceType]?.sizes || [] : []}
+                      placeholder={serviceType ? "Choose Property Size" : "Select Property Type First"}
+                    />
+                  </div>
+
+                  {/* QUANTITY */}
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-2 block">
+                      Approx how much space will your items take? (How much to move)
+                    </label>
+
+                    <CustomIconSelect
+                      value={quantity}
+                      onChange={(val) => handleQuantityChange(val)}
+                      options={serviceType ? propertyConfigs[serviceType]?.quantities || [] : []}
+                      placeholder={serviceType ? "Choose Quantity" : "Select Property Type First"}
+                    />
+                  </div>
+
+                  {/* DISTANCE */}
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-2 block">
+                      Distance (miles)
+                    </label>
+
+                    <input
+                      type="text"
+                      value={distanceMiles || ""}
+                      readOnly
+                      className="w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-100 
+                      text-gray-600 cursor-not-allowed outline-none"
+                      placeholder="Distance auto-calculated"
+                    />
+                  </div>
+                </>
+              )}
+
+              {/* ADDITIONAL SPACES (Only for House) */}
+              {serviceType === "house" && (
+                <div className="md:col-span-2">
+                  <label className="text-sm font-medium text-gray-700 mb-2 block">
+                    Additional Spaces (Select all that apply)
+                  </label>
+                  <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+                    {propertyConfigs.house.additionalSpaces.map((space) => (
+                      <div key={space.value} className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          id={`space-${space.value}`}
+                          checked={additionalSpaces.includes(space.value)}
+                          onChange={() => handleAdditionalSpaceChange(space.value)}
+                          className="h-4 w-4 text-pink-600 focus:ring-pink-500 border-gray-300 rounded"
+                        />
+                        <label
+                          htmlFor={`space-${space.value}`}
+                          className="text-sm text-gray-700 cursor-pointer"
+                        >
+                          {space.label}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                  {additionalSpaces.length > 0 && (
+                    <p className="text-xs text-gray-500 mt-2">
+                      Selected: {additionalSpaces.map(s =>
+                        propertyConfigs.house.additionalSpaces.find(as => as.value === s)?.label
+                      ).join(", ")}
+                    </p>
+                  )}
                 </div>
               )}
             </div>
-          </div>
 
-          <div className="relative">
-            <iframe
-              srcDoc={generateCustomMap()}
-              width="100%"
-              height="350"
-              style={{ border: 0 }}
-              title="Move Route Map"
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-            ></iframe>
+            <div className="mt-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+              <ul className="space-y-1 text-sm text-gray-700">
+                {[
+                  "Instant Prices",
+                  "On Screen Comparison",
+                  "Dedicated Move Manager",
+                ].map((f) => (
+                  <li key={f} className="flex items-center gap-2">
+                    <Check className="h-4 w-4 text-pink-600" /> {f}
+                  </li>
+                ))}
+              </ul>
 
-            <div className="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/60 to-transparent p-4">
-              <div className="text-white text-sm">
-                {distanceKm ? (
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-1 bg-pink-400 rounded-full"></div>
-                    <span>
-                      {distanceMiles} miles ({distanceKm} km) route calculated
-                    </span>
-                  </div>
-                ) : routeGeometry ? (
-                  <div className="flex items-center gap-2">
-                    <div className="w-4 h-1 bg-pink-500 rounded-full"></div>
-                    <span>Optimal route calculated</span>
-                  </div>
-                ) : pickupCoords && dropoffCoords ? (
-                  <div className="flex items-center gap-2">
-                    <div className="w-4 h-1 bg-pink-500 rounded-full"></div>
-                    <span>Direct path shown</span>
-                  </div>
+              <Motion.button
+                type="submit"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="bg-pink-600 hover:bg-pink-700 text-white rounded-full px-8 py-3 font-semibold flex items-center gap-2 shadow-md transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={!quantity || loadingCompanies}
+              >
+                {loadingCompanies ? (
+                  <>
+                    <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Loading...
+                  </>
                 ) : (
-                  <div className="flex items-center justify-between">
-                    {pickupCoords && (
-                      <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                        <span>Pickup Set</span>
-                      </div>
-                    )}
-                    {dropoffCoords && (
-                      <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                        <span>Dropoff Set</span>
-                      </div>
-                    )}
-                  </div>
+                  "Compare Prices →"
                 )}
-              </div>
+              </Motion.button>
             </div>
-          </div>
+          </Motion.form>
+        </Motion.div>
 
-          <div className="p-3 bg-gray-50 text-center text-xs text-gray-600 border-t">
-            <div className="flex items-center justify-center gap-4">
-              <div className="flex items-center gap-1">
-                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                <span>Pickup</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <div className="w-4 h-1 bg-pink-500 rounded-full"></div>
-                <span>Route</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                <span>Dropoff</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </Motion.div>
+        {/* RIGHT SIDE - Empty space for map to show through */}
+        <div className="lg:w-[50%] w-full mt-10 lg:mt-0 order-2"></div>
+      </div>
     </section>
   );
 };

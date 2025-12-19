@@ -123,8 +123,8 @@ const AdminSidebar = ({ forcedHidden, onClose }) => {
             <FaHeadset /> Support
           </NavLink>
 
-          <NavLink to="/admin/analytics" className={navLinkClasses} onClick={handleMenuClick}>
-            <FaChartBar /> Analytics
+          <NavLink to="/admin/ManageInventory" className={navLinkClasses} onClick={handleMenuClick}>
+            <FaChartBar /> Manage Inventory
           </NavLink>
 
           <NavLink to="/admin/settings" className={navLinkClasses} onClick={handleMenuClick}>

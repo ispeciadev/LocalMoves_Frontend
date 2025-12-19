@@ -21,6 +21,7 @@ const PaymentSuccess = () => {
     toast.success("Subscription activated!");
 
     updateLocalSubscription();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const updateLocalSubscription = () => {
