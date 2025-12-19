@@ -332,13 +332,14 @@ const VEHICLE_FIELD_KEYS = {
 };
 
 /* --------------------------------------------------------------------
-   CLOUDINARY (kept same)
+   CLOUDINARY
 -------------------------------------------------------------------- */
-const CLOUDINARY_CLOUD_NAME = "dhqeap5k0";
-const CLOUDINARY_UPLOAD_PRESET = "localmoves_uploads";
-const CLOUDINARY_FOLDER = "localmoves";
-const CLOUDINARY_UPLOAD_URL =
-  "https://api.cloudinary.com/v1_1/" + CLOUDINARY_CLOUD_NAME + "/auto/upload";
+import env from "../../config/env";
+
+const CLOUDINARY_CLOUD_NAME = env.CLOUDINARY_CLOUD_NAME;
+const CLOUDINARY_UPLOAD_PRESET = env.CLOUDINARY_UPLOAD_PRESET;
+const CLOUDINARY_FOLDER = env.CLOUDINARY_FOLDER;
+const CLOUDINARY_UPLOAD_URL = env.CLOUDINARY_UPLOAD_URL;
 
 /* --------------------------------------------------------------------
    vehicleQuantityFields from original EditCompany

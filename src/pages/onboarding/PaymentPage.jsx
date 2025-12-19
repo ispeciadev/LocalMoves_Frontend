@@ -3,11 +3,11 @@ import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import api from "../../api/axios";
+import env from "../../config/env";
 
-const PAYPAL_CLIENT_ID =
-  "ASm02TPJYiJIF3UDo_zN68nJF54cPpet9-mxExj7oQlczR6qy3bfQ4M57hw-CfGDXjtSJbYvYlV-eiWc";
+const PAYPAL_CLIENT_ID = env.PAYPAL_CLIENT_ID;
 
-const INR_TO_USD_RATE = 85;
+const INR_TO_USD_RATE = env.INR_TO_USD_RATE;
 
 // Match backend plan names
 const PLAN_NAME_MAPPING = {

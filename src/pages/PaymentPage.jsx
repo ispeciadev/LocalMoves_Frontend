@@ -3,16 +3,15 @@ import React, { useEffect, useRef, useState, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
+import env from "../config/env";
 
 const PAYPAL_CONFIG = {
-  CLIENT_ID:
-    "ASm02TPJYiJIF3UDo_zN68nJF54cPpet9-mxExj7oQlczR6qy3bfQ4M57hw-CfGDXjtSJbYvYlV-eiWc",
-  CURRENCY: "USD",
-  INR_TO_USD_RATE: 85,
+  CLIENT_ID: env.PAYPAL_CLIENT_ID,
+  CURRENCY: env.PAYPAL_CURRENCY,
+  INR_TO_USD_RATE: env.INR_TO_USD_RATE,
 };
 
-const API_URL =
-  "http://127.0.0.1:8000/api/method/localmoves.api.request_payment.create_request_with_payment";
+const API_URL = `${env.API_BASE_URL}localmoves.api.request_payment.create_request_with_payment`;
 
 export default function PaymentPage() {
   const navigate = useNavigate();
@@ -44,7 +43,7 @@ export default function PaymentPage() {
       try {
         const token = JSON.parse(localStorage.getItem("user"))?.token || "";
         const response = await axios.get(
-          "http://127.0.0.1:8000/api/method/localmoves.api.dashboard.get_current_deposit_percentage",
+          `${env.API_BASE_URL}localmoves.api.dashboard.get_current_deposit_percentage`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

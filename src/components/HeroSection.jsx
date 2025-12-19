@@ -1,11 +1,11 @@
 
-
 // HeroSection.jsx (CLEANED VERSION - DEBUGGERS REMOVED)
 import React, { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion as Motion } from "framer-motion";
 import { MapPin, Check, Truck, Route, Boxes, Layers, Package, Home, Briefcase, Building2 } from "lucide-react";
 import axios from "axios";
+import env from "../config/env";
 import CustomIconSelect from "./CustomIconSelect";
 
 // Emoji Icon Wrappers
@@ -46,9 +46,9 @@ const HeroSection = () => {
   // Save to localStorage helper
   const saveToStorage = (key, value) => {
     try {
-      localStorage.setItem(`move_${key}`, JSON.stringify(value));
+      localStorage.setItem(`move_${key} `, JSON.stringify(value));
     } catch (error) {
-      console.error(`Error saving to localStorage: ${key}`, error);
+      console.error(`Error saving to localStorage: ${key} `, error);
     }
   };
 
@@ -228,7 +228,7 @@ const HeroSection = () => {
     try {
       setLoadingCount(true);
       const res = await axios.post(
-        "http://127.0.0.1:8000/api/method/localmoves.api.company.search_number_of_companies_by_pincode",
+        `${env.API_BASE_URL} localmoves.api.company.search_number_of_companies_by_pincode`,
         { pincode }
       );
       const msg = res.data?.message;
@@ -517,7 +517,7 @@ const HeroSection = () => {
         };
 
         const res = await axios.post(
-          "http://127.0.0.1:8000/api/method/localmoves.api.company.search_companies_by_pincode",
+          `${env.API_BASE_URL}localmoves.api.company.search_companies_by_pincode`,
           payload,
           {
             headers: {
