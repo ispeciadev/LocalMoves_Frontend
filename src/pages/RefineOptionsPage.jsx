@@ -381,8 +381,8 @@ const RefineOptionsPage = () => {
   useEffect(() => {
     const fetchInventoryData = async () => {
       try {
-        console.log("📦 Fetching inventory items from API...");
-        const response = await api.get("localmoves.api.dashboard.get_all_inventory_items");
+        console.log("📦 Fetching inventory categories from API...");
+        const response = await api.post("localmoves.api.dashboard.get_all_inventory_categories");
         console.log("✅ Inventory API Response:", response.data);
         
         const inventoryItems = response.data?.message?.data || [];
