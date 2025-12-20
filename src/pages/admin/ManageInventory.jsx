@@ -485,6 +485,7 @@ const ManageInventory = () => {
   const [items, setItems] = useState([]);
   const [filteredItems, setFilteredItems] = useState([]);
   const [categorySummary, setCategorySummary] = useState([]);
+  const [categories, setCategories] = useState(["All"]);
   const [loading, setLoading] = useState(true);
 
   // Modal states
@@ -735,8 +736,38 @@ const ManageInventory = () => {
     fetchInventory();
   }, []);
 
-  // Get unique categories for filter
-  const categories = ["All", ...Array.from(new Set(items.map(item => item.category)))];
+  // ---------------------------------------------
+  // FETCH CATEGORIES
+  // ---------------------------------------------
+  const fetchCategories = async () => {
+    try {
+      const res = await api.post(
+        "localmoves.api.dashboard.get_all_inventory_categories"
+      );
+
+      console.log("Categories API Response:", res);
+
+      const categoryList = res.data?.message?.categories ||
+        res.data?.categories ||
+        [];
+
+      console.log("Extracted categories:", categoryList);
+
+      // Add "All" at the beginning
+      setCategories(["All", ...categoryList]);
+    } catch (error) {
+      console.error("Failed to load categories:", error);
+      console.error("Error response:", error.response);
+    }
+  };
+
+  // ---------------------------------------------
+  // INITIAL FETCH
+  // ---------------------------------------------
+  useEffect(() => {
+    fetchInventory();
+    fetchCategories();
+  }, []);
 
   return (
     <div
