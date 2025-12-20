@@ -201,11 +201,24 @@ const rebuildInventoryByCategory = () => {
   }, {});
 };
 
-// Helper: format item_name as "category-item (variant)" in lowercase
+// Helper function to format item name for sending to backend
 const formatItemNameForDisplay = (category, itemName) => {
   // Simply concatenate category + "-" + item_name exactly as they come from database
   return `${category}-${itemName}`;
 };
+
+// Helper function to extract display name from full item name (remove category prefix)
+const getItemDisplayName = (fullItemName) => {
+  if (!fullItemName) return "";
+  // If item name contains "-", return everything after the first "-"
+  const dashIndex = fullItemName.indexOf("-");
+  if (dashIndex !== -1) {
+    return fullItemName.substring(dashIndex + 1);
+  }
+  // If no dash, return the full name
+  return fullItemName;
+};
+
 // --------------------------------------------------------------
 //  Property Type Options - Will be populated from API
 // --------------------------------------------------------------
@@ -2095,11 +2108,11 @@ const RefineOptionsPage = () => {
                                   <span
                                     className={`text-[13px] font-medium block ${
                                       isActive
-                                        ? "text-pink-700"
-                                        : "text-gray-700"
+                                        ? "text-gray-900"
+                                        : "text-gray-600"
                                     }`}
                                   >
-                                    {item.item_name}
+                                    {getItemDisplayName(item.item_name)}
                                   </span>
                                 </div>
 
@@ -2241,7 +2254,7 @@ const RefineOptionsPage = () => {
                                     onClick={() =>
                                       updateItemQuantity(key, qty - 1)
                                     }
-                                    aria-label={`Decrease ${item.item_name}`}
+                                    aria-label={`Decrease ${getItemDisplayName(item.item_name)}`}
                                   >
                                     −
                                   </button>
@@ -2264,7 +2277,7 @@ const RefineOptionsPage = () => {
                                     onClick={() =>
                                       updateItemQuantity(key, qty + 1)
                                     }
-                                    aria-label={`Increase ${item.item_name}`}
+                                    aria-label={`Increase ${getItemDisplayName(item.item_name)}`}
                                   >
                                     +
                                   </button>
