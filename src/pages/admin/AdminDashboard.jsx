@@ -62,7 +62,7 @@ function formatMonthLabel(monthString) {
 // -----------------------------------------------------------
 
 // 🟣 Glassy Stat Card
-function StatCard({ label, value, highlight, isDarkMode }) {
+function StatCard({ label, value, highlight, isDarkMode, icon: Icon }) {
   const numeric = Number(value ?? 0);
 
   return (
@@ -99,7 +99,7 @@ function StatCard({ label, value, highlight, isDarkMode }) {
             : "bg-gray-100 text-gray-500"
           }`}
       >
-        {/* Icon removed - was causing crash */}
+        {Icon && <Icon className="text-lg md:text-xl" />}
       </div>
     </div>
   );
