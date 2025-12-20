@@ -66,11 +66,17 @@ const ManageCompanies = () => {
   const fetchCompanies = async () => {
     try {
       setLoading(true);
+      console.log('📡 Fetching companies...');
       const res = await api.get("localmoves.api.dashboard.get_all_companies");
+      console.log('✅ Get companies response:', res);
+      console.log('📦 Response data:', res.data);
       const data = res.data?.message?.data || [];
+      console.log('🏢 Parsed companies:', data);
+      console.log('📊 Number of companies:', data.length);
       setCompanies(data);
     } catch (error) {
-      console.error("Failed to load companies:", error);
+      console.error("❌ Failed to load companies:", error);
+      console.error("Error response:", error.response?.data);
       toast.error("Failed to load companies.");
     } finally {
       setLoading(false);
@@ -115,23 +121,32 @@ const ManageCompanies = () => {
         lwb_van_images: toArray(form.lwb_van_images),
       };
 
+      console.log('📤 Submitting payload:', payload);
+
       if (editMode) {
         // For update, use the original company_name from selectedCompany
-        await api.post("localmoves.api.dashboard.update_company", {
+        console.log('✏️ Updating company:', selectedCompany.company_name);
+        const updateRes = await api.post("localmoves.api.dashboard.update_company", {
           ...payload,
           company_name: selectedCompany.company_name,
         });
+        console.log('✅ Update response:', updateRes);
         toast.success("Company updated successfully!");
       } else {
-        await api.post("localmoves.api.dashboard.create_company", payload);
+        console.log('➕ Creating new company');
+        const createRes = await api.post("localmoves.api.dashboard.create_company", payload);
+        console.log('✅ Create response:', createRes);
+        console.log('📦 Create response data:', createRes.data);
         toast.success("Company created successfully!");
       }
 
       setShowModal(false);
-      fetchCompanies();
+      console.log('🔄 Refreshing companies list...');
+      await fetchCompanies();
     } catch (error) {
-      console.error("Failed to submit company:", error);
-      toast.error("Something went wrong.");
+      console.error("❌ Failed to submit company:", error);
+      console.error("Error response:", error.response?.data);
+      toast.error(error.response?.data?.message || "Something went wrong.");
     }
   };
 
