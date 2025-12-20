@@ -1,0 +1,108 @@
+﻿{
+    "message":  {
+                    "success":  true,
+                    "data":  {
+                                 "pricing":  {
+                                                 "loading_cost_per_m3":  40.0,
+                                                 "cost_per_mile_under_100":  0.28,
+                                                 "cost_per_mile_over_100":  0.15,
+                                                 "assembly_per_m3":  55.0,
+                                                 "disassembly_per_m3":  27.5,
+                                                 "packing_percentage":  0.4
+                                             },
+                                 "vehicle_capacities":  {
+                                                            "swb_van":  6,
+                                                            "mwb_van":  9,
+                                                            "lwb_van":  12
+                                                        },
+                                 "property_volumes":  {
+                                                          "a_few_items":  {
+                                                                              "swb_van":  5,
+                                                                              "mwb_van":  8,
+                                                                              "lwb_van":  11
+                                                                          },
+                                                          "house":  {
+                                                                        "2_bed":  28,
+                                                                        "3_bed":  42
+                                                                    },
+                                                          "flat":  {
+                                                                       "studio":  12,
+                                                                       "1_bed":  18,
+                                                                       "2_bed":  28,
+                                                                       "3_bed":  38,
+                                                                       "4_bed":  48
+                                                                   },
+                                                          "office":  {
+                                                                         "2_workstations":  7,
+                                                                         "4_workstations":  12,
+                                                                         "8_workstations":  22,
+                                                                         "15_workstations":  40,
+                                                                         "25_workstations":  70
+                                                                     }
+                                                      },
+                                 "additional_spaces":  {
+                                                           "shed":  4,
+                                                           "loft":  6,
+                                                           "basement":  10,
+                                                           "single_garage":  8,
+                                                           "double_garage":  15
+                                                       },
+                                 "quantity_multipliers":  {
+                                                              "some_things":  0.25,
+                                                              "half_contents":  0.5,
+                                                              "three_quarter":  0.75,
+                                                              "everything":  1.0
+                                                          },
+                                 "vehicle_space_multipliers":  {
+                                                                   "quarter_van":  0.25,
+                                                                   "half_van":  0.5,
+                                                                   "three_quarter_van":  0.75,
+                                                                   "whole_van":  1.0
+                                                               },
+                                 "plan_limits":  {
+                                                     "Free":  5,
+                                                     "Basic":  20,
+                                                     "Standard":  50,
+                                                     "Premium":  -1
+                                                 },
+                                 "collection_assessment":  {
+                                                               "parking":  {
+                                                                               "driveway":  0.0,
+                                                                               "roadside":  0.0
+                                                                           },
+                                                               "parking_distance":  {
+                                                                                        "less_than_10m":  0.05,
+                                                                                        "10_to_20m":  0.1,
+                                                                                        "over_20m":  0.15
+                                                                                    },
+                                                               "house_type":  {
+                                                                                  "house_ground_and_1st":  0.05,
+                                                                                  "bungalow_ground":  0.0,
+                                                                                  "townhouse_ground_1st_2nd":  0.1
+                                                                              },
+                                                               "internal_access":  {
+                                                                                       "stairs_only":  0.0,
+                                                                                       "lift_access":  0.025
+                                                                                   },
+                                                               "floor_level":  {
+                                                                                   "ground_floor":  0.0,
+                                                                                   "1st_floor":  0.1,
+                                                                                   "2nd_floor":  0.15,
+                                                                                   "3rd_floor_plus":  0.2
+                                                                               }
+                                                           },
+                                 "notice_period_multipliers":  {
+                                                                   "flexible":  0.75,
+                                                                   "within_3_days":  1.35,
+                                                                   "within_week":  1.25,
+                                                                   "within_2_weeks":  1.1,
+                                                                   "within_month":  1.0,
+                                                                   "over_month":  0.9
+                                                               },
+                                 "move_day_multipliers":  {
+                                                              "sun_to_thurs":  1.0,
+                                                              "friday_saturday":  1.2
+                                                          }
+                             }
+                }
+}

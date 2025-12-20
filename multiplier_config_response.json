@@ -1,0 +1,49 @@
+﻿{
+    "message":  {
+                    "success":  true,
+                    "quantity_multipliers":  {
+                                                 "some_things":  0.25,
+                                                 "half_contents":  0.5,
+                                                 "three_quarter":  0.75,
+                                                 "everything":  1.0
+                                             },
+                    "collection_assessment":  {
+                                                  "parking":  {
+                                                                  "driveway":  0.0,
+                                                                  "roadside":  0.0
+                                                              },
+                                                  "parking_distance":  {
+                                                                           "less_than_10m":  0.05,
+                                                                           "10_to_20m":  0.1,
+                                                                           "over_20m":  0.15
+                                                                       },
+                                                  "house_type":  {
+                                                                     "house_ground_and_1st":  0.05,
+                                                                     "bungalow_ground":  0.0,
+                                                                     "townhouse_ground_1st_2nd":  0.1
+                                                                 },
+                                                  "internal_access":  {
+                                                                          "stairs_only":  0.0,
+                                                                          "lift_access":  0.025
+                                                                      },
+                                                  "floor_level":  {
+                                                                      "ground_floor":  0.0,
+                                                                      "1st_floor":  0.1,
+                                                                      "2nd_floor":  0.15,
+                                                                      "3rd_floor_plus":  0.2
+                                                                  }
+                                              },
+                    "notice_period_multipliers":  {
+                                                      "flexible":  0.75,
+                                                      "within_3_days":  1.35,
+                                                      "within_week":  1.25,
+                                                      "within_2_weeks":  1.1,
+                                                      "within_month":  1.0,
+                                                      "over_month":  0.9
+                                                  },
+                    "move_day_multipliers":  {
+                                                 "sun_to_thurs":  1.0,
+                                                 "friday_saturday":  1.2
+                                             }
+                }
+}

@@ -1,0 +1,41 @@
+﻿{
+    "message":  {
+                    "success":  true,
+                    "vehicle_capacities":  {
+                                               "swb_van":  6,
+                                               "mwb_van":  9,
+                                               "lwb_van":  12
+                                           },
+                    "vehicle_space_multipliers":  {
+                                                      "quarter_van":  0.25,
+                                                      "half_van":  0.5,
+                                                      "three_quarter_van":  0.75,
+                                                      "whole_van":  1.0
+                                                  },
+                    "property_volumes":  {
+                                             "a_few_items":  {
+                                                                 "swb_van":  5,
+                                                                 "mwb_van":  8,
+                                                                 "lwb_van":  11
+                                                             },
+                                             "house":  {
+                                                           "2_bed":  28,
+                                                           "3_bed":  42
+                                                       },
+                                             "flat":  {
+                                                          "studio":  12,
+                                                          "1_bed":  18,
+                                                          "2_bed":  28,
+                                                          "3_bed":  38,
+                                                          "4_bed":  48
+                                                      },
+                                             "office":  {
+                                                            "2_workstations":  7,
+                                                            "4_workstations":  12,
+                                                            "8_workstations":  22,
+                                                            "15_workstations":  40,
+                                                            "25_workstations":  70
+                                                        }
+                                         }
+                }
+}

@@ -1,0 +1,13 @@
+﻿{
+    "message":  {
+                    "success":  true,
+                    "data":  {
+                                 "loading_cost_per_m3":  40.0,
+                                 "cost_per_mile_under_100":  0.28,
+                                 "cost_per_mile_over_100":  0.15,
+                                 "assembly_per_m3":  55.0,
+                                 "disassembly_per_m3":  27.5,
+                                 "packing_percentage":  0.4
+                             }
+                }
+}
