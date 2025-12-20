@@ -53,6 +53,7 @@ const ManageRequests = () => {
   const { isDarkMode } = useAdminThemeStore();
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [companies, setCompanies] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -117,11 +118,13 @@ const ManageRequests = () => {
   // ---------------------------------------------
   const fetchRequests = async () => {
     try {
+      setRefreshing(true);
       setLoading(true);
       const res = await api.get("localmoves.api.dashboard.get_all_requests");
       console.log("✅ Fetch Requests Response:", res.data);
       const data = res.data?.message?.data || [];
       setRequests(data);
+      toast.success('Data refreshed successfully!');
     } catch (error) {
       console.error("❌ Fetch Requests Error:", {
         message: error.message,
@@ -132,6 +135,7 @@ const ManageRequests = () => {
       toast.error("Failed to load requests.");
     } finally {
       setLoading(false);
+      setTimeout(() => setRefreshing(false), 500);
     }
   };
 
@@ -560,14 +564,15 @@ const ManageRequests = () => {
           <button
             type="button"
             onClick={fetchRequests}
+            disabled={refreshing}
             className={`px-3 md:px-4 py-1.5 md:py-2 rounded-full border text-xs md:text-sm hover:transition flex items-center gap-2 transition-colors flex-shrink-0 ${isDarkMode
-              ? "bg-pink-900/20 border-pink-700/50 text-pink-300 hover:bg-pink-900/30"
-              : "bg-pink-100 border-pink-300 text-pink-900 hover:bg-pink-200"
-              }`}
+                ? "bg-pink-900/20 border-pink-700/50 text-pink-300 hover:bg-pink-900/30"
+                : "bg-pink-100 border-pink-300 text-pink-900 hover:bg-pink-200"
+              } ${refreshing ? 'opacity-75 cursor-not-allowed' : ''}`}
           >
-            <span className="h-2 w-2 bg-green-400 rounded-full animate-pulse flex-shrink-0" />
-            <span className="hidden sm:inline">Refresh data</span>
-            <span className="sm:hidden">Refresh</span>
+            <span className={`h-2 w-2 bg-green-400 rounded-full flex-shrink-0 ${refreshing ? 'animate-spin' : 'animate-pulse'}`} />
+            <span className="hidden sm:inline">{refreshing ? 'Refreshing...' : 'Refresh data'}</span>
+            <span className="sm:hidden">{refreshing ? 'Refreshing...' : 'Refresh'}</span>
           </button>
 
           <button
