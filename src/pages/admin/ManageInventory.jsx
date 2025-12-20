@@ -715,7 +715,7 @@ const ManageInventory = () => {
   const handleFormSubmit = async (formData) => {
     const payload = {
       category: formData.category.trim(),
-      item_name: formatItemNameForDisplay(formData.category.trim(), formData.item_name.trim()),
+      item_name: formData.item_name.trim(),  // Send plain item name, backend will handle full format
       average_volume: Number(formData.average_volume),
       unit: "m³"
     };
