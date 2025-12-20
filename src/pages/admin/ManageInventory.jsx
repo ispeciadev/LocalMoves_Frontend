@@ -862,17 +862,34 @@ const ManageInventory = () => {
           <button
             onClick={() => setShowCategoryModal(true)}
             className={`rounded-full px-4 py-2 text-xs font-semibold transition flex items-center gap-2 ${isDarkMode
-              ? "bg-slate-700 text-slate-300 hover:bg-slate-600"
-              : "bg-pink-100 text-pink-700 hover:bg-pink-200"
+                ? "bg-slate-700 text-slate-300 hover:bg-slate-600"
+                : "bg-pink-100 text-pink-700 hover:bg-pink-200"
               }`}
           >
             + Add Category
           </button>
           <button
+            onClick={() => {
+              // Show a simple prompt to select category to delete
+              const categoryToDelete = prompt("Enter category name to delete:");
+              if (categoryToDelete && categoryToDelete.trim()) {
+                setCategoryToDelete(categoryToDelete.trim());
+                setShowDeleteCategoryModal(true);
+              }
+            }}
+            className={`rounded-full px-4 py-2 text-xs font-semibold transition flex items-center gap-2 ${isDarkMode
+                ? "bg-red-600 text-white hover:bg-red-700"
+                : "bg-red-600 text-white hover:bg-red-700"
+              }`}
+          >
+            <FiTrash2 size={14} />
+            Delete Category
+          </button>
+          <button
             onClick={handleAddClick}
             className={`rounded-full px-4 py-2 text-xs font-semibold transition flex items-center gap-2 ${isDarkMode
-              ? "bg-pink-600 text-white hover:bg-pink-700"
-              : "bg-pink-600 text-white hover:bg-pink-700"
+                ? "bg-pink-600 text-white hover:bg-pink-700"
+                : "bg-pink-600 text-white hover:bg-pink-700"
               }`}
           >
             + Add Item
@@ -886,26 +903,9 @@ const ManageInventory = () => {
         {categorySummary.map((summary) => (
           <div
             key={summary.category}
-            className={`rounded-xl p-3 text-center transition-colors relative group ${isDarkMode ? "bg-slate-800" : "bg-pink-50"
+            className={`rounded-xl p-3 text-center transition-colors ${isDarkMode ? "bg-slate-800" : "bg-pink-50"
               }`}
           >
-            {/* Delete button - only show for non-All categories */}
-            {summary.category !== "All" && (
-              <button
-                onClick={() => {
-                  setCategoryToDelete(summary.category);
-                  setShowDeleteCategoryModal(true);
-                }}
-                className={`absolute top-2 right-2 p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity ${isDarkMode
-                  ? "bg-red-600 hover:bg-red-700 text-white"
-                  : "bg-red-500 hover:bg-red-600 text-white"
-                  }`}
-                title={`Delete ${summary.category} category`}
-              >
-                <FiTrash2 size={12} />
-              </button>
-            )}
-
             <div className={`text-2xl font-bold ${isDarkMode ? "text-slate-100" : "text-gray-900"
               }`}>
               {summary.count}
