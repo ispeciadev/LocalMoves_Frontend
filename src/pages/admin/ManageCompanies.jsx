@@ -24,6 +24,7 @@ const ManageCompanies = () => {
   const [form, setForm] = useState({
     company_name: "",
     manager_email: "",
+    password: "",  // For new user registration
     personal_contact_name: "",
     phone: "",
     address: "",
@@ -178,6 +179,7 @@ const ManageCompanies = () => {
     setForm({
       company_name: "",
       manager_email: "",
+      password: "",  // For new user registration
       personal_contact_name: "",
       phone: "",
       address: "",
@@ -754,6 +756,29 @@ const ManageCompanies = () => {
                   <label className={`floating-label ${isDarkMode ? "text-slate-400" : "text-gray-600"
                     }`}>Manager Email *</label>
                 </div>
+
+                {/* Password field - only show when adding new company */}
+                {!editMode && (
+                  <div className="relative">
+                    <input
+                      name="password"
+                      type="password"
+                      value={form.password}
+                      onChange={handleChange}
+                      className={`peer h-9 w-full rounded-xl border px-4 pt-2.5 text-sm outline-none transition-colors ${isDarkMode
+                          ? "border-slate-600 bg-slate-700/50 text-slate-100 focus:border-pink-500"
+                          : "border-gray-300 bg-white text-gray-900 focus:border-pink-500"
+                        }`}
+                      placeholder=" "
+                    />
+                    <label className={`floating-label ${isDarkMode ? "text-slate-400" : "text-gray-600"
+                      }`}>Password *</label>
+                    <p className={`text-[10px] mt-1 ${isDarkMode ? "text-slate-500" : "text-gray-500"
+                      }`}>
+                      Required if manager email is not registered
+                    </p>
+                  </div>
+                )}
 
                 <div className="relative">
                   <input
