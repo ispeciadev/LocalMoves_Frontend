@@ -11,6 +11,18 @@ const formatItemNameForDisplay = (category, itemName) => {
   return `${category}-${itemName}`;
 };
 
+// Helper function to extract display name from full item name (remove category prefix)
+const getItemDisplayName = (fullItemName) => {
+  if (!fullItemName) return "";
+  // If item name contains "-", return everything after the first "-"
+  const dashIndex = fullItemName.indexOf("-");
+  if (dashIndex !== -1) {
+    return fullItemName.substring(dashIndex + 1);
+  }
+  // If no dash, return the full name
+  return fullItemName;
+};
+
 // ---------------------------------------------
 // CATEGORY BADGE COLOR
 // ---------------------------------------------
@@ -68,7 +80,7 @@ const InventoryFormModal = ({
       if (isEditing && initialData) {
         setFormData({
           category: initialData.category || "",
-          item_name: initialData.item_name || "",
+          item_name: getItemDisplayName(initialData.item_name) || "",  // Extract just the item name part
           average_volume: initialData.average_volume || "",
           unit: initialData.unit || "m³"
         });
