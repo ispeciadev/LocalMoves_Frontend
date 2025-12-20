@@ -868,23 +868,32 @@ const ManageInventory = () => {
           >
             + Add Category
           </button>
-          <button
-            onClick={() => {
-              // Show a simple prompt to select category to delete
-              const categoryToDelete = prompt("Enter category name to delete:");
-              if (categoryToDelete && categoryToDelete.trim()) {
-                setCategoryToDelete(categoryToDelete.trim());
-                setShowDeleteCategoryModal(true);
-              }
-            }}
-            className={`rounded-full px-4 py-2 text-xs font-semibold transition flex items-center gap-2 ${isDarkMode
-                ? "bg-red-600 text-white hover:bg-red-700"
-                : "bg-red-600 text-white hover:bg-red-700"
-              }`}
-          >
-            <FiTrash2 size={14} />
-            Delete Category
-          </button>
+
+          {/* Delete Category Dropdown */}
+          <div className="relative flex items-center gap-2">
+            <select
+              onChange={(e) => {
+                if (e.target.value) {
+                  setCategoryToDelete(e.target.value);
+                  setShowDeleteCategoryModal(true);
+                  e.target.value = ""; // Reset select
+                }
+              }}
+              className={`rounded-full px-4 py-2 text-xs font-semibold transition cursor-pointer ${isDarkMode
+                  ? "bg-red-600 text-white hover:bg-red-700 border-red-600"
+                  : "bg-red-600 text-white hover:bg-red-700 border-red-600"
+                }`}
+              defaultValue=""
+            >
+              <option value="" disabled>🗑️ Delete Category</option>
+              {categories.filter(cat => cat !== "All").map((cat) => (
+                <option key={cat} value={cat} className="bg-white text-gray-900">
+                  {cat}
+                </option>
+              ))}
+            </select>
+          </div>
+
           <button
             onClick={handleAddClick}
             className={`rounded-full px-4 py-2 text-xs font-semibold transition flex items-center gap-2 ${isDarkMode
