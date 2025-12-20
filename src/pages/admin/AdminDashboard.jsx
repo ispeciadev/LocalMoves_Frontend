@@ -107,38 +107,36 @@ function StatCard({ label, value, highlight, isDarkMode, icon: Icon }) {
 
 // 💸 Metric Card
 function MetricCard({ title, value, badge, isDarkMode }) {
-  const numeric = Number(value ?? 0);
   return (
     <div
-      className={`backdrop-blur-md border hover:shadow-md shadow-sm rounded-2xl p-4 md:p-5 transition-all duration-200 ${isDarkMode
-        ? "bg-slate-800/90 border-slate-700 hover:border-slate-600"
-        : "bg-white/90 border-pink-200 hover:border-pink-300"
+      className={`backdrop-blur-md border shadow-sm hover:shadow-md rounded-2xl p-3 md:p-4 transition-all duration-200 ${isDarkMode
+        ? "bg-slate-800/90 border-slate-700"
+        : "bg-white/90 border-pink-200"
         }`}
     >
       <div className="flex items-center justify-between mb-2">
         <p
-          className={`text-[11px] md:text-xs font-medium uppercase tracking-wide truncate transition-colors ${isDarkMode ? "text-slate-400" : "text-gray-400"
+          className={`text-[10px] md:text-xs font-semibold uppercase tracking-wide transition-colors ${isDarkMode ? "text-slate-400" : "text-gray-600"
             }`}
         >
           {title}
         </p>
         {badge && (
           <span
-            className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] md:text-[11px] font-medium shadow-sm transition-colors flex-shrink-0 ml-2 ${isDarkMode
+            className={`rounded-full px-2 py-0.5 text-[9px] md:text-[10px] font-medium transition-colors ${isDarkMode
               ? "bg-pink-900/30 text-pink-300"
-              : "bg-pink-100 text-pink-800"
+              : "bg-pink-50 text-pink-600"
               }`}
           >
             {badge}
           </span>
         )}
       </div>
-
       <p
-        className={`text-xl md:text-2xl lg:text-3xl font-semibold transition-colors truncate ${isDarkMode ? "text-slate-100" : "text-gray-800"
+        className={`text-xl md:text-2xl font-bold tracking-tight transition-colors ${isDarkMode ? "text-slate-100" : "text-gray-900"
           }`}
       >
-        ₹{numeric.toLocaleString("en-IN")}
+        {value}
       </p>
     </div>
   );
