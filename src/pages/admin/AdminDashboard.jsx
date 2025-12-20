@@ -67,20 +67,20 @@ function StatCard({ label, value, highlight, isDarkMode, icon: Icon }) {
 
   return (
     <div
-      className={`backdrop-blur-md border shadow-sm hover:shadow-md rounded-2xl p-4 md:p-5 flex items-center justify-between transition-all duration-200 ${isDarkMode
+      className={`backdrop-blur-md border shadow-sm hover:shadow-md rounded-2xl p-3 md:p-4 flex items-center justify-between transition-all duration-200 ${isDarkMode
         ? "bg-slate-800/90 border-slate-700"
         : "bg-white/90 border-pink-200"
         }`}
     >
       <div className="flex-1 min-w-0">
         <p
-          className={`text-xs md:text-sm font-semibold uppercase tracking-wide mb-1 md:mb-2 ${isDarkMode ? "text-slate-400" : "text-gray-600"
+          className={`text-[10px] md:text-xs font-semibold uppercase tracking-wide mb-1 ${isDarkMode ? "text-slate-400" : "text-gray-600"
             }`}
         >
           {label}
         </p>
         <p
-          className={`text-2xl md:text-3xl font-bold tracking-tight ${highlight
+          className={`text-xl md:text-2xl font-bold tracking-tight ${highlight
             ? "bg-gradient-to-r from-pink-500 to-pink-700 bg-clip-text text-transparent"
             : isDarkMode
               ? "text-slate-100"
@@ -92,14 +92,14 @@ function StatCard({ label, value, highlight, isDarkMode, icon: Icon }) {
       </div>
 
       <div
-        className={`h-10 w-10 md:h-12 md:w-12 rounded-2xl flex-shrink-0 flex items-center justify-center shadow-sm ml-3 ${highlight
+        className={`h-8 w-8 md:h-10 md:w-10 rounded-2xl flex-shrink-0 flex items-center justify-center shadow-sm ml-2 md:ml-3 ${highlight
           ? "bg-gradient-to-br from-pink-700 to-pink-600 text-white"
           : isDarkMode
             ? "bg-slate-700 text-slate-400"
             : "bg-gray-100 text-gray-500"
           }`}
       >
-        {Icon && <Icon className="text-lg md:text-xl" />}
+        {Icon && <Icon className="text-base md:text-lg" />}
       </div>
     </div>
   );
