@@ -335,23 +335,8 @@ const AdminSupport = () => {
     if (!dateString) return "N/A";
 
     try {
-      // Handle various date formats
-      let date;
-
-      // Try parsing as ISO string first
-      if (typeof dateString === 'string') {
-        // Replace space with T for proper ISO format if needed
-        const isoString = dateString.includes('T') ? dateString : dateString.replace(' ', 'T');
-        date = new Date(isoString);
-      } else {
-        date = new Date(dateString);
-      }
-
-      // Check if date is valid
-      if (isNaN(date.getTime())) {
-        console.warn('Invalid date:', dateString);
-        return "Invalid date";
-      }
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return "Invalid date";
 
       const now = new Date();
       const diffMs = now - date;
@@ -359,27 +344,17 @@ const AdminSupport = () => {
       const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
       const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
-      // Handle future dates
-      if (diffMs < 0) {
-        return date.toLocaleDateString("en-GB", {
-          day: "2-digit",
-          month: "short",
-          year: "numeric"
-        });
-      }
-
       if (diffMins < 1) return "Just now";
       if (diffMins < 60) return `${diffMins} min ago`;
       if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
       if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
 
-      return date.toLocaleDateString("en-GB", {
-        day: "2-digit",
+      return date.toLocaleDateString("en-US", {
         month: "short",
+        day: "numeric",
         year: "numeric"
       });
-    } catch (error) {
-      console.error('Date formatting error:', error, dateString);
+    } catch {
       return "Invalid date";
     }
   }, []);
