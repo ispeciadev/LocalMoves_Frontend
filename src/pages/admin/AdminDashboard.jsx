@@ -654,7 +654,7 @@ function AdminDashboard() {
                     className={`font-medium truncate ml-2 ${isDarkMode ? "text-slate-100" : "text-gray-900"
                       }`}
                   >
-                    ₹{revenueRangeTotal.toLocaleString("en-IN")}
+                  €{revenueRangeTotal.toLocaleString("en-IN")}
                   </span>
                 </div>
               </div>
@@ -904,7 +904,7 @@ function AdminDashboard() {
                     className={`font-medium truncate ml-2 ${isDarkMode ? "text-slate-100" : "text-gray-900"
                       }`}
                   >
-                    ₹{depositTotalRevenue.toLocaleString("en-IN")}
+                  €{depositTotalRevenue.toLocaleString("en-IN")}
                   </span>
                 </div>
               </div>
@@ -1316,7 +1316,7 @@ function AdminDashboard() {
                               className={`py-1.5 px-1.5 sm:px-2 font-semibold transition-colors truncate ${isDarkMode ? "text-slate-100" : "text-gray-900"
                                 }`}
                             >
-                              ₹{amt.toLocaleString("en-IN")}
+                            €{amt.toLocaleString("en-IN")}
                             </td>
                             <td className="py-1.5 px-1.5 sm:px-2 hidden lg:table-cell">
                               <span
@@ -1460,7 +1460,7 @@ function AdminDashboard() {
                                   : "text-gray-900"
                                   }`}
                               >
-                                ₹{total.toLocaleString("en-IN")}
+                              €{total.toLocaleString("en-IN")}
                               </td>
 
                               <td
@@ -1469,7 +1469,7 @@ function AdminDashboard() {
                                   : "text-gray-700"
                                   }`}
                               >
-                                ₹{deposit.toLocaleString("en-IN")}
+                              €{deposit.toLocaleString("en-IN")}
                               </td>
 
                               <td
@@ -1478,7 +1478,7 @@ function AdminDashboard() {
                                   : "text-gray-700"
                                   }`}
                               >
-                                ₹{balance.toLocaleString("en-IN")}
+                              €{balance.toLocaleString("en-IN")}
                               </td>
 
                               <td className="py-1.5 px-1.5 sm:px-2">
