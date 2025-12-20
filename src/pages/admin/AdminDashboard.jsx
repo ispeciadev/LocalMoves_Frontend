@@ -136,7 +136,7 @@ function MetricCard({ title, value, badge, isDarkMode }) {
         className={`text-xl md:text-2xl font-bold tracking-tight transition-colors ${isDarkMode ? "text-slate-100" : "text-gray-900"
           }`}
       >
-        {value}
+        €{value}
       </p>
     </div>
   );
