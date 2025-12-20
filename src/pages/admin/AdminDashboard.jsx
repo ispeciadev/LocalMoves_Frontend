@@ -491,29 +491,25 @@ function AdminDashboard() {
                 icon={FaBuilding}
                 isDarkMode={isDarkMode}
               />
-              <div className="col-span-2 lg:col-span-1">
-                <StatCard
-                  label="Paid Subscribers"
-                  value={totals.paid_subscribers}
-                  icon={FaCheckCircle}
-                  isDarkMode={isDarkMode}
-                />
-              </div>
+              <StatCard
+                label="Paid Subscribers"
+                value={totals.paid_subscribers}
+                icon={FaCheckCircle}
+                isDarkMode={isDarkMode}
+              />
               <StatCard
                 label="Requests"
                 value={totals.requests}
                 icon={FaClipboardList}
                 isDarkMode={isDarkMode}
               />
-              <div className="col-span-2 lg:col-span-1">
-                <StatCard
-                  label="Payment Transactions"
-                  value={totals.total_payment_transactions}
-                  icon={FaMoneyBillWave}
-                  highlight
-                  isDarkMode={isDarkMode}
-                />
-              </div>
+              <StatCard
+                label="Payment Transactions"
+                value={totals.total_payment_transactions}
+                icon={FaMoneyBillWave}
+                highlight
+                isDarkMode={isDarkMode}
+              />
             </div>
 
             {/* METRICS */}
