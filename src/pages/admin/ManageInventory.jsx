@@ -823,7 +823,7 @@ const ManageInventory = () => {
           </div>
 
           {/* CATEGORY FILTER */}
-          <div className="flex gap-2 overflow-x-auto pb-2">
+          <div className="flex gap-2 overflow-x-auto pb-2 scroll-smooth scrollbar-thin scrollbar-thumb-pink-500 scrollbar-track-transparent">
             {categories.map((category) => (
               <button
                 key={category}
