@@ -740,11 +740,19 @@ const ManageInventory = () => {
   };
 
   const handleCategoryFilter = (category) => {
+    console.log("🔍 Category Filter Clicked:", category);
+    console.log("📦 Total items:", items.length);
+    console.log("📋 Items categories:", items.map(item => item.category));
+
     setSelectedCategory(category);
     let filtered = items;
 
     if (category !== "All") {
-      filtered = filtered.filter(item => item.category === category);
+      filtered = filtered.filter(item => {
+        const matches = item.category === category;
+        console.log(`Item: ${item.item_name}, Category: ${item.category}, Matches ${category}:`, matches);
+        return matches;
+      });
     }
 
     if (searchTerm) {
@@ -754,6 +762,7 @@ const ManageInventory = () => {
       );
     }
 
+    console.log("✅ Filtered items count:", filtered.length);
     setFilteredItems(filtered);
   };
 
