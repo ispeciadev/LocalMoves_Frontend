@@ -556,7 +556,7 @@ const ManageRequests = () => {
           </p>
         </div>
 
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
             onClick={fetchRequests}
@@ -1264,10 +1264,10 @@ const ManageRequests = () => {
                 </div>
                 <div className="flex flex-col items-end gap-1">
                   <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-semibold ${selectedRequest.payment_status === "Paid"
-                      ? "bg-green-100 text-green-700 border border-green-200"
-                      : selectedRequest.payment_status === "Pending"
-                        ? "bg-yellow-100 text-yellow-700 border border-yellow-200"
-                        : "bg-gray-100 text-gray-700 border border-gray-200"
+                    ? "bg-green-100 text-green-700 border border-green-200"
+                    : selectedRequest.payment_status === "Pending"
+                      ? "bg-yellow-100 text-yellow-700 border border-yellow-200"
+                      : "bg-gray-100 text-gray-700 border border-gray-200"
                     }`}>
                     {selectedRequest.payment_status || "Pending"}
                   </span>
