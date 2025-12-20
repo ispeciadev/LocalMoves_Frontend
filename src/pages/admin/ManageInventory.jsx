@@ -142,8 +142,8 @@ const InventoryFormModal = ({
           <button
             onClick={onClose}
             className={`p-2 rounded-full hover:bg-opacity-10 ${isDarkMode
-                ? "hover:bg-slate-100 text-slate-400"
-                : "hover:bg-gray-900 text-gray-500"
+              ? "hover:bg-slate-100 text-slate-400"
+              : "hover:bg-gray-900 text-gray-500"
               }`}
           >
             <FiX size={20} />
@@ -165,8 +165,8 @@ const InventoryFormModal = ({
               value={formData.category}
               onChange={handleChange}
               className={`w-full rounded-lg px-4 py-3 text-sm border transition-colors ${isDarkMode
-                  ? "bg-slate-700 border-slate-600 text-slate-100 focus:border-pink-500 focus:ring-1 focus:ring-pink-500"
-                  : "bg-white border-pink-200 text-gray-900 focus:border-pink-500 focus:ring-1 focus:ring-pink-500"
+                ? "bg-slate-700 border-slate-600 text-slate-100 focus:border-pink-500 focus:ring-1 focus:ring-pink-500"
+                : "bg-white border-pink-200 text-gray-900 focus:border-pink-500 focus:ring-1 focus:ring-pink-500"
                 }`}
               required
             >
@@ -193,8 +193,8 @@ const InventoryFormModal = ({
               value={formData.item_name}
               onChange={handleChange}
               className={`w-full rounded-lg px-4 py-3 text-sm border transition-colors ${isDarkMode
-                  ? "bg-slate-700 border-slate-600 text-slate-100 focus:border-pink-500 focus:ring-1 focus:ring-pink-500"
-                  : "bg-white border-pink-200 text-gray-900 focus:border-pink-500 focus:ring-1 focus:ring-pink-500"
+                ? "bg-slate-700 border-slate-600 text-slate-100 focus:border-pink-500 focus:ring-1 focus:ring-pink-500"
+                : "bg-white border-pink-200 text-gray-900 focus:border-pink-500 focus:ring-1 focus:ring-pink-500"
                 }`}
               placeholder="e.g., Dining Chair"
               required
@@ -219,8 +219,8 @@ const InventoryFormModal = ({
                   step="0.01"
                   min="0"
                   className={`w-full rounded-lg px-4 py-3 text-sm border transition-colors ${isDarkMode
-                      ? "bg-slate-700 border-slate-600 text-slate-100 focus:border-pink-500 focus:ring-1 focus:ring-pink-500"
-                      : "bg-white border-pink-200 text-gray-900 focus:border-pink-500 focus:ring-1 focus:ring-pink-500"
+                    ? "bg-slate-700 border-slate-600 text-slate-100 focus:border-pink-500 focus:ring-1 focus:ring-pink-500"
+                    : "bg-white border-pink-200 text-gray-900 focus:border-pink-500 focus:ring-1 focus:ring-pink-500"
                     }`}
                   placeholder="e.g., 0.18"
                   required
@@ -228,8 +228,8 @@ const InventoryFormModal = ({
               </div>
               <div className="w-20">
                 <div className={`w-full rounded-lg px-3 py-3 text-sm border text-center ${isDarkMode
-                    ? "bg-slate-700 border-slate-600 text-slate-300"
-                    : "bg-pink-50 border-pink-200 text-pink-700"
+                  ? "bg-slate-700 border-slate-600 text-slate-300"
+                  : "bg-pink-50 border-pink-200 text-pink-700"
                   }`}>
                   m³
                 </div>
@@ -243,8 +243,8 @@ const InventoryFormModal = ({
               type="button"
               onClick={onClose}
               className={`flex-1 py-3 rounded-lg text-sm font-medium transition-colors ${isDarkMode
-                  ? "bg-slate-700 text-slate-300 hover:bg-slate-600"
-                  : "bg-pink-100 text-pink-700 hover:bg-pink-200"
+                ? "bg-slate-700 text-slate-300 hover:bg-slate-600"
+                : "bg-pink-100 text-pink-700 hover:bg-pink-200"
                 }`}
             >
               Cancel
@@ -253,8 +253,8 @@ const InventoryFormModal = ({
               type="submit"
               disabled={loading}
               className={`flex-1 py-3 rounded-lg text-sm font-medium transition-colors ${loading
-                  ? "opacity-70 cursor-not-allowed"
-                  : ""
+                ? "opacity-70 cursor-not-allowed"
+                : ""
                 } ${isDarkMode
                   ? "bg-pink-600 text-white hover:bg-pink-700"
                   : "bg-pink-600 text-white hover:bg-pink-700"
@@ -316,8 +316,8 @@ const DeleteConfirmationModal = ({
             <button
               onClick={onClose}
               className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-colors ${isDarkMode
-                  ? "bg-slate-700 text-slate-300 hover:bg-slate-600"
-                  : "bg-pink-100 text-pink-700 hover:bg-pink-200"
+                ? "bg-slate-700 text-slate-300 hover:bg-slate-600"
+                : "bg-pink-100 text-pink-700 hover:bg-pink-200"
                 }`}
             >
               Cancel
@@ -325,14 +325,151 @@ const DeleteConfirmationModal = ({
             <button
               onClick={onConfirm}
               className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-colors ${isDarkMode
-                  ? "bg-red-600 text-white hover:bg-red-700"
-                  : "bg-red-600 text-white hover:bg-red-700"
+                ? "bg-red-600 text-white hover:bg-red-700"
+                : "bg-red-600 text-white hover:bg-red-700"
                 }`}
             >
               Delete
             </button>
           </div>
         </div>
+      </div>
+    </div>
+  );
+};
+
+// ---------------------------------------------
+// ADD CATEGORY MODAL
+// ---------------------------------------------
+const AddCategoryModal = ({
+  isOpen,
+  onClose,
+  onSubmit,
+  isDarkMode
+}) => {
+  const [categoryName, setCategoryName] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (isOpen) {
+      setCategoryName("");
+      setError("");
+    }
+  }, [isOpen]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    try {
+      if (!categoryName.trim()) {
+        throw new Error("Category name is required");
+      }
+
+      await onSubmit(categoryName.trim());
+      onClose();
+    } catch (err) {
+      setError(err.message || "Failed to create category");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div
+        className={`rounded-2xl w-full max-w-md transition-colors ${isDarkMode ? "bg-slate-800 text-slate-100" : "bg-white text-gray-900"
+          }`}
+      >
+        {/* HEADER */}
+        <div className={`flex items-center justify-between p-6 border-b ${isDarkMode ? "border-slate-700" : "border-gray-200"
+          }`}>
+          <div>
+            <h3 className="text-lg font-semibold">
+              Add New Category
+            </h3>
+            {error && (
+              <div className={`mt-1 text-sm font-medium ${isDarkMode ? "text-red-300" : "text-red-600"
+                }`}>
+                {error}
+              </div>
+            )}
+          </div>
+          <button
+            onClick={onClose}
+            className={`p-2 rounded-full hover:bg-opacity-10 ${isDarkMode
+              ? "hover:bg-slate-100 text-slate-400"
+              : "hover:bg-gray-900 text-gray-500"
+              }`}
+          >
+            <FiX size={20} />
+          </button>
+        </div>
+
+        {/* FORM */}
+        <form onSubmit={handleSubmit} className="p-6">
+          <div className="mb-6">
+            <label
+              className={`block text-sm font-medium mb-2 ${isDarkMode ? "text-slate-300" : "text-gray-700"
+                }`}
+            >
+              Category Name *
+            </label>
+            <input
+              type="text"
+              value={categoryName}
+              onChange={(e) => setCategoryName(e.target.value)}
+              className={`w-full rounded-lg px-4 py-3 text-sm border transition-colors ${isDarkMode
+                ? "bg-slate-700 border-slate-600 text-slate-100 focus:border-pink-500 focus:ring-1 focus:ring-pink-500"
+                : "bg-white border-pink-200 text-gray-900 focus:border-pink-500 focus:ring-1 focus:ring-pink-500"
+                }`}
+              placeholder="e.g., Movie Studio"
+              required
+              autoFocus
+            />
+          </div>
+
+          {/* ACTIONS */}
+          <div className="flex gap-3">
+            <button
+              type="button"
+              onClick={onClose}
+              className={`flex-1 py-3 rounded-lg text-sm font-medium transition-colors ${isDarkMode
+                ? "bg-slate-700 text-slate-300 hover:bg-slate-600"
+                : "bg-pink-100 text-pink-700 hover:bg-pink-200"
+                }`}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className={`flex-1 py-3 rounded-lg text-sm font-medium transition-colors ${loading
+                ? "opacity-70 cursor-not-allowed"
+                : ""
+                } ${isDarkMode
+                  ? "bg-pink-600 text-white hover:bg-pink-700"
+                  : "bg-pink-600 text-white hover:bg-pink-700"
+                }`}
+            >
+              {loading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  Creating...
+                </span>
+              ) : (
+                <span className="flex items-center justify-center gap-2">
+                  <FiCheck size={16} />
+                  Create Category
+                </span>
+              )}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );
@@ -353,6 +490,7 @@ const ManageInventory = () => {
   // Modal states
   const [showFormModal, setShowFormModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
 
   // Editing state
   const [editingItem, setEditingItem] = useState(null);
@@ -491,6 +629,31 @@ const ManageInventory = () => {
   };
 
   // ---------------------------------------------
+  // CREATE CATEGORY
+  // ---------------------------------------------
+  const handleCreateCategory = async (categoryName) => {
+    try {
+      const res = await api.post(
+        "localmoves.api.dashboard.create_inventory_category",
+        {
+          category_name: categoryName
+        }
+      );
+
+      if (res.data?.message?.success) {
+        // Refresh inventory to get the new category and its sample item
+        await fetchInventory();
+        return true;
+      }
+
+      throw new Error(res.data?.message?.error || "Failed to create category");
+    } catch (error) {
+      console.error("Failed to create category:", error);
+      throw new Error(error.response?.data?.message?.error || error.message);
+    }
+  };
+
+  // ---------------------------------------------
   // FORM HANDLERS
   // ---------------------------------------------
   const handleAddClick = () => {
@@ -597,15 +760,26 @@ const ManageInventory = () => {
           </p>
         </div>
 
-        <button
-          onClick={handleAddClick}
-          className={`rounded-full px-4 py-2 text-xs font-semibold transition flex items-center gap-2 ${isDarkMode
+        <div className="flex gap-2">
+          <button
+            onClick={() => setShowCategoryModal(true)}
+            className={`rounded-full px-4 py-2 text-xs font-semibold transition flex items-center gap-2 ${isDarkMode
+              ? "bg-slate-700 text-slate-300 hover:bg-slate-600"
+              : "bg-pink-100 text-pink-700 hover:bg-pink-200"
+              }`}
+          >
+            + Add Category
+          </button>
+          <button
+            onClick={handleAddClick}
+            className={`rounded-full px-4 py-2 text-xs font-semibold transition flex items-center gap-2 ${isDarkMode
               ? "bg-pink-600 text-white hover:bg-pink-700"
               : "bg-pink-600 text-white hover:bg-pink-700"
-            }`}
-        >
-          + Add Item
-        </button>
+              }`}
+          >
+            + Add Item
+          </button>
+        </div>
       </div>
 
       {/* STATS SUMMARY */}
@@ -626,8 +800,8 @@ const ManageInventory = () => {
 
       {/* FILTERS */}
       <div className={`rounded-2xl border p-4 transition-colors ${isDarkMode
-          ? "bg-slate-800 border-slate-700"
-          : "bg-white border-pink-100"
+        ? "bg-slate-800 border-slate-700"
+        : "bg-white border-pink-100"
         }`}>
         <div className="flex flex-col md:flex-row gap-4">
           {/* SEARCH */}
@@ -641,8 +815,8 @@ const ManageInventory = () => {
                 value={searchTerm}
                 onChange={(e) => handleSearch(e.target.value)}
                 className={`w-full pl-10 pr-4 py-2.5 rounded-lg text-sm border transition-colors ${isDarkMode
-                    ? "bg-slate-700 border-slate-600 text-slate-100 placeholder-slate-400 focus:border-pink-500"
-                    : "bg-white border-pink-200 text-gray-900 placeholder-gray-400 focus:border-pink-500"
+                  ? "bg-slate-700 border-slate-600 text-slate-100 placeholder-slate-400 focus:border-pink-500"
+                  : "bg-white border-pink-200 text-gray-900 placeholder-gray-400 focus:border-pink-500"
                   }`}
               />
             </div>
@@ -655,12 +829,12 @@ const ManageInventory = () => {
                 key={category}
                 onClick={() => handleCategoryFilter(category)}
                 className={`px-4 py-2 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${selectedCategory === category
-                    ? isDarkMode
-                      ? "bg-pink-600 text-white"
-                      : "bg-pink-600 text-white"
-                    : isDarkMode
-                      ? "bg-slate-700 text-slate-300 hover:bg-slate-600"
-                      : "bg-pink-100 text-pink-700 hover:bg-pink-200"
+                  ? isDarkMode
+                    ? "bg-pink-600 text-white"
+                    : "bg-pink-600 text-white"
+                  : isDarkMode
+                    ? "bg-slate-700 text-slate-300 hover:bg-slate-600"
+                    : "bg-pink-100 text-pink-700 hover:bg-pink-200"
                   }`}
               >
                 {category}
@@ -673,8 +847,8 @@ const ManageInventory = () => {
       {/* INVENTORY LIST */}
       <div
         className={`rounded-2xl border transition-colors ${isDarkMode
-            ? "bg-slate-800 border-slate-700"
-            : "bg-white border-pink-100"
+          ? "bg-slate-800 border-slate-700"
+          : "bg-white border-pink-100"
           }`}
       >
         <div className={`p-4 border-b ${isDarkMode ? "border-slate-700" : "border-pink-100"
@@ -753,8 +927,8 @@ const ManageInventory = () => {
                     <button
                       onClick={() => handleEditClick(item)}
                       className={`p-2 rounded-lg transition-colors ${isDarkMode
-                          ? "text-slate-400 hover:text-slate-300 hover:bg-slate-700"
-                          : "text-pink-500 hover:text-pink-700 hover:bg-pink-100"
+                        ? "text-slate-400 hover:text-slate-300 hover:bg-slate-700"
+                        : "text-pink-500 hover:text-pink-700 hover:bg-pink-100"
                         }`}
                       title="Edit item"
                     >
@@ -763,8 +937,8 @@ const ManageInventory = () => {
                     <button
                       onClick={() => handleDeleteClick(item)}
                       className={`p-2 rounded-lg transition-colors ${isDarkMode
-                          ? "text-red-400 hover:text-red-300 hover:bg-red-900/20"
-                          : "text-red-500 hover:text-red-700 hover:bg-red-50"
+                        ? "text-red-400 hover:text-red-300 hover:bg-red-900/20"
+                        : "text-red-500 hover:text-red-700 hover:bg-red-50"
                         }`}
                       title="Delete item"
                     >
@@ -798,6 +972,14 @@ const ManageInventory = () => {
         }}
         onConfirm={handleDeleteItem}
         itemName={itemToDelete?.item_name}
+        isDarkMode={isDarkMode}
+      />
+
+      {/* ADD CATEGORY MODAL */}
+      <AddCategoryModal
+        isOpen={showCategoryModal}
+        onClose={() => setShowCategoryModal(false)}
+        onSubmit={handleCreateCategory}
         isDarkMode={isDarkMode}
       />
     </div>
