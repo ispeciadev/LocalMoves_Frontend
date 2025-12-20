@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Mail, Phone, MapPin, Send } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
+import api from "../api/axios";
 
 const ContactPage = () => {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
@@ -29,18 +30,12 @@ const ContactPage = () => {
 
     setLoading(true);
     try {
-      const res = await fetch(
-        "http://127.0.0.1:8000/api/method/localmoves.api.dashboard.submit_contact_form",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(form),
-        }
+      const res = await api.post(
+        "localmoves.api.dashboard.submit_contact_form",
+        form
       );
 
-      const data = await res.json();
+      const data = res.data;
 
       if (data.message?.success) {
         toast.success("Message sent successfully! We'll get back to you soon.");
@@ -50,8 +45,13 @@ const ContactPage = () => {
           data.message?.error || "Something went wrong. Please try again."
         );
       }
-    } catch {
-      toast.error("Server error. Please try again later.");
+    } catch (error) {
+      console.error("Contact form error:", error);
+      toast.error(
+        error.response?.data?.message?.error ||
+        error.response?.data?.message ||
+        "Server error. Please try again later."
+      );
     } finally {
       setLoading(false);
     }
