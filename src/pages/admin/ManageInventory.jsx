@@ -502,6 +502,31 @@ const ManageInventory = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
 
   // ---------------------------------------------
+  // FETCH CATEGORIES
+  // ---------------------------------------------
+  const fetchCategories = async () => {
+    try {
+      const res = await api.post(
+        "localmoves.api.dashboard.get_all_inventory_categories"
+      );
+
+      console.log("Categories API Response:", res);
+
+      const categoryData = res.data?.message?.data || res.data?.data || [];
+
+      console.log("Extracted categories:", categoryData);
+
+      // Extract category names and add "All" at the beginning
+      const categoryNames = categoryData.map(cat => cat.category_name || cat.category || cat);
+      setCategories(["All", ...categoryNames]);
+
+    } catch (error) {
+      console.error("Failed to load categories:", error);
+      console.error("Error response:", error.response);
+    }
+  };
+
+  // ---------------------------------------------
   // FETCH INVENTORY ITEMS
   // ---------------------------------------------
   const fetchInventory = async () => {
@@ -533,6 +558,9 @@ const ManageInventory = () => {
       setItems(data);
       setFilteredItems(data);
       setCategorySummary(summary);
+
+      // Also fetch categories
+      await fetchCategories();
     } catch (error) {
       console.error("Failed to load inventory:", error);
       console.error("Error response:", error.response);
@@ -644,8 +672,6 @@ const ManageInventory = () => {
       if (res.data?.message?.success) {
         // Refresh inventory to get the new category and its sample item
         await fetchInventory();
-        // Refresh categories list
-        await fetchCategories();
         return true;
       }
 
@@ -736,39 +762,6 @@ const ManageInventory = () => {
   // ---------------------------------------------
   useEffect(() => {
     fetchInventory();
-  }, []);
-
-  // ---------------------------------------------
-  // FETCH CATEGORIES
-  // ---------------------------------------------
-  const fetchCategories = async () => {
-    try {
-      const res = await api.post(
-        "localmoves.api.dashboard.get_all_inventory_categories"
-      );
-
-      console.log("Categories API Response:", res);
-
-      const categoryList = res.data?.message?.categories ||
-        res.data?.categories ||
-        [];
-
-      console.log("Extracted categories:", categoryList);
-
-      // Add "All" at the beginning
-      setCategories(["All", ...categoryList]);
-    } catch (error) {
-      console.error("Failed to load categories:", error);
-      console.error("Error response:", error.response);
-    }
-  };
-
-  // ---------------------------------------------
-  // INITIAL FETCH
-  // ---------------------------------------------
-  useEffect(() => {
-    fetchInventory();
-    fetchCategories();
   }, []);
 
   return (
