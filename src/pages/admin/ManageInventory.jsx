@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useAdminThemeStore } from "../../stores/useAdminThemeStore";
 import api from "../../api/axios";
-import { FiEdit, FiTrash2, FiX, FiCheck, FiSearch, FiFilter } from "react-icons/fi";
+import { FiEdit, FiTrash2, FiX, FiCheck, FiSearch, FiFilter, FiChevronDown } from "react-icons/fi";
+import toast, { Toaster } from 'react-hot-toast';
 
 // ---------------------------------------------
 // HELPER FUNCTION - FORMAT ITEM NAME
@@ -506,6 +507,7 @@ const ManageInventory = () => {
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [showDeleteCategoryModal, setShowDeleteCategoryModal] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState(null);
+  const [showDeleteDropdown, setShowDeleteDropdown] = useState(false);
 
   // Editing state
   const [editingItem, setEditingItem] = useState(null);
@@ -597,9 +599,9 @@ const ManageInventory = () => {
       );
 
       console.log("✅ Create API response:", res);
-      console.log("✅ Response data:", res.data);
-
+      console.log("✅ Create item SUCCESS", res);
       if (res.data?.message?.success) {
+        toast.success('✅ Item created successfully!');
         fetchInventory();
         return true;
       }
@@ -624,12 +626,9 @@ const ManageInventory = () => {
       console.error("Error response message:", error.response?.data?.message);
       console.error("Error response exception:", error.response?.data?.exception);
 
-      throw new Error(
-        error.response?.data?.message?.error ||
-        error.response?.data?.exception ||
-        error.message ||
-        "Failed to create item"
-      );
+      const errorMessage = error.response?.data?.message?.error || error.response?.data?.exception || error.message || "Failed to create item";
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
     }
   };
 
@@ -644,12 +643,16 @@ const ManageInventory = () => {
         }
       );
       if (res.data?.message?.success) {
+        toast.success('✅ Item updated successfully!');
         fetchInventory();
         return true;
       }
       throw new Error(res.data?.message?.error || "Failed to update item");
     } catch (error) {
-      throw new Error(error.response?.data?.message?.error || error.message);
+      console.error("Failed to update item:", error);
+      const errorMessage = error.response?.data?.message?.error || error.message || "Failed to update item";
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
     }
   };
 
@@ -669,17 +672,22 @@ const ManageInventory = () => {
       console.log("✅ Delete response:", res);
 
       if (res.data?.message?.success) {
+        toast.success('✅ Item deleted successfully!');
         fetchInventory();
         setShowDeleteModal(false);
         setItemToDelete(null);
       } else {
         console.error("❌ Delete failed:", res.data?.message);
-        alert(res.data?.message?.error || "Failed to delete item");
+        const errorMsg = res.data?.message?.error || "Failed to delete item";
+        toast.error(errorMsg);
+        alert(errorMsg);
       }
     } catch (error) {
       console.error("❌ Failed to delete item:", error);
       console.error("Error response:", error.response?.data);
-      alert(error.response?.data?.message?.error || "Failed to delete item");
+      const errorMsg = error.response?.data?.message?.error || "Failed to delete item";
+      toast.error(errorMsg);
+      alert(errorMsg);
     }
   };
 
@@ -726,6 +734,7 @@ const ManageInventory = () => {
       console.log("✅ Delete category response:", res);
 
       if (res.data?.message?.success) {
+        toast.success(`✅ Category "${categoryToDelete}" deleted successfully!`);
         // Refresh inventory
         await fetchInventory();
         setShowDeleteCategoryModal(false);
@@ -736,12 +745,16 @@ const ManageInventory = () => {
         }
       } else {
         console.error("❌ Delete category failed:", res.data?.message);
-        alert(res.data?.message?.error || "Failed to delete category");
+        const errorMsg = res.data?.message?.error || "Failed to delete category";
+        toast.error(errorMsg);
+        alert(errorMsg);
       }
     } catch (error) {
       console.error("❌ Failed to delete category:", error);
       console.error("Error response:", error.response?.data);
-      alert(error.response?.data?.message?.error || "Failed to delete category");
+      const errorMsg = error.response?.data?.message?.error || "Failed to delete category";
+      toast.error(errorMsg);
+      alert(errorMsg);
     }
   };
 
@@ -841,6 +854,31 @@ const ManageInventory = () => {
       className={`space-y-6 p-4 transition-colors ${isDarkMode ? "bg-slate-950 text-slate-100" : "bg-white text-gray-900"
         }`}
     >
+      {/* Toast Notifications */}
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 3000,
+          style: {
+            background: isDarkMode ? '#1e293b' : '#ffffff',
+            color: isDarkMode ? '#f1f5f9' : '#1f2937',
+            border: isDarkMode ? '1px solid #334155' : '1px solid #e5e7eb',
+          },
+          success: {
+            iconTheme: {
+              primary: '#ec4899',
+              secondary: '#ffffff',
+            },
+          },
+          error: {
+            iconTheme: {
+              primary: '#ef4444',
+              secondary: '#ffffff',
+            },
+          },
+        }}
+      />
+
       {/* HEADER */}
       <div className="flex items-center justify-between">
         <div>
@@ -862,43 +900,77 @@ const ManageInventory = () => {
           <button
             onClick={() => setShowCategoryModal(true)}
             className={`rounded-full px-4 py-2 text-xs font-semibold transition flex items-center gap-2 ${isDarkMode
-                ? "bg-slate-700 text-slate-300 hover:bg-slate-600"
-                : "bg-pink-100 text-pink-700 hover:bg-pink-200"
+              ? "bg-slate-700 text-slate-300 hover:bg-slate-600"
+              : "bg-pink-100 text-pink-700 hover:bg-pink-200"
               }`}
           >
             + Add Category
           </button>
 
           {/* Delete Category Dropdown */}
-          <div className="relative flex items-center gap-2">
-            <select
-              onChange={(e) => {
-                if (e.target.value) {
-                  setCategoryToDelete(e.target.value);
-                  setShowDeleteCategoryModal(true);
-                  e.target.value = ""; // Reset select
-                }
-              }}
-              className={`rounded-full px-4 py-2 text-xs font-semibold transition cursor-pointer ${isDarkMode
-                  ? "bg-red-600 text-white hover:bg-red-700 border-red-600"
-                  : "bg-red-600 text-white hover:bg-red-700 border-red-600"
+          <div className="relative">
+            <button
+              onClick={() => setShowDeleteDropdown(!showDeleteDropdown)}
+              className={`rounded-full px-4 py-2 text-xs font-semibold transition flex items-center gap-2 ${isDarkMode
+                ? "bg-red-600 text-white hover:bg-red-700"
+                : "bg-red-600 text-white hover:bg-red-700"
                 }`}
-              defaultValue=""
             >
-              <option value="" disabled>🗑️ Delete Category</option>
-              {categories.filter(cat => cat !== "All").map((cat) => (
-                <option key={cat} value={cat} className="bg-white text-gray-900">
-                  {cat}
-                </option>
-              ))}
-            </select>
+              <FiTrash2 size={14} />
+              Delete Category
+              <FiChevronDown size={14} className={`transition-transform ${showDeleteDropdown ? 'rotate-180' : ''}`} />
+            </button>
+
+            {/* Dropdown Menu */}
+            {showDeleteDropdown && (
+              <>
+                {/* Backdrop to close dropdown */}
+                <div
+                  className="fixed inset-0 z-10"
+                  onClick={() => setShowDeleteDropdown(false)}
+                />
+
+                {/* Dropdown Content */}
+                <div className={`absolute right-0 mt-2 w-48 rounded-lg shadow-lg z-20 border ${isDarkMode
+                  ? "bg-slate-800 border-slate-700"
+                  : "bg-white border-gray-200"
+                  }`}>
+                  <div className="py-1">
+                    {categories.filter(cat => cat !== "All").length === 0 ? (
+                      <div className={`px-4 py-2 text-xs ${isDarkMode ? "text-slate-400" : "text-gray-500"
+                        }`}>
+                        No categories available
+                      </div>
+                    ) : (
+                      categories.filter(cat => cat !== "All").map((cat) => (
+                        <button
+                          key={cat}
+                          onClick={() => {
+                            setCategoryToDelete(cat);
+                            setShowDeleteCategoryModal(true);
+                            setShowDeleteDropdown(false);
+                          }}
+                          className={`w-full text-left px-4 py-2 text-xs transition-colors flex items-center gap-2 ${isDarkMode
+                            ? "hover:bg-slate-700 text-slate-200"
+                            : "hover:bg-red-50 text-gray-700 hover:text-red-600"
+                            }`}
+                        >
+                          <FiTrash2 size={12} />
+                          {cat}
+                        </button>
+                      ))
+                    )}
+                  </div>
+                </div>
+              </>
+            )}
           </div>
 
           <button
             onClick={handleAddClick}
             className={`rounded-full px-4 py-2 text-xs font-semibold transition flex items-center gap-2 ${isDarkMode
-                ? "bg-pink-600 text-white hover:bg-pink-700"
-                : "bg-pink-600 text-white hover:bg-pink-700"
+              ? "bg-pink-600 text-white hover:bg-pink-700"
+              : "bg-pink-600 text-white hover:bg-pink-700"
               }`}
           >
             + Add Item
