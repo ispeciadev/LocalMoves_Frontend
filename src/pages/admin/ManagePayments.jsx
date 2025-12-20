@@ -34,7 +34,7 @@ const formatDateTime = (dateString) => {
   });
 };
 
-const formatCurrency = (amount, currency = "INR") => {
+const formatCurrency = (amount, currency = "EUR") => {
   if (amount == null) return "-";
   try {
     return new Intl.NumberFormat("en-IN", {
@@ -475,7 +475,7 @@ const ManagePayments = () => {
     )
     .map((p) => ({
       ...p,
-      amount_display: formatCurrency(p.amount, "INR"),
+      amount_display: formatCurrency(p.amount, "EUR"),
       payment_date_display: formatDateTime(p.payment_date),
       actions: (
         <div className="flex justify-end gap-3">
