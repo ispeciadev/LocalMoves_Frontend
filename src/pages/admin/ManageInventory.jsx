@@ -644,6 +644,8 @@ const ManageInventory = () => {
       if (res.data?.message?.success) {
         // Refresh inventory to get the new category and its sample item
         await fetchInventory();
+        // Refresh categories list
+        await fetchCategories();
         return true;
       }
 
