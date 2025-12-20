@@ -45,7 +45,7 @@ const columns = [
   { key: "company", label: "Company" },
   { key: "date", label: "Delivery Date" },
   { key: "status", label: "Status" },
-  { key: "estimated_cost", label: "Estimated Cost" },
+  { key: "payment_status", label: "Payment Status" },
   { key: "actions", label: "Actions" },
 ];
 
@@ -97,7 +97,7 @@ const ManageRequests = () => {
     office_size: "2 Workstations",
     office_quantity: "Everything",
 
-    estimated_cost: 0
+    payment_status: "Pending"
   });
 
   // EDIT FORM
@@ -231,7 +231,7 @@ const ManageRequests = () => {
       office_size: "2 Workstations",
       office_quantity: "Everything",
 
-      estimated_cost: 0
+      payment_status: "Pending"
     });
     setShowAddModal(true);
   };
@@ -310,7 +310,7 @@ const ManageRequests = () => {
           office_quantity: addForm.office_quantity
         }),
 
-        estimated_cost: addForm.estimated_cost || 0
+        payment_status: addForm.payment_status || "Pending"
       };
 
       console.log("📤 Create Request Payload:", payload);
@@ -437,9 +437,14 @@ const ManageRequests = () => {
         </span>
       ),
       vehicle_type: r.vehicle_type || "-",
-      estimated_cost: (
-        <span className="font-semibold text-green-600">
-          ₹{r.estimated_cost ? parseInt(r.estimated_cost).toLocaleString() : "0"}
+      payment_status: (
+        <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-semibold ${r.payment_status === "Paid"
+          ? "bg-green-100 text-green-700 border border-green-200"
+          : r.payment_status === "Pending"
+            ? "bg-yellow-100 text-yellow-700 border border-yellow-200"
+            : "bg-gray-100 text-gray-700 border border-gray-200"
+          }`}>
+          {r.payment_status || "Pending"}
         </span>
       ),
       actions: (
@@ -608,8 +613,13 @@ const ManageRequests = () => {
                   >
                     {r.status || "-"}
                   </span>
-                  <span className="text-xs font-semibold text-green-600">
-                    ₹{r.estimated_cost ? parseInt(r.estimated_cost).toLocaleString() : "0"}
+                  <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-semibold ${r.payment_status === "Paid"
+                    ? "bg-green-100 text-green-700 border border-green-200"
+                    : r.payment_status === "Pending"
+                      ? "bg-yellow-100 text-yellow-700 border border-yellow-200"
+                      : "bg-gray-100 text-gray-700 border border-gray-200"
+                    }`}>
+                    {r.payment_status || "Pending"}
                   </span>
                 </div>
               </div>
@@ -1253,8 +1263,13 @@ const ManageRequests = () => {
                   </p>
                 </div>
                 <div className="flex flex-col items-end gap-1">
-                  <span className="text-xs font-semibold text-green-600">
-                    ₹{selectedRequest.estimated_cost ? parseInt(selectedRequest.estimated_cost).toLocaleString() : "0"}
+                  <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-semibold ${selectedRequest.payment_status === "Paid"
+                      ? "bg-green-100 text-green-700 border border-green-200"
+                      : selectedRequest.payment_status === "Pending"
+                        ? "bg-yellow-100 text-yellow-700 border border-yellow-200"
+                        : "bg-gray-100 text-gray-700 border border-gray-200"
+                    }`}>
+                    {selectedRequest.payment_status || "Pending"}
                   </span>
                   <span className={`text-[10px] px-2 py-0.5 rounded-full ${selectedRequest.status === "Completed"
                     ? "bg-green-100 text-green-800"
