@@ -641,19 +641,31 @@ const ManageInventory = () => {
 
   const handleDeleteItem = async () => {
     try {
+      console.log("🗑️ Deleting item:", itemToDelete);
+      console.log("📤 Sending item_name:", itemToDelete.item_name);
+      console.log("📤 Item name field:", itemToDelete.name);
+
       const res = await api.post(
         "localmoves.api.dashboard.delete_inventory_item",
         {
-          item_name: itemToDelete.item_name
+          item_name: itemToDelete.name || itemToDelete.item_name
         }
       );
+
+      console.log("✅ Delete response:", res);
+
       if (res.data?.message?.success) {
         fetchInventory();
         setShowDeleteModal(false);
         setItemToDelete(null);
+      } else {
+        console.error("❌ Delete failed:", res.data?.message);
+        alert(res.data?.message?.error || "Failed to delete item");
       }
     } catch (error) {
-      console.error("Failed to delete item:", error);
+      console.error("❌ Failed to delete item:", error);
+      console.error("Error response:", error.response?.data);
+      alert(error.response?.data?.message?.error || "Failed to delete item");
     }
   };
 
