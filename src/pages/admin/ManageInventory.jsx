@@ -504,6 +504,8 @@ const ManageInventory = () => {
   const [showFormModal, setShowFormModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [showDeleteCategoryModal, setShowDeleteCategoryModal] = useState(false);
+  const [categoryToDelete, setCategoryToDelete] = useState(null);
 
   // Editing state
   const [editingItem, setEditingItem] = useState(null);
@@ -707,6 +709,43 @@ const ManageInventory = () => {
   };
 
   // ---------------------------------------------
+  // DELETE CATEGORY
+  // ---------------------------------------------
+  const handleDeleteCategory = async () => {
+    try {
+      console.log("🗑️ Deleting category:", categoryToDelete);
+
+      const res = await api.post(
+        "localmoves.api.dashboard.delete_inventory_category",
+        {
+          category_name: categoryToDelete,
+          confirm: "true"
+        }
+      );
+
+      console.log("✅ Delete category response:", res);
+
+      if (res.data?.message?.success) {
+        // Refresh inventory
+        await fetchInventory();
+        setShowDeleteCategoryModal(false);
+        setCategoryToDelete(null);
+        // Reset to "All" category if we deleted the selected one
+        if (selectedCategory === categoryToDelete) {
+          setSelectedCategory("All");
+        }
+      } else {
+        console.error("❌ Delete category failed:", res.data?.message);
+        alert(res.data?.message?.error || "Failed to delete category");
+      }
+    } catch (error) {
+      console.error("❌ Failed to delete category:", error);
+      console.error("Error response:", error.response?.data);
+      alert(error.response?.data?.message?.error || "Failed to delete category");
+    }
+  };
+
+  // ---------------------------------------------
   // FORM HANDLERS
   // ---------------------------------------------
   const handleAddClick = () => {
@@ -847,12 +886,36 @@ const ManageInventory = () => {
         {categorySummary.map((summary) => (
           <div
             key={summary.category}
-            className={`rounded-xl p-3 text-center transition-colors ${isDarkMode ? "bg-slate-800" : "bg-pink-50"
+            className={`rounded-xl p-3 text-center transition-colors relative group ${isDarkMode ? "bg-slate-800" : "bg-pink-50"
               }`}
           >
-            <div className="text-lg font-semibold">{summary.count}</div>
-            <div className="text-xs truncate">{summary.category.split(' ')[0]}</div>
-            <div className="text-xs opacity-75">{summary.total_volume.toFixed(1)} m³</div>
+            {/* Delete button - only show for non-All categories */}
+            {summary.category !== "All" && (
+              <button
+                onClick={() => {
+                  setCategoryToDelete(summary.category);
+                  setShowDeleteCategoryModal(true);
+                }}
+                className={`absolute top-2 right-2 p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity ${isDarkMode
+                  ? "bg-red-600 hover:bg-red-700 text-white"
+                  : "bg-red-500 hover:bg-red-600 text-white"
+                  }`}
+                title={`Delete ${summary.category} category`}
+              >
+                <FiTrash2 size={12} />
+              </button>
+            )}
+
+            <div className={`text-2xl font-bold ${isDarkMode ? "text-slate-100" : "text-gray-900"
+              }`}>
+              {summary.count}
+            </div>
+            <div className="text-xs mt-1 font-medium">
+              {summary.category}
+            </div>
+            <div className="text-[10px] mt-1">
+              {summary.total_volume.toFixed(1)} m³
+            </div>
           </div>
         ))}
       </div>
@@ -1039,6 +1102,18 @@ const ManageInventory = () => {
         isOpen={showCategoryModal}
         onClose={() => setShowCategoryModal(false)}
         onSubmit={handleCreateCategory}
+        isDarkMode={isDarkMode}
+      />
+
+      {/* DELETE CATEGORY MODAL */}
+      <DeleteConfirmationModal
+        isOpen={showDeleteCategoryModal}
+        onClose={() => {
+          setShowDeleteCategoryModal(false);
+          setCategoryToDelete(null);
+        }}
+        onConfirm={handleDeleteCategory}
+        itemName={categoryToDelete ? `${categoryToDelete} category and all its items` : ""}
         isDarkMode={isDarkMode}
       />
     </div>
