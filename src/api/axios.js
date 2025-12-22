@@ -16,6 +16,7 @@ const api = axios.create({
 const PUBLIC_ROUTES = [
   "auth.login",
   "auth.signup",
+  "auth.send_otp",
 ];
 
 // Remove Expect header from all requests (fixes 417 error)

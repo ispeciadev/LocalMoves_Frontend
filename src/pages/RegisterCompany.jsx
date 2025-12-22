@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import api from "../api/axios";
-import axios from "axios";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/solid";
 import {
   FaBuilding,
@@ -611,11 +610,10 @@ const RegisterCompany = () => {
       console.log("Sending OTP request with phone:", cleanedPhone);
       console.log("Request payload:", { phone: cleanedPhone });
 
-      // Use axios directly with env URL (works for both local and live Frappe Cloud)
-      const res = await axios.post(
-        `${env.API_BASE_URL}localmoves.api.auth.send_otp`,
-        { phone: cleanedPhone }
-      );
+      // Use api instance (now properly configured for public send_otp endpoint)
+      const res = await api.post("localmoves.api.auth.send_otp", {
+        phone: cleanedPhone,
+      });
 
       console.log("OTP Response:", res.data);
 
