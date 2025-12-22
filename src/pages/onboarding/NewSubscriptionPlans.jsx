@@ -70,6 +70,8 @@ const PLANS = [
     name: "Basic",
     price: "£495",
     period: "per year",
+    priceINR: 495,
+    priceDisplay: "£495/year",
     tagline: "Perfect for small local movers",
     featured: false,
     bullets: [
@@ -86,6 +88,8 @@ const PLANS = [
     name: "Standard",
     price: "£995",
     period: "per year",
+    priceINR: 995,
+    priceDisplay: "£995/year",
     tagline: "Ideal for expanding moving companies",
     featured: true,
     highlight: "Most Popular",
@@ -104,6 +108,8 @@ const PLANS = [
     name: "Premium",
     price: "£1595",
     period: "per year",
+    priceINR: 1595,
+    priceDisplay: "£1595/year",
     tagline: "Best for high-volume UK logistics teams",
     featured: false,
     bullets: [
