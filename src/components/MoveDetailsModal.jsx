@@ -234,11 +234,11 @@ const MoveDetailsModal = ({ isOpen, onClose, onSubmit, companyCount = 0 }) => {
       role="dialog"
       aria-modal="true"
     >
-      <div className="relative w-[90%] max-w-md sm:max-w-lg">
+      <div className="relative w-[95%] max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl">
 
         {/* Decorative Layers */}
-        <div className="absolute top-3 left-1 w-full h-[73vh] sm:h-[75vh] bg-white rounded-3xl shadow-md -rotate-3" />
-        <div className="absolute top-1 left-1 w-full h-[73vh] sm:h-[75vh] bg-white rounded-3xl shadow-md rotate-3" />
+        <div className="absolute top-2 sm:top-3 left-1 w-full h-[70vh] sm:h-[73vh] md:h-[75vh] bg-white rounded-2xl sm:rounded-3xl shadow-md -rotate-3" />
+        <div className="absolute top-1 left-1 w-full h-[70vh] sm:h-[73vh] md:h-[75vh] bg-white rounded-2xl sm:rounded-3xl shadow-md rotate-3" />
 
         {/* Floating Count Badge - Only show in login mode */}
         {!isRegisterMode && companyCount > 0 && (
@@ -249,26 +249,26 @@ const MoveDetailsModal = ({ isOpen, onClose, onSubmit, companyCount = 0 }) => {
         )}
 
         {/* Modal Card */}
-        <div className="relative bg-white rounded-3xl shadow-2xl p-4 sm:p-6 border border-gray-100 max-h-[85vh] overflow-y-auto z-10">
+        <div className="relative bg-white rounded-2xl sm:rounded-3xl shadow-2xl p-3 sm:p-4 md:p-6 border border-gray-100 max-h-[85vh] overflow-y-auto z-10">
 
           {!isRegisterMode ? (
             <>
               {/* LOGIN MODE */}
-              <div className="flex items-center justify-center mb-3 mt-4 text-pink-600 font-semibold text-[11px] sm:text-[14px]">
-                <Search size={15} className="mr-2 sm:w-4 sm:h-4" />
+              <div className="flex items-center justify-center mb-2 sm:mb-3 mt-2 sm:mt-4 text-pink-600 font-semibold text-[10px] sm:text-[12px] md:text-[14px]">
+                <Search size={14} className="mr-1 sm:mr-2 w-3 h-3 sm:w-4 sm:h-4" />
                 <span>
                   We found {companyCount} transport providers for your move
                 </span>
               </div>
 
-              <h2 className="text-[12px] sm:text-[15px] font-semibold text-gray-800 mb-1 text-center">
+              <h2 className="text-[13px] sm:text-[15px] md:text-[16px] font-semibold text-gray-800 mb-1 text-center">
                 To view your moving quotes,
               </h2>
-              <p className="text-[11px] sm:text-[13px] text-gray-500 text-center mb-4">
+              <p className="text-[11px] sm:text-[12px] md:text-[13px] text-gray-500 text-center mb-3 sm:mb-4">
                 please login using your details below:
               </p>
 
-              <form onSubmit={handleLogin} className="space-y-3">
+              <form onSubmit={handleLogin} className="space-y-2 sm:space-y-3">
                 {/* Email */}
                 <div className="flex flex-col">
                   <label className="text-[11px] sm:text-[12px] font-medium text-gray-700 mb-1 flex items-center gap-1">
@@ -304,15 +304,15 @@ const MoveDetailsModal = ({ isOpen, onClose, onSubmit, companyCount = 0 }) => {
                 {/* Login Button */}
                 <button
                   type="submit"
-                  className="w-full bg-pink-600 hover:bg-pink-700 text-white text-[12px] sm:text-[14px] font-semibold py-3 rounded-lg flex items-center justify-center gap-2 transition-transform hover:scale-[1.02]"
+                  className="w-full bg-pink-600 hover:bg-pink-700 text-white text-[13px] sm:text-[14px] md:text-[15px] font-semibold py-2.5 sm:py-3 rounded-lg flex items-center justify-center gap-2 transition-transform hover:scale-[1.02] mt-2"
                 >
-                  Login & View Results
-                  <ChevronRight size={15} className="sm:w-4 sm:h-4" />
+                  Login & View Quotes
+                  <ChevronRight size={14} className="sm:w-4 sm:h-4" />
                 </button>
               </form>
 
               {/* Switch to Register */}
-              <p className="text-[11px] text-gray-600 text-center mt-3">
+              <p className="text-[10px] sm:text-[11px] md:text-[12px] text-gray-600 text-center mt-3">
                 New user?{" "}
                 <button
                   onClick={() => {
@@ -329,24 +329,24 @@ const MoveDetailsModal = ({ isOpen, onClose, onSubmit, companyCount = 0 }) => {
             <>
               {/* REGISTER MODE (DEFAULT) */}
               <div className="flex items-center justify-center mb-2 text-pink-600">
-                <UserPlus size={20} />
+                <UserPlus size={18} className="sm:w-5 sm:h-5 md:w-6 md:h-6" />
               </div>
               
-              <h2 className="text-[16px] sm:text-[18px] font-bold text-gray-900 mb-1 text-center">
+              <h2 className="text-[15px] sm:text-[17px] md:text-[19px] font-bold text-gray-900 mb-1 text-center">
                 Create Your Account
               </h2>
               
               {companyCount > 0 && (
-                <p className="text-[11px] sm:text-[12px] text-center text-pink-600 font-medium mb-2">
+                <p className="text-[10px] sm:text-[11px] md:text-[12px] text-center text-pink-600 font-medium mb-2">
                   Register to view {companyCount} transport providers for your move
                 </p>
               )}
               
-              <p className="text-[11px] sm:text-[13px] text-gray-500 text-center mb-4">
+              <p className="text-[11px] sm:text-[12px] md:text-[13px] text-gray-500 text-center mb-3 sm:mb-4">
                 Join <span className="text-pink-600 font-semibold">Local Moves</span> to get started!
               </p>
 
-              <form onSubmit={handleRegister} className="space-y-3">
+              <form onSubmit={handleRegister} className="space-y-2 sm:space-y-3">
                 {/* Name */}
                 <div className="flex flex-col">
                   <label className="text-[11px] sm:text-[12px] font-medium text-gray-700 mb-1 flex items-center gap-1">
@@ -413,7 +413,7 @@ const MoveDetailsModal = ({ isOpen, onClose, onSubmit, companyCount = 0 }) => {
                   <label className="text-[11px] sm:text-[12px] font-medium text-gray-700 mb-1 flex items-center gap-1">
                     <Phone size={13} className="text-pink-600" /> Phone Number
                   </label>
-                  <div className="flex gap-2">
+                  <div className="flex flex-col sm:flex-row gap-2">
                     <input
                       type="tel"
                       name="phone"
@@ -428,14 +428,14 @@ const MoveDetailsModal = ({ isOpen, onClose, onSubmit, companyCount = 0 }) => {
                         type="button"
                         onClick={handleSendOtp}
                         disabled={otpStep}
-                        className={`px-3 py-2 rounded-lg text-[11px] sm:text-[12px] text-white ${
+                        className={`px-3 py-2 rounded-lg text-[11px] sm:text-[12px] text-white whitespace-nowrap ${
                           otpStep ? "bg-gray-400" : "bg-pink-600 hover:bg-pink-700"
                         }`}
                       >
                         {otpStep ? "Sent" : "Send OTP"}
                       </button>
                     ) : (
-                      <span className="bg-pink-600 text-white px-3 py-2 rounded-lg flex items-center gap-1 text-[11px] sm:text-[12px]">
+                      <span className="bg-pink-600 text-white px-3 py-2 rounded-lg flex items-center justify-center gap-1 text-[11px] sm:text-[12px] whitespace-nowrap">
                         <CheckCircle size={12} /> Verified
                       </span>
                     )}
@@ -541,15 +541,15 @@ const MoveDetailsModal = ({ isOpen, onClose, onSubmit, companyCount = 0 }) => {
                 {/* Register Button */}
                 <button
                   type="submit"
-                  className="w-full bg-pink-600 hover:bg-pink-700 text-white text-[12px] sm:text-[14px] font-semibold py-3 rounded-lg flex items-center justify-center gap-2 transition-transform hover:scale-[1.02] mt-2"
+                  className="w-full bg-pink-600 hover:bg-pink-700 text-white text-[13px] sm:text-[14px] md:text-[15px] font-semibold py-2.5 sm:py-3 rounded-lg flex items-center justify-center gap-2 transition-transform hover:scale-[1.02] mt-2"
                 >
                   Create Account & Continue
-                  <ChevronRight size={15} className="sm:w-4 sm:h-4" />
+                  <ChevronRight size={14} className="sm:w-4 sm:h-4" />
                 </button>
               </form>
 
               {/* Switch to Login */}
-              <p className="text-[11px] text-gray-600 text-center mt-3">
+              <p className="text-[10px] sm:text-[11px] md:text-[12px] text-gray-600 text-center mt-3">
                 Already have an account?{" "}
                 <button
                   onClick={() => {
@@ -565,7 +565,7 @@ const MoveDetailsModal = ({ isOpen, onClose, onSubmit, companyCount = 0 }) => {
           )}
 
           {/* Footer text */}
-          <p className="text-[10px] sm:text-[12px] text-gray-500 text-center mt-4">
+          <p className="text-[9px] sm:text-[10px] md:text-[11px] text-gray-500 text-center mt-3 sm:mt-4 px-2">
             We aim to redefine local and long-distance moving by making it transparent, customer-friendly, and supported by modern digital tools.
           </p>
 
