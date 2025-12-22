@@ -41,7 +41,10 @@ const PaymentSuccess = () => {
     localStorage.setItem("hasSubscription", "true");
     window.dispatchEvent(new Event("subscription-updated"));
 
-    navigate("/logistic-dashboard/home", { replace: true });
+    // Add delay to allow state to update, then force refresh to dashboard
+    setTimeout(() => {
+      window.location.href = "/logistic-dashboard/home";
+    }, 500);
   };
 
   if (!plan || !transactionId) return null;

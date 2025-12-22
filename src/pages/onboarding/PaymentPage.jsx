@@ -150,9 +150,21 @@ const PaymentPage = () => {
 
   if (!plan) return <p>No plan selected.</p>;
 
+  // Debug: Log the plan object to see what's being passed
+  console.log("Plan object received:", plan);
+  console.log("Plan price:", plan.price);
+  console.log("Plan priceDisplay:", plan.priceDisplay);
+  console.log("Plan priceINR:", plan.priceINR);
+  console.log("Plan period:", plan.period);
+
   // Handle different plan structures - add fallbacks
-  const displayPrice = plan.priceDisplay || `${plan.price}${plan.period ? '/' + plan.period : ''}`;
-  const priceInINR = plan.priceINR || plan.price?.replace(/[^0-9]/g, '') || 0;
+  const displayPrice = plan.priceDisplay ||
+    (plan.price && plan.period ? `${plan.price} ${plan.period}` : plan.price) ||
+    'Price not available';
+  const priceInINR = plan.priceINR || parseInt(plan.price?.replace(/[^0-9]/g, '')) || 0;
+
+  console.log("Calculated displayPrice:", displayPrice);
+  console.log("Calculated priceInINR:", priceInINR);
 
   return (
     <div className="flex justify-center min-h-screen p-6 bg-gray-100">
@@ -165,7 +177,7 @@ const PaymentPage = () => {
         <p className="font-bold text-xl">{plan.name}</p>
 
         {/* Display price with fallback */}
-        <p className="text-2xl text-pink-600 font-bold">{displayPrice}</p>
+        <p className="text-2xl text-pink-600 font-bold mt-2 mb-4">{displayPrice}</p>
 
         <div id="paypal-btn" className="mt-6"></div>
       </div>
