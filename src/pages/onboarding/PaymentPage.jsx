@@ -41,18 +41,34 @@ const PaymentPage = () => {
       }
 
       try {
-        const res = await api.get("localmoves.api.company.get_my_company", {
+        console.log("Fetching company for email:", user.email);
+        // Use get_company_details instead of get_my_company to avoid 417 error
+        const res = await api.get("localmoves.api.company.get_company_details", {
           params: { email: user.email },
         });
 
+        console.log("Company fetch response:", res.data);
         const c = res.data?.message?.data?.[0];
         if (c?.company_name) {
           setCompanyName(c.company_name);
+          console.log("Company name set:", c.company_name);
         } else {
+          console.warn("No company found in response");
           toast.error("Company not found.");
         }
-      } catch {
-        toast.error("Failed to load company info.");
+      } catch (error) {
+        console.error("Company fetch error:", error);
+        console.error("Error status:", error.response?.status);
+        console.error("Error data:", error.response?.data);
+
+        // Handle 417 error specifically
+        if (error.response?.status === 417) {
+          toast.error("Authentication error. Please try logging in again.");
+          // Don't block payment page, just show warning
+          console.warn("417 error - continuing without company name");
+        } else {
+          toast.error("Failed to load company info.");
+        }
       } finally {
         setLoading(false);
       }
