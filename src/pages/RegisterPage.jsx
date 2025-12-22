@@ -17,6 +17,7 @@ import {
 import { HiUserAdd } from "react-icons/hi";
 import registerIllustration from "../assets/login-abstract.png";
 import axios from "axios";
+import env from "../config/env";
 
 const RegisterPage = () => {
   const [form, setForm] = useState({
@@ -52,7 +53,7 @@ const RegisterPage = () => {
 
     try {
       const res = await axios.post(
-        "http://127.0.0.1:8000/api/method/localmoves.api.auth.send_otp",
+        `${env.API_BASE_URL}localmoves.api.auth.send_otp`,
         { phone: form.phone }
       );
 
@@ -235,9 +236,8 @@ const RegisterPage = () => {
                     type="button"
                     onClick={handleSendOtp}
                     disabled={otpStep}
-                    className={`px-3 py-2 rounded-lg text-white ${
-                      otpStep ? "bg-gray-400" : "bg-pink-600 hover:bg-pink-700"
-                    }`}
+                    className={`px-3 py-2 rounded-lg text-white ${otpStep ? "bg-gray-400" : "bg-pink-600 hover:bg-pink-700"
+                      }`}
                   >
                     {otpStep ? "Sent" : "Send OTP"}
                   </button>

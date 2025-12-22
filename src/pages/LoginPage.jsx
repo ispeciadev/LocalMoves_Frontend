@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import loginIllustration from "../assets/login-abstract.png";
 import axios from "axios";
+import env from "../config/env";
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -32,7 +33,7 @@ const LoginPage = () => {
 
     try {
       const res = await axios.post(
-        "http://127.0.0.1:8000/api/method/localmoves.api.auth.forgot_password",
+        `${env.API_BASE_URL}localmoves.api.auth.forgot_password`,
         { email: forgotEmail }
       );
 

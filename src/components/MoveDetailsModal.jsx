@@ -18,6 +18,7 @@ import {
 import { toast } from "react-toastify";
 import { useAuthStore } from "../stores/useAuthStore";
 import axios from "axios";
+import env from "../config/env";
 
 const MoveDetailsModal = ({ isOpen, onClose, onSubmit, companyCount = 0 }) => {
   const { login, register } = useAuthStore();
@@ -53,7 +54,7 @@ const MoveDetailsModal = ({ isOpen, onClose, onSubmit, companyCount = 0 }) => {
 
     try {
       const res = await axios.post(
-        "http://127.0.0.1:8000/api/method/localmoves.api.auth.send_otp",
+        `${env.API_BASE_URL}localmoves.api.auth.send_otp`,
         { phone: form.phone }
       );
 

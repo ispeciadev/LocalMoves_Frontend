@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { Lock, Eye, EyeOff } from "lucide-react";
+import env from "../config/env";
 
 const ResetPassword = () => {
   const [searchParams] = useSearchParams();
@@ -26,7 +27,7 @@ const ResetPassword = () => {
 
     try {
       const res = await axios.post(
-        "http://127.0.0.1:8000/api/method/localmoves.api.auth.reset_password",
+        `${env.API_BASE_URL}localmoves.api.auth.reset_password`,
         { token, new_password: password }
       );
 
@@ -85,11 +86,10 @@ const ResetPassword = () => {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full py-2.5 rounded-lg font-semibold ${
-              loading
+            className={`w-full py-2.5 rounded-lg font-semibold ${loading
                 ? "bg-gray-400 cursor-not-allowed"
                 : "bg-pink-600 hover:bg-pink-700 text-white shadow-md"
-            }`}
+              }`}
           >
             {loading ? "Resetting..." : "Reset Password"}
           </button>
