@@ -109,8 +109,8 @@ const CustomSelect = ({ value, onChange, options, placeholder, required }) => {
                 setIsOpen(false);
               }}
               className={`w-full px-3 py-2 text-sm text-left transition-colors ${value === opt.label
-                  ? "bg-pink-100 text-pink-800 font-semibold"
-                  : "hover:bg-pink-50 text-gray-900"
+                ? "bg-pink-100 text-pink-800 font-semibold"
+                : "hover:bg-pink-50 text-gray-900"
                 }`}
             >
               <span className="truncate">
@@ -593,15 +593,20 @@ const RegisterCompany = () => {
   // ---------------- OTP: send & verify ----------------
   const handleSendOtp = async () => {
     const phone = formData.contactNumber?.trim();
-    if (!phone || phone.length < 10) {
-      toast.error("Please enter a valid phone number.");
+
+    // Clean phone number - remove all non-digit characters
+    const cleanedPhone = phone?.replace(/\D/g, "") || "";
+
+    // Validate that we have exactly 10 digits
+    if (!cleanedPhone || cleanedPhone.length !== 10) {
+      toast.error("Please enter a valid 10-digit phone number.");
       return;
     }
 
     try {
       setSendingOtp(true);
       const res = await api.post("localmoves.api.auth.send_otp", {
-        phone,
+        phone: cleanedPhone,
       });
 
       const apiRes = res.data?.message || res.data;
@@ -1052,7 +1057,13 @@ const RegisterCompany = () => {
                     type="text"
                     name="contactNumber"
                     value={formData.contactNumber}
-                    onChange={handleChange}
+                    onChange={(e) => {
+                      // Only allow digits
+                      const cleaned = e.target.value.replace(/\D/g, "");
+                      // Limit to 10 digits
+                      const limited = cleaned.slice(0, 10);
+                      handleChange({ target: { name: "contactNumber", value: limited } });
+                    }}
                     placeholder="10-digit phone number"
                     className="w-full border rounded-lg px-4 py-2 text-sm border-gray-300 bg-white text-gray-900 focus:border-pink-500"
                     required
@@ -1294,8 +1305,8 @@ const RegisterCompany = () => {
                       type="button"
                       onClick={() => setActivePostcode(code)}
                       className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs border transition ${activePostcode === code
-                          ? "bg-pink-100 border-pink-500 text-pink-700"
-                          : "bg-gray-100 border-gray-300 text-gray-700"
+                        ? "bg-pink-100 border-pink-500 text-pink-700"
+                        : "bg-gray-100 border-gray-300 text-gray-700"
                         }`}
                     >
                       <span>{code}</span>
