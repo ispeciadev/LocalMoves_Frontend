@@ -278,6 +278,16 @@ const NewSubscriptionPlans = () => {
     fetchData();
   }, [user, isAuthenticated]);
 
+  // AUTO-SCROLL TO TABS ON PAGE LOAD
+  useEffect(() => {
+    // Wait for page to render, then scroll to tabs
+    const timer = setTimeout(() => {
+      planRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 500); // 500ms delay to allow page to render
+
+    return () => clearTimeout(timer);
+  }, []);
+
   const handleStartAction = (plan) => {
     // Navigate to payment with plan data
     if (plan) {
