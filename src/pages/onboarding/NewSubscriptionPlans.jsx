@@ -1,3 +1,4 @@
+// src/pages/onboarding/NewSubscriptionPlans.jsx
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../stores/useAuthStore";
@@ -63,11 +64,19 @@ const COLORS = {
   purple: "#8b5cf6",
 };
 
+//  Map UI → Backend (IMPORTANT FOR PAYMENT)
+const PLAN_MAP = {
+  Starter: "Basic",
+  Growth: "Standard",
+  Pro: "Premium",
+};
+
 // PUBLIC PLANS
 const PLANS = [
   {
     id: "basic",
     name: "Basic",
+    backendName: "Basic", // For payment
     price: "£495",
     period: "per year",
     priceINR: 495,
@@ -86,6 +95,7 @@ const PLANS = [
   {
     id: "standard",
     name: "Standard",
+    backendName: "Standard", // For payment
     price: "£995",
     period: "per year",
     priceINR: 995,
@@ -106,6 +116,7 @@ const PLANS = [
   {
     id: "premium",
     name: "Premium",
+    backendName: "Premium", // For payment
     price: "£1595",
     period: "per year",
     priceINR: 1595,
@@ -131,8 +142,10 @@ const LEADS_PLANS = [
   {
     id: "starter",
     name: "Starter",
+    backendName: "Starter", // For payment
     price: "£200",
     period: "per month",
+    priceINR: 200,
     tagline: "Ideal for small businesses or those beginning structured lead generation",
     featured: false,
     bullets: [
@@ -148,8 +161,10 @@ const LEADS_PLANS = [
   {
     id: "growth",
     name: "Growth",
+    backendName: "Growth", // For payment
     price: "£400",
     period: "per month",
+    priceINR: 400,
     tagline: "Designed for growing teams needing more consistent volumes",
     featured: true,
     highlight: "Best Value",
@@ -168,8 +183,10 @@ const LEADS_PLANS = [
   {
     id: "pro",
     name: "Pro",
+    backendName: "Pro", // For payment
     price: "£700",
     period: "per month",
+    priceINR: 700,
     tagline: "Built for scaling operations that require high-volume, high-quality lead flow",
     featured: false,
     bullets: [
@@ -191,8 +208,10 @@ const JOBS_PLANS = [
   {
     id: "founder",
     name: "Founder",
+    backendName: "Founder", // For payment
     price: "£500",
     period: "per month",
+    priceINR: 500,
     tagline: "Perfect for small or newly established businesses that need consistent, ready-to-deliver jobs without the workload of lead chasing",
     featured: false,
     bullets: [
@@ -208,8 +227,10 @@ const JOBS_PLANS = [
   {
     id: "advanced",
     name: "Advanced",
+    backendName: "Advanced", // For payment
     price: "£900",
     period: "per month",
+    priceINR: 900,
     tagline: "Designed for growing trades and service companies that want a stronger pipeline of confirmed jobs without internal admin burden",
     featured: true,
     highlight: "Recommended",
@@ -228,8 +249,10 @@ const JOBS_PLANS = [
   {
     id: "enterprise",
     name: "Enterprise",
+    backendName: "Enterprise", // For payment
     price: "£1700",
     period: "per month",
+    priceINR: 1700,
     tagline: "Built for larger or scaling businesses requiring high-volume, reliably converted jobs every month",
     featured: false,
     bullets: [
@@ -295,10 +318,14 @@ const NewSubscriptionPlans = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  // PAYMENT HANDLER - Navigate to payment page with plan data
   const handleStartAction = (plan) => {
-    // Navigate to payment with plan data
     if (plan) {
-      navigate("/onboarding/payment", { state: { plan } });
+      const finalPlan = {
+        ...plan,
+        name: plan.backendName, // Use backendName for payment
+      };
+      navigate("/onboarding/payment", { state: { plan: finalPlan } });
     } else {
       toast.info("Please select a plan to continue");
     }
@@ -385,7 +412,7 @@ const NewSubscriptionPlans = () => {
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, delay: index * 0.1 }}
-        className={`relative rounded-2xl p-8 h-full flex flex-col transition-all duration-300 ${plan.featured
+        className={`relative rounded-2xl p-6 sm:p-8 h-full flex flex-col transition-all duration-300 ${plan.featured
           ? 'bg-gradient-to-br from-white to-gray-50 border-2 border-pink-200 shadow-xl transform hover:-translate-y-1'
           : 'bg-white border border-gray-200 shadow-lg hover:shadow-xl hover:border-gray-300'
           }`}
@@ -400,7 +427,7 @@ const NewSubscriptionPlans = () => {
         {/* Highlight badge */}
         {plan.highlight && (
           <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-            <div className="bg-gradient-to-r from-pink-600 to-pink-500 text-white px-4 py-1 rounded-full text-sm font-bold shadow-lg flex items-center gap-1">
+            <div className="bg-gradient-to-r from-pink-600 to-pink-500 text-white px-4 py-1 rounded-full text-xs sm:text-sm font-bold shadow-lg flex items-center gap-1">
               <FaMedal className="text-yellow-300" />
               {plan.highlight}
             </div>
@@ -414,49 +441,49 @@ const NewSubscriptionPlans = () => {
               type="checkbox"
               checked={isSelected}
               onChange={() => handleCompareToggle(plan.id)}
-              className="w-5 h-5 text-pink-600 rounded focus:ring-pink-500 border-gray-300"
+              className="w-4 h-4 sm:w-5 sm:h-5 text-pink-600 rounded focus:ring-pink-500 border-gray-300"
             />
-            <span className="text-sm text-gray-600">Compare</span>
+            <span className="text-xs sm:text-sm text-gray-600">Compare</span>
           </label>
         </div>
 
         {/* Plan icon */}
-        <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-gray-50 to-gray-100 mb-4">
+        <div className="text-center mb-4 sm:mb-6">
+          <div className="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-r from-gray-50 to-gray-100 mb-3 sm:mb-4">
             {getPlanIcon(plan.id, activeTab)}
           </div>
-          <h3 className="text-2xl font-bold text-gray-900">{plan.name} Plan</h3>
-          <p className="text-gray-600 mt-2 text-sm leading-relaxed">{plan.tagline}</p>
+          <h3 className="text-xl sm:text-2xl font-bold text-gray-900">{plan.name} Plan</h3>
+          <p className="text-gray-600 mt-2 text-xs sm:text-sm leading-relaxed">{plan.tagline}</p>
         </div>
 
         {/* Price */}
-        <div className="text-center mb-6">
+        <div className="text-center mb-4 sm:mb-6">
           <div className="flex items-end justify-center">
-            <span className="text-5xl font-bold text-gray-900">{plan.price}</span>
-            <span className="text-gray-600 ml-2">{plan.period}</span>
+            <span className="text-4xl sm:text-5xl font-bold text-gray-900">{plan.price}</span>
+            <span className="text-gray-600 ml-2 text-sm sm:text-base">{plan.period}</span>
           </div>
         </div>
 
         {/* Features list */}
         <div className="flex-grow">
-          <ul className="space-y-3">
+          <ul className="space-y-2 sm:space-y-3">
             {plan.bullets.slice(0, 6).map((bullet, i) => (
               <li key={i} className="flex items-start p-2 hover:bg-gray-50 rounded-lg transition-colors">
-                <span className="flex-shrink-0 mt-1 mr-3">
+                <span className="flex-shrink-0 mt-1 mr-2 sm:mr-3">
                   {getBulletIcon(bullet)}
                 </span>
-                <span className="text-gray-700 text-sm">{bullet}</span>
+                <span className="text-gray-700 text-xs sm:text-sm">{bullet}</span>
               </li>
             ))}
           </ul>
 
           {plan.bestFor && (
-            <div className="mt-6 pt-6 border-t border-gray-100">
+            <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-gray-100">
               <div className="flex items-start">
                 <FaSmile className="text-gray-400 mt-1 mr-2 flex-shrink-0" />
                 <div>
-                  <p className="font-semibold text-gray-800">Best for:</p>
-                  <p className="text-gray-600 text-sm">{plan.bestFor}</p>
+                  <p className="font-semibold text-gray-800 text-xs sm:text-sm">Best for:</p>
+                  <p className="text-gray-600 text-xs sm:text-sm">{plan.bestFor}</p>
                 </div>
               </div>
             </div>
@@ -464,16 +491,16 @@ const NewSubscriptionPlans = () => {
         </div>
 
         {/* Action buttons */}
-        <div className="mt-8 space-y-3">
+        <div className="mt-6 sm:mt-8 space-y-2 sm:space-y-3">
           <button
             onClick={() => handleViewDetails(plan)}
-            className="w-full bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 px-6 py-3 rounded-xl font-semibold transition duration-300 hover:border-gray-400"
+            className="w-full bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl text-sm sm:text-base font-semibold transition duration-300 hover:border-gray-400"
           >
             View Details
           </button>
           <button
             onClick={() => handleStartAction(plan)}
-            className="w-full bg-gradient-to-r from-pink-600 to-pink-500 hover:from-pink-700 hover:to-pink-600 text-white px-6 py-3 rounded-xl font-semibold transition duration-300 flex items-center justify-center shadow-md hover:shadow-lg"
+            className="w-full bg-gradient-to-r from-pink-600 to-pink-500 hover:from-pink-700 hover:to-pink-600 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl text-sm sm:text-base font-semibold transition duration-300 flex items-center justify-center shadow-md hover:shadow-lg"
           >
             Subscribe Now <FaArrowRight className="ml-2" />
           </button>
@@ -495,12 +522,12 @@ const NewSubscriptionPlans = () => {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white rounded-2xl shadow-xl p-8 mt-8 border border-gray-200"
+        className="bg-white rounded-2xl shadow-xl p-4 sm:p-8 mt-8 border border-gray-200"
       >
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex justify-between items-center mb-6 sm:mb-8">
           <div>
-            <h3 className="text-2xl font-bold text-gray-900">Plan Comparison</h3>
-            <p className="text-gray-600">Side-by-side feature comparison</p>
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-900">Plan Comparison</h3>
+            <p className="text-gray-600 text-sm sm:text-base">Side-by-side feature comparison</p>
           </div>
           <button
             onClick={() => {
@@ -509,7 +536,7 @@ const NewSubscriptionPlans = () => {
             }}
             className="text-gray-400 hover:text-gray-600 bg-gray-50 hover:bg-gray-100 p-2 rounded-full transition-colors"
           >
-            <FaTimes size={24} />
+            <FaTimes size={20} className="sm:w-6 sm:h-6" />
           </button>
         </div>
 
@@ -517,33 +544,33 @@ const NewSubscriptionPlans = () => {
           <table className="w-full">
             <thead>
               <tr className="bg-gradient-to-r from-gray-50 to-gray-100">
-                <th className="text-left p-4 text-gray-800 font-bold">Features</th>
-                <th className="text-center p-4">
-                  <div className="font-bold text-xl text-gray-900">{plan1.name}</div>
-                  <div className="text-gray-600 font-bold">{plan1.price} {plan1.period}</div>
+                <th className="text-left p-3 sm:p-4 text-gray-800 font-bold text-sm sm:text-base">Features</th>
+                <th className="text-center p-3 sm:p-4">
+                  <div className="font-bold text-lg sm:text-xl text-gray-900">{plan1.name}</div>
+                  <div className="text-gray-600 font-bold text-xs sm:text-sm">{plan1.price} {plan1.period}</div>
                 </th>
-                <th className="text-center p-4">
-                  <div className="font-bold text-xl text-gray-900">{plan2.name}</div>
-                  <div className="text-gray-600 font-bold">{plan2.price} {plan2.period}</div>
+                <th className="text-center p-3 sm:p-4">
+                  <div className="font-bold text-lg sm:text-xl text-gray-900">{plan2.name}</div>
+                  <div className="text-gray-600 font-bold text-xs sm:text-sm">{plan2.price} {plan2.period}</div>
                 </th>
               </tr>
             </thead>
             <tbody>
               {allFeatures.map((feature, index) => (
                 <tr key={index} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
-                  <td className="p-4 font-medium text-gray-800">{feature}</td>
-                  <td className="p-4 text-center">
+                  <td className="p-3 sm:p-4 font-medium text-gray-800 text-xs sm:text-sm">{feature}</td>
+                  <td className="p-3 sm:p-4 text-center">
                     {plan1.bullets.includes(feature) ? (
-                      <FaCheckCircle className="text-green-500 mx-auto text-xl" />
+                      <FaCheckCircle className="text-green-500 mx-auto text-lg sm:text-xl" />
                     ) : (
-                      <FaTimes className="text-gray-300 mx-auto text-xl" />
+                      <FaTimes className="text-gray-300 mx-auto text-lg sm:text-xl" />
                     )}
                   </td>
-                  <td className="p-4 text-center">
+                  <td className="p-3 sm:p-4 text-center">
                     {plan2.bullets.includes(feature) ? (
-                      <FaCheckCircle className="text-green-500 mx-auto text-xl" />
+                      <FaCheckCircle className="text-green-500 mx-auto text-lg sm:text-xl" />
                     ) : (
-                      <FaTimes className="text-gray-300 mx-auto text-xl" />
+                      <FaTimes className="text-gray-300 mx-auto text-lg sm:text-xl" />
                     )}
                   </td>
                 </tr>
@@ -552,16 +579,16 @@ const NewSubscriptionPlans = () => {
           </table>
         </div>
 
-        <div className="flex justify-center space-x-4 mt-8">
+        <div className="flex flex-col sm:flex-row justify-center space-y-3 sm:space-y-0 sm:space-x-4 mt-6 sm:mt-8">
           <button
             onClick={() => handleStartAction(plan1)}
-            className="bg-gradient-to-r from-pink-600 to-pink-500 hover:from-pink-700 hover:to-pink-600 text-white px-8 py-3 rounded-xl font-semibold transition duration-300 shadow-md hover:shadow-lg"
+            className="bg-gradient-to-r from-pink-600 to-pink-500 hover:from-pink-700 hover:to-pink-600 text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-xl text-sm sm:text-base font-semibold transition duration-300 shadow-md hover:shadow-lg"
           >
             Choose {plan1.name}
           </button>
           <button
             onClick={() => handleStartAction(plan2)}
-            className="bg-gradient-to-r from-pink-600 to-pink-500 hover:from-pink-700 hover:to-pink-600 text-white px-8 py-3 rounded-xl font-semibold transition duration-300 shadow-md hover:shadow-lg"
+            className="bg-gradient-to-r from-pink-600 to-pink-500 hover:from-pink-700 hover:to-pink-600 text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-xl text-sm sm:text-base font-semibold transition duration-300 shadow-md hover:shadow-lg"
           >
             Choose {plan2.name}
           </button>
@@ -870,22 +897,22 @@ const NewSubscriptionPlans = () => {
               </div>
 
               {selectedPlan.bestFor && (
-                <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl p-6 mb-8 border border-gray-200">
-                  <h4 className="font-bold text-lg text-gray-900 mb-2 flex items-center">
+                <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 border border-gray-200">
+                  <h4 className="font-bold text-base sm:text-lg text-gray-900 mb-2 flex items-center">
                     <FaSmile className="text-gray-600 mr-2" />
                     Best for:
                   </h4>
-                  <p className="text-gray-800">{selectedPlan.bestFor}</p>
+                  <p className="text-sm sm:text-base text-gray-800">{selectedPlan.bestFor}</p>
                 </div>
               )}
 
               {/* Plan Note */}
-              <div className="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-xl">
+              <div className="mt-6 sm:mt-8 p-4 bg-blue-50 border border-blue-200 rounded-xl">
                 <div className="flex items-start">
                   <FaInfoCircle className="text-blue-500 mt-1 mr-3" />
                   <div>
-                    <p className="font-semibold text-blue-800 mb-1">Important Note:</p>
-                    <p className="text-blue-700 text-sm">
+                    <p className="font-semibold text-blue-800 mb-1 text-sm sm:text-base">Important Note:</p>
+                    <p className="text-blue-700 text-xs sm:text-sm">
                       {activeTab === "leads"
                         ? "Lead figures represent average monthly volumes. All plans require a 12-month contract."
                         : "Job numbers represent average monthly volumes. All plans require a 12-month contract."}
@@ -895,19 +922,19 @@ const NewSubscriptionPlans = () => {
               </div>
             </div>
 
-            <div className="sticky bottom-0 bg-white border-t border-gray-200 p-6 rounded-b-2xl">
+            <div className="sticky bottom-0 bg-white border-t border-gray-200 p-4 sm:p-6 rounded-b-2xl">
               <div className="flex flex-col sm:flex-row justify-center space-y-3 sm:space-y-0 sm:space-x-4">
                 <button
                   onClick={() => setShowModal(false)}
-                  className="px-8 py-3 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl font-semibold transition duration-300"
+                  className="px-6 sm:px-8 py-2.5 sm:py-3 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl text-sm sm:text-base font-semibold transition duration-300"
                 >
                   Close
                 </button>
                 <button
-                  onClick={handleStartAction}
-                  className="px-8 py-3 bg-gradient-to-r from-pink-600 to-pink-500 hover:from-pink-700 hover:to-pink-600 text-white rounded-xl font-semibold transition duration-300 flex items-center justify-center shadow-md hover:shadow-lg"
+                  onClick={() => handleStartAction(selectedPlan)}
+                  className="px-6 sm:px-8 py-2.5 sm:py-3 bg-gradient-to-r from-pink-600 to-pink-500 hover:from-pink-700 hover:to-pink-600 text-white rounded-xl text-sm sm:text-base font-semibold transition duration-300 flex items-center justify-center shadow-md hover:shadow-lg"
                 >
-                  Get Started Now <FaArrowRight className="ml-2" />
+                  Subscribe Now <FaArrowRight className="ml-2" />
                 </button>
               </div>
             </div>
