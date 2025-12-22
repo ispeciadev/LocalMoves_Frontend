@@ -1008,7 +1008,7 @@ const RegisterCompany = () => {
       {/* LEFT FORM */}
       <div className="lg:w-2/3 w-full flex justify-center items-start">
         <div className="w-full max-w-2xl rounded-3xl shadow-lg p-4 sm:p-6 md:p-8 lg:p-10 hover:shadow-xl transition-all border border-pink-100 bg-white">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-6 flex items-center gap-2 text-pink-600">
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4 sm:mb-6 flex items-center gap-2 text-pink-600">
             <HiOutlineBuildingStorefront /> Register Company & Services
           </h2>
 
@@ -1069,7 +1069,7 @@ const RegisterCompany = () => {
                 <label className="mb-1 font-medium flex items-center gap-1 text-pink-600">
                   <FaPhoneAlt /> Phone *
                 </label>
-                <div className="flex gap-2">
+                <div className="flex flex-col sm:flex-row gap-2">
                   <input
                     type="text"
                     name="contactNumber"
@@ -1103,7 +1103,7 @@ const RegisterCompany = () => {
                 </div>
 
                 {otpStep && !isVerified && (
-                  <div className="flex gap-2 mt-2">
+                  <div className="flex flex-col sm:flex-row gap-2 mt-2">
                     <input
                       type="text"
                       placeholder="Enter 6-digit OTP"
@@ -1214,7 +1214,7 @@ const RegisterCompany = () => {
               </label>
 
               {formData.galleryPreviews.length > 0 && (
-                <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 mt-2">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 mt-2">
                   {formData.galleryPreviews.map((item, idx) => (
                     <div
                       key={idx}
@@ -1625,11 +1625,11 @@ const RegisterCompany = () => {
             </div>
 
             {/* SUBMIT */}
-            <div className="flex justify-center mt-4">
+            <div className="flex justify-center mt-6">
               <button
                 type="submit"
                 disabled={loading || uploadingGallery}
-                className="text-white px-6 py-3 rounded-xl transition font-semibold bg-pink-600 hover:bg-pink-700 disabled:opacity-50"
+                className="w-full sm:w-auto text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl transition font-semibold text-base sm:text-lg bg-pink-600 hover:bg-pink-700 disabled:opacity-50 shadow-lg hover:shadow-xl"
               >
                 {loading
                   ? "Registering..."
