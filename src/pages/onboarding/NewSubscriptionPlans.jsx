@@ -567,14 +567,67 @@ const NewSubscriptionPlans = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Page Header */}
-      <div className="bg-white border-b border-gray-200 py-8 sm:py-12">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-3 sm:mb-4">
+      <div className="relative bg-gradient-to-r from-pink-600 via-pink-500 to-purple-600 overflow-hidden">
+        {/* Decorative elements */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-0 left-0 w-64 h-64 bg-white rounded-full mix-blend-overlay filter blur-3xl animate-blob"></div>
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white rounded-full mix-blend-overlay filter blur-3xl animate-blob animation-delay-2000"></div>
+          <div className="absolute bottom-0 left-1/2 w-64 h-64 bg-white rounded-full mix-blend-overlay filter blur-3xl animate-blob animation-delay-4000"></div>
+        </div>
+
+        <div className="relative max-w-7xl mx-auto px-4 py-12 sm:py-16 md:py-20 text-center">
+          {/* Icon */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+            className="mb-4 sm:mb-6"
+          >
+            <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-white/20 backdrop-blur-sm rounded-2xl border-2 border-white/30 shadow-xl">
+              <FaCrown className="text-3xl sm:text-4xl text-white" />
+            </div>
+          </motion.div>
+
+          {/* Heading */}
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white mb-4 sm:mb-6 leading-tight"
+          >
             Subscription Plans
-          </h1>
-          <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
+          </motion.h1>
+
+          {/* Subtitle */}
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="text-lg sm:text-xl md:text-2xl text-white/90 max-w-3xl mx-auto font-light mb-6 sm:mb-8"
+          >
             Choose the perfect plan for your moving business and start growing today
-          </p>
+          </motion.p>
+
+          {/* Trust badges */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-white/80"
+          >
+            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20">
+              <FaCheckCircle className="text-green-300" />
+              <span className="text-sm sm:text-base">No Hidden Fees</span>
+            </div>
+            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20">
+              <FaRocket className="text-yellow-300" />
+              <span className="text-sm sm:text-base">Instant Activation</span>
+            </div>
+            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20">
+              <FaShieldAlt className="text-blue-300" />
+              <span className="text-sm sm:text-base">Secure Payment</span>
+            </div>
+          </motion.div>
         </div>
       </div>
 
@@ -657,7 +710,10 @@ const NewSubscriptionPlans = () => {
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => setActiveTab("leads")}
+            onClick={() => {
+              setActiveTab("leads");
+              planRef.current?.scrollIntoView({ behavior: 'smooth' });
+            }}
             className={`px-4 sm:px-6 md:px-8 py-2 sm:py-3 rounded-full font-semibold text-sm sm:text-base transition-all duration-300 flex items-center relative z-10 ${activeTab === "leads"
               ? "text-white"
               : "text-gray-700 hover:text-gray-900"
@@ -672,7 +728,10 @@ const NewSubscriptionPlans = () => {
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => setActiveTab("jobs")}
+            onClick={() => {
+              setActiveTab("jobs");
+              planRef.current?.scrollIntoView({ behavior: 'smooth' });
+            }}
             className={`px-4 sm:px-6 md:px-8 py-2 sm:py-3 rounded-full font-semibold text-sm sm:text-base transition-all duration-300 flex items-center relative z-10 ${activeTab === "jobs"
               ? "text-white"
               : "text-gray-700 hover:text-gray-900"
@@ -747,59 +806,6 @@ const NewSubscriptionPlans = () => {
         ) : (
           renderComparisonTable()
         )}
-
-        {/* FAQ Section */}
-        <div className="mt-12 sm:mt-16 md:mt-20">
-          <div className="text-center mb-8 sm:mb-12 px-4">
-            <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 sm:mb-3">
-              Frequently Asked Questions
-            </h3>
-            <p className="text-sm sm:text-base text-gray-600">Find answers to common questions about our plans</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 max-w-4xl mx-auto">
-            {[
-              {
-                q: "Can I change my plan later?",
-                a: "Yes, you can upgrade or downgrade your plan at any time. Changes will be prorated based on your billing cycle.",
-                icon: <FaRibbon className="text-pink-600 text-xl" />
-              },
-              {
-                q: "Is there a setup fee?",
-                a: "No, there are no hidden setup fees. You only pay the monthly or annual subscription fee.",
-                icon: <FaGem className="text-purple-500 text-xl" />
-              },
-              {
-                q: "What if I exceed my lead/job limit?",
-                a: "You'll be notified and given options to upgrade or purchase additional credits.",
-                icon: <FaBolt className="text-yellow-500 text-xl" />
-              },
-              {
-                q: "Is there a contract period?",
-                a: "Yes, all plans require a 12-month commitment for the best pricing.",
-                icon: <FaShieldAlt className="text-blue-500 text-xl" />
-              }
-            ].map((faq, idx) => (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.1 }}
-                className="bg-white p-4 sm:p-6 rounded-lg sm:rounded-xl shadow-lg border border-gray-200 hover:border-gray-300 transition-colors"
-              >
-                <div className="flex items-start">
-                  <div className="bg-gray-100 p-2 sm:p-3 rounded-lg mr-3 sm:mr-4 flex-shrink-0">
-                    {faq.icon}
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-base sm:text-lg text-gray-900 mb-2">{faq.q}</h4>
-                    <p className="text-sm sm:text-base text-gray-700">{faq.a}</p>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
       </div>
 
       {/* Plan Details Modal */}
