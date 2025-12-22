@@ -458,8 +458,17 @@ const RefineOptionsPage = () => {
         
         if (config.notice_period_multipliers || config.move_day_multipliers) {
           setMultiplierConfig({
-            notice_period_multipliers: config.notice_period_multipliers || multiplierConfig.notice_period_multipliers,
-            move_day_multipliers: config.move_day_multipliers || multiplierConfig.move_day_multipliers,
+            notice_period_multipliers: config.notice_period_multipliers || {
+              within_3_days: 1.3,
+              within_week: 1.2,
+              within_2_weeks: 1.1,
+              within_month: 1.0,
+              over_month: 0.9,
+            },
+            move_day_multipliers: config.move_day_multipliers || {
+              sun_to_thurs: 1.0,
+              friday_saturday: 1.15,
+            },
           });
           console.log("✅ Multiplier configuration loaded successfully");
         } else {
@@ -1526,7 +1535,7 @@ const RefineOptionsPage = () => {
 
         try {
           const userRes = await axios.get(
-            "http://127.0.0.1:8000/api/method/localmoves.api.user.get_user_details"
+            `${env.API_BASE_URL}localmoves.api.user.get_user_details`
           );
 
           if (userRes.data?.message) {

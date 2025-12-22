@@ -1,8 +1,8 @@
-// src/pages/BookServicePage.jsx
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
+import env from "../config/env";
 import {
   Calendar,
   MapPin,
@@ -99,7 +99,7 @@ export default function BookServicePage() {
       try {
         const token = JSON.parse(localStorage.getItem("user"))?.token || "";
         const response = await axios.get(
-          "http://127.0.0.1:8000/api/method/localmoves.api.dashboard.get_current_deposit_percentage",
+          `${env.API_BASE_URL}localmoves.api.dashboard.get_current_deposit_percentage`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -152,7 +152,7 @@ export default function BookServicePage() {
 
         if (token) {
           const response = await axios.get(
-            "http://127.0.0.1:8000/api/method/localmoves.api.auth.get_current_user_info",
+            `${env.API_BASE_URL}localmoves.api.auth.get_current_user_info`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
