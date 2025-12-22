@@ -1,49 +1,35 @@
-// src/pages/onboarding/NewSubscriptionPlans.jsx
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion";
 import {
   FaCrown,
-  FaRupeeSign,
   FaCalendarAlt,
   FaCheckCircle,
   FaStar,
   FaRocket,
   FaBullhorn,
   FaChartLine,
-  FaBuilding,
   FaUsers,
-  FaBriefcase,
-  FaHandshake,
-  FaCog,
-  FaShieldAlt,
-  FaClock,
-  FaEnvelope,
-  FaSms,
-  FaWhatsapp,
-  FaPhone,
-  FaCalendarCheck,
-  FaMoneyBillWave,
-  FaUserTie,
-  FaChartBar,
   FaHeadset,
-  FaEye,
   FaThumbsUp,
   FaArrowRight,
-  FaTrophy,
-  FaChartPie,
-  FaLightbulb,
   FaBolt,
   FaGem,
   FaRegCheckCircle,
   FaTimes,
   FaInfinity,
-  FaHeart,
   FaSmile,
   FaMedal,
-  FaRibbon,
-  FaInfoCircle,
+  FaShieldAlt,
+  FaClock,
+  FaEnvelope,
+  FaUserTie,
+  FaChartBar,
+  FaEye,
+  FaMoneyBillWave,
+  FaBuilding,
+  FaCalendarCheck,
 } from "react-icons/fa";
 
 // Professional Color Palette
@@ -63,17 +49,17 @@ const COLORS = {
 
 //  Map UI → Backend
 const PLAN_MAP = {
-  Starter: "Basic",
-  Growth: "Standard",
-  Pro: "Premium",
+  Basic: "Basic",
+  Standard: "Standard",
+  Premium: "Premium",
 };
 
-// PLANS DATA - Using PricePlansDetails content with NewSubscriptionPlans names
+// PLANS DATA - Matching PricePlansDetails exactly
 const PLANS = [
   {
-    id: "starter",
-    name: "Starter",
-    backendName: PLAN_MAP["Starter"],
+    id: "basic",
+    name: "Basic",
+    backendName: PLAN_MAP["Basic"],
     price: "£495",
     period: "per year",
     priceINR: 495,
@@ -87,14 +73,12 @@ const PLANS = [
       "Quote Display",
       "Image Gallery",
       "Email Support",
-      "Showcase Your Services",
-      "Boost Local Discovery",
     ],
   },
   {
-    id: "growth",
-    name: "Growth",
-    backendName: PLAN_MAP["Growth"],
+    id: "standard",
+    name: "Standard",
+    backendName: PLAN_MAP["Standard"],
     price: "£995",
     period: "per year",
     priceINR: 995,
@@ -110,14 +94,12 @@ const PLANS = [
       "Map Display",
       "Quote Display",
       "Image Gallery",
-      "Rank Higher in Local Listings",
-      "Access to Priority Leads",
     ],
   },
   {
-    id: "pro",
-    name: "Pro",
-    backendName: PLAN_MAP["Pro"],
+    id: "premium",
+    name: "Premium",
+    backendName: PLAN_MAP["Premium"],
     price: "£1595",
     period: "per year",
     priceINR: 1595,
@@ -130,21 +112,17 @@ const PLANS = [
       "Survey Bookings",
       "Hide Competitors",
       "Phone/Email Support",
-      "Dedicated Profile Page",
+      "Profile Page",
       "Map Display",
       "Quote Display",
       "Image Gallery",
-      "Featured Listing Badge",
-      "Top Ranking in Your Area",
-      "Win More Exclusive Requests",
     ],
   },
 ];
 
-
-
 const NewSubscriptionPlans = () => {
   const navigate = useNavigate();
+  const planRef = useRef(null);
   const [comparisonPlans, setComparisonPlans] = useState([]);
   const [compareMode, setCompareMode] = useState(false);
 
@@ -171,6 +149,7 @@ const NewSubscriptionPlans = () => {
   const handleCompareView = () => {
     if (comparisonPlans.length === 2) {
       setCompareMode(true);
+      planRef.current?.scrollIntoView({ behavior: 'smooth' });
     } else {
       toast.info("Please select exactly 2 plans to compare");
     }
@@ -191,9 +170,6 @@ const NewSubscriptionPlans = () => {
       { keywords: ["gallery", "image"], icon: <FaEye className="text-gray-600" /> },
       { keywords: ["survey", "booking"], icon: <FaCalendarCheck className="text-blue-500" /> },
       { keywords: ["hide", "competitor"], icon: <FaShieldAlt className="text-blue-600" /> },
-      { keywords: ["featured", "badge"], icon: <FaMedal className="text-yellow-500" /> },
-      { keywords: ["ranking", "top"], icon: <FaTrophy className="text-pink-600" /> },
-      { keywords: ["exclusive", "win"], icon: <FaCrown className="text-purple-500" /> },
     ];
 
     const match = iconMap.find((item) =>
@@ -201,6 +177,15 @@ const NewSubscriptionPlans = () => {
     );
 
     return match ? match.icon : <FaRegCheckCircle className="text-pink-600" />;
+  };
+
+  const getPlanIcon = (planId) => {
+    const icons = {
+      basic: <span className="text-2xl">⭐</span>,
+      standard: <span className="text-2xl">📈</span>,
+      premium: <span className="text-2xl">🚀</span>,
+    };
+    return icons[planId] || <FaStar className="text-pink-600" />;
   };
 
   const renderPlanCard = (plan, index) => {
@@ -212,9 +197,9 @@ const NewSubscriptionPlans = () => {
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, delay: index * 0.1 }}
-        className={`relative rounded-2xl p-6 sm:p-8 h-full flex flex-col transition-all duration-300 ${plan.featured
-          ? "bg-gradient-to-br from-white to-gray-50 border-2 border-pink-200 shadow-xl transform hover:-translate-y-1"
-          : "bg-white border border-gray-200 shadow-lg hover:shadow-xl hover:border-gray-300"
+        className={`relative rounded-2xl p-8 h-full flex flex-col transition-all duration-300 ${plan.featured
+            ? "bg-gradient-to-br from-white to-gray-50 border-2 border-pink-200 shadow-xl transform hover:-translate-y-1"
+            : "bg-white border border-gray-200 shadow-lg hover:shadow-xl hover:border-gray-300"
           }`}
       >
         {/* Sparkle effect for featured */}
@@ -227,7 +212,7 @@ const NewSubscriptionPlans = () => {
         {/* Highlight badge */}
         {plan.highlight && (
           <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-            <div className="bg-gradient-to-r from-pink-600 to-pink-500 text-white px-4 py-1 rounded-full text-xs sm:text-sm font-bold shadow-lg flex items-center gap-1">
+            <div className="bg-gradient-to-r from-pink-600 to-pink-500 text-white px-4 py-1 rounded-full text-sm font-bold shadow-lg flex items-center gap-1">
               <FaMedal className="text-yellow-300" />
               {plan.highlight}
             </div>
@@ -241,127 +226,117 @@ const NewSubscriptionPlans = () => {
               type="checkbox"
               checked={isSelected}
               onChange={() => handleCompareToggle(plan.id)}
-              className="w-4 h-4 sm:w-5 sm:h-5 text-pink-600 rounded focus:ring-pink-500 border-gray-300"
+              className="w-5 h-5 text-pink-600 rounded focus:ring-pink-500 border-gray-300"
             />
-            <span className="text-xs sm:text-sm text-gray-600">Compare</span>
+            <span className="text-sm text-gray-600">Compare</span>
           </label>
         </div>
 
-        {/* Plan Icon */}
-        <div className="flex justify-center mb-4">
-          <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-pink-100 to-pink-50 rounded-full flex items-center justify-center">
-            {plan.id === "starter" && <span className="text-3xl sm:text-4xl">⭐</span>}
-            {plan.id === "growth" && <span className="text-3xl sm:text-4xl">📈</span>}
-            {plan.id === "pro" && <span className="text-3xl sm:text-4xl">🚀</span>}
+        {/* Plan icon */}
+        <div className="text-center mb-6">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-gray-50 to-gray-100 mb-4">
+            {getPlanIcon(plan.id)}
           </div>
+          <h3 className="text-2xl font-bold text-gray-900">{plan.name} Plan</h3>
+          <p className="text-gray-600 mt-2 text-sm leading-relaxed">{plan.tagline}</p>
         </div>
-
-        {/* Plan Name */}
-        <h3 className="text-2xl sm:text-3xl font-bold text-center text-gray-900 mb-2">
-          {plan.name}
-        </h3>
-
-        {/* Tagline */}
-        <p className="text-sm sm:text-base text-center text-gray-600 mb-4 min-h-[48px]">
-          {plan.tagline}
-        </p>
 
         {/* Price */}
         <div className="text-center mb-6">
-          <div className="flex items-baseline justify-center gap-1">
-            <span className="text-4xl sm:text-5xl font-extrabold text-pink-600">
-              {plan.price}
-            </span>
+          <div className="flex items-end justify-center">
+            <span className="text-5xl font-bold text-gray-900">{plan.price}</span>
+            <span className="text-gray-600 ml-2">{plan.period}</span>
           </div>
-          <p className="text-sm text-gray-500 mt-1">{plan.period}</p>
         </div>
 
-        {/* Features List */}
-        <ul className="space-y-3 mb-6 flex-grow">
-          {plan.bullets.map((bullet, idx) => (
-            <li key={idx} className="flex items-start gap-3">
-              <div className="flex-shrink-0 mt-0.5">{getBulletIcon(bullet)}</div>
-              <span className="text-sm sm:text-base text-gray-700">{bullet}</span>
-            </li>
-          ))}
-        </ul>
+        {/* Features list */}
+        <div className="flex-grow">
+          <ul className="space-y-3">
+            {plan.bullets.slice(0, 6).map((bullet, i) => (
+              <li key={i} className="flex items-start p-2 hover:bg-gray-50 rounded-lg transition-colors">
+                <span className="flex-shrink-0 mt-1 mr-3">
+                  {getBulletIcon(bullet)}
+                </span>
+                <span className="text-gray-700 text-sm">{bullet}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
 
-        {/* Subscribe Button */}
-        <button
-          onClick={() => handleSubscribe(plan)}
-          className={`w-full py-3 sm:py-4 rounded-xl font-bold text-sm sm:text-base transition-all duration-300 flex items-center justify-center gap-2 ${plan.featured
-            ? "bg-gradient-to-r from-pink-600 to-pink-500 text-white hover:from-pink-700 hover:to-pink-600 shadow-lg hover:shadow-xl transform hover:scale-105"
-            : "bg-gray-900 text-white hover:bg-gray-800 shadow-md hover:shadow-lg"
-            }`}
-        >
-          Subscribe Now
-          <FaArrowRight className="text-sm" />
-        </button>
+        {/* Action buttons */}
+        <div className="mt-8 space-y-3">
+          <button
+            onClick={() => handleSubscribe(plan)}
+            className="w-full bg-gradient-to-r from-pink-600 to-pink-500 hover:from-pink-700 hover:to-pink-600 text-white px-6 py-3 rounded-xl font-semibold transition duration-300 flex items-center justify-center shadow-md hover:shadow-lg"
+          >
+            Subscribe Now <FaArrowRight className="ml-2" />
+          </button>
+        </div>
       </motion.div>
     );
   };
 
   const renderComparisonTable = () => {
-    if (!compareMode || comparisonPlans.length !== 2) return null;
-
     const plan1 = PLANS.find((p) => p.id === comparisonPlans[0]);
     const plan2 = PLANS.find((p) => p.id === comparisonPlans[1]);
 
     if (!plan1 || !plan2) return null;
 
+    const allFeatures = [...new Set([...plan1.bullets, ...plan2.bullets])];
+
     return (
-      <div className="mt-12 bg-white rounded-2xl shadow-xl p-4 sm:p-8 border border-gray-200">
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="text-xl sm:text-2xl font-bold text-gray-900">Plan Comparison</h3>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-white rounded-2xl shadow-xl p-8 mt-8 border border-gray-200"
+      >
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h3 className="text-2xl font-bold text-gray-900">Plan Comparison</h3>
+            <p className="text-gray-600">Side-by-side feature comparison</p>
+          </div>
           <button
             onClick={() => {
               setCompareMode(false);
               setComparisonPlans([]);
             }}
-            className="text-gray-500 hover:text-gray-700 p-2"
+            className="text-gray-400 hover:text-gray-600 bg-gray-50 hover:bg-gray-100 p-2 rounded-full transition-colors"
           >
-            <FaTimes size={20} />
+            <FaTimes size={24} />
           </button>
         </div>
 
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto rounded-xl border border-gray-200">
           <table className="w-full">
             <thead>
-              <tr className="border-b-2 border-gray-200">
-                <th className="text-left py-4 px-2 sm:px-4 text-sm sm:text-base font-semibold text-gray-700">
-                  Feature
+              <tr className="bg-gradient-to-r from-gray-50 to-gray-100">
+                <th className="text-left p-4 text-gray-800 font-bold">Features</th>
+                <th className="text-center p-4">
+                  <div className="font-bold text-xl text-gray-900">{plan1.name}</div>
+                  <div className="text-gray-600 font-bold">{plan1.price} {plan1.period}</div>
                 </th>
-                <th className="text-center py-4 px-2 sm:px-4 text-sm sm:text-base font-semibold text-pink-600">
-                  {plan1.name}
-                </th>
-                <th className="text-center py-4 px-2 sm:px-4 text-sm sm:text-base font-semibold text-pink-600">
-                  {plan2.name}
+                <th className="text-center p-4">
+                  <div className="font-bold text-xl text-gray-900">{plan2.name}</div>
+                  <div className="text-gray-600 font-bold">{plan2.price} {plan2.period}</div>
                 </th>
               </tr>
             </thead>
             <tbody>
-              <tr className="border-b border-gray-100">
-                <td className="py-4 px-2 sm:px-4 text-sm sm:text-base font-medium text-gray-700">
-                  Price
-                </td>
-                <td className="py-4 px-2 sm:px-4 text-center text-sm sm:text-base font-bold text-pink-600">
-                  {plan1.price}
-                </td>
-                <td className="py-4 px-2 sm:px-4 text-center text-sm sm:text-base font-bold text-pink-600">
-                  {plan2.price}
-                </td>
-              </tr>
-              {plan1.bullets.map((bullet, idx) => (
-                <tr key={idx} className="border-b border-gray-100">
-                  <td className="py-3 px-2 sm:px-4 text-xs sm:text-sm text-gray-700">{bullet}</td>
-                  <td className="py-3 px-2 sm:px-4 text-center">
-                    <FaCheckCircle className="inline text-green-500 text-base sm:text-lg" />
-                  </td>
-                  <td className="py-3 px-2 sm:px-4 text-center">
-                    {plan2.bullets.includes(bullet) ? (
-                      <FaCheckCircle className="inline text-green-500 text-base sm:text-lg" />
+              {allFeatures.map((feature, index) => (
+                <tr key={index} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
+                  <td className="p-4 font-medium text-gray-800">{feature}</td>
+                  <td className="p-4 text-center">
+                    {plan1.bullets.includes(feature) ? (
+                      <FaCheckCircle className="text-green-500 mx-auto text-xl" />
                     ) : (
-                      <FaTimes className="inline text-gray-300 text-base sm:text-lg" />
+                      <FaTimes className="text-gray-300 mx-auto text-xl" />
+                    )}
+                  </td>
+                  <td className="p-4 text-center">
+                    {plan2.bullets.includes(feature) ? (
+                      <FaCheckCircle className="text-green-500 mx-auto text-xl" />
+                    ) : (
+                      <FaTimes className="text-gray-300 mx-auto text-xl" />
                     )}
                   </td>
                 </tr>
@@ -369,54 +344,206 @@ const NewSubscriptionPlans = () => {
             </tbody>
           </table>
         </div>
-      </div>
+
+        <div className="flex justify-center space-x-4 mt-8">
+          <button
+            onClick={() => handleSubscribe(plan1)}
+            className="bg-gradient-to-r from-pink-600 to-pink-500 hover:from-pink-700 hover:to-pink-600 text-white px-8 py-3 rounded-xl font-semibold transition duration-300 shadow-md hover:shadow-lg"
+          >
+            Choose {plan1.name}
+          </button>
+          <button
+            onClick={() => handleSubscribe(plan2)}
+            className="bg-gradient-to-r from-pink-600 to-pink-500 hover:from-pink-700 hover:to-pink-600 text-white px-8 py-3 rounded-xl font-semibold transition duration-300 shadow-md hover:shadow-lg"
+          >
+            Choose {plan2.name}
+          </button>
+        </div>
+      </motion.div>
     );
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      {/* Hero Section */}
-      <div className="bg-gradient-to-r from-pink-600 via-pink-500 to-purple-600 text-white py-12 sm:py-16 md:py-20 px-4">
-        <div className="max-w-7xl mx-auto text-center">
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <div className="flex items-center justify-center gap-3 mb-4">
-              <FaCrown className="text-3xl sm:text-4xl md:text-5xl text-yellow-300" />
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold">
-                Subscription Plans
-              </h1>
-            </div>
-            <p className="text-lg sm:text-xl md:text-2xl mb-4 text-pink-100">
-              Choose a plan that matches your business goals
-            </p>
-            <p className="text-sm sm:text-base md:text-lg text-pink-50 max-w-3xl mx-auto">
-              Upgrade anytime as you grow — no hidden fees, no long-term lock-ins
-            </p>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header Section */}
+      <div className="relative bg-gradient-to-r from-pink-600 to-pink-500 text-white py-20 overflow-hidden">
+        {/* Decorative background elements */}
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute top-0 left-0 w-72 h-72 bg-pink-700 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob"></div>
+          <div className="absolute top-0 right-0 w-72 h-72 bg-pink-800 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000"></div>
+          <div className="absolute -bottom-8 left-20 w-72 h-72 bg-pink-900 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-4000"></div>
+        </div>
 
-            {/* Trust Indicators */}
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-4 sm:gap-6 md:gap-8 text-xs sm:text-sm">
-              <div className="flex items-center gap-2">
-                <FaShieldAlt className="text-lg sm:text-xl" />
-                <span>Secure Payment</span>
+        <div className="relative max-w-7xl mx-auto px-4 text-center">
+          {/* Main Title */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-12"
+          >
+            <div className="inline-block mb-4 sm:mb-6">
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl sm:rounded-2xl px-4 sm:px-6 py-1.5 sm:py-2 border border-white/20 inline-flex items-center gap-2">
+                <FaStar className="text-yellow-300 text-sm sm:text-base" />
+                <span className="text-xs sm:text-sm font-semibold">TRUSTED BY 500+ BUSINESSES</span>
               </div>
-              <div className="flex items-center gap-2">
-                <FaHeart className="text-lg sm:text-xl" />
-                <span>30-Day Guarantee</span>
+            </div>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 leading-tight px-4">
+              Choose Your Perfect Plan
+            </h1>
+            <p className="text-base sm:text-xl md:text-2xl text-white/90 max-w-3xl mx-auto font-light px-4">
+              Flexible pricing designed to help your moving business grow
+            </p>
+          </motion.div>
+
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 max-w-6xl mx-auto mt-8 sm:mt-12 md:mt-16">
+            {/* Stat 1 */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="group"
+            >
+              <div className="bg-white rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-pink-100 to-pink-50 group-hover:from-pink-200 group-hover:to-pink-100 transition-all">
+                    <FaUsers className="text-3xl text-pink-600" />
+                  </div>
+                  <div className="text-right">
+                    <div className="text-4xl font-bold text-gray-900 mb-1">500+</div>
+                    <div className="text-xs text-gray-500 font-medium">COMPANIES</div>
+                  </div>
+                </div>
+                <div className="text-left">
+                  <h4 className="text-lg font-bold text-gray-900 mb-2">Trusted Platform</h4>
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    Join hundreds of successful moving companies across the UK.
+                  </p>
+                </div>
+                <div className="mt-6 pt-6 border-t border-gray-100">
+                  <div className="flex items-center text-sm text-gray-500">
+                    <FaRocket className="mr-2 text-pink-500" />
+                    <span>Growing every day</span>
+                  </div>
+                </div>
               </div>
+            </motion.div>
+
+            {/* Stat 2 */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="group"
+            >
+              <div className="bg-white rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-green-100 to-green-50 group-hover:from-green-200 group-hover:to-green-100 transition-all">
+                    <FaChartLine className="text-3xl text-green-600" />
+                  </div>
+                  <div className="text-right">
+                    <div className="text-4xl font-bold text-gray-900 mb-1">98%</div>
+                    <div className="text-xs text-gray-500 font-medium">SATISFACTION</div>
+                  </div>
+                </div>
+                <div className="text-left">
+                  <h4 className="text-lg font-bold text-gray-900 mb-2">Client Success</h4>
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    Our clients see real growth in their moving business.
+                  </p>
+                </div>
+                <div className="mt-6 pt-6 border-t border-gray-100">
+                  <div className="flex items-center text-sm text-gray-500">
+                    <FaThumbsUp className="mr-2 text-blue-500" />
+                    <span>Rated excellent by clients</span>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Stat 3 */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="group"
+            >
+              <div className="bg-white rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-100 to-blue-50 group-hover:from-blue-200 group-hover:to-blue-100 transition-all">
+                    <FaHeadset className="text-3xl text-blue-600" />
+                  </div>
+                  <div className="text-right">
+                    <div className="text-4xl font-bold text-gray-900 mb-1">24/7</div>
+                    <div className="text-xs text-gray-500 font-medium">SUPPORT</div>
+                  </div>
+                </div>
+                <div className="text-left">
+                  <h4 className="text-lg font-bold text-gray-900 mb-2">Always Available</h4>
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    Round-the-clock dedicated support for all your moving business needs.
+                  </p>
+                </div>
+                <div className="mt-6 pt-6 border-t border-gray-100">
+                  <div className="flex items-center text-sm text-gray-500">
+                    <FaClock className="mr-2 text-purple-500" />
+                    <span>Instant response guarantee</span>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* CTA Button */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="mt-12"
+          >
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 px-4">
+              <button
+                onClick={() => planRef.current?.scrollIntoView({ behavior: 'smooth' })}
+                className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 bg-white text-pink-600 hover:bg-gray-50 rounded-xl font-bold text-base sm:text-lg transition-all duration-300 flex items-center justify-center gap-2 sm:gap-3 shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+              >
+                <FaRocket className="text-pink-500" />
+                View Plans
+                <FaArrowRight />
+              </button>
+            </div>
+
+            {/* Trust badges */}
+            <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 text-white/80 px-4">
               <div className="flex items-center gap-2">
-                <FaSmile className="text-lg sm:text-xl" />
-                <span>Cancel Anytime</span>
+                <FaShieldAlt className="text-green-400" />
+                <span className="text-xs sm:text-sm">Secure Payments</span>
+              </div>
+              <div className="hidden sm:block h-4 w-px bg-white/30"></div>
+              <div className="flex items-center gap-2">
+                <FaCheckCircle className="text-blue-400" />
+                <span className="text-xs sm:text-sm">No Hidden Fees</span>
+              </div>
+              <div className="hidden sm:block h-4 w-px bg-white/30"></div>
+              <div className="flex items-center gap-2">
+                <FaCalendarCheck className="text-purple-400" />
+                <span className="text-xs sm:text-sm">Flexible Billing</span>
               </div>
             </div>
           </motion.div>
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-8 sm:py-12 md:py-16">
+      {/* Plans Section */}
+      <div className="max-w-7xl mx-auto px-4 py-16" ref={planRef}>
+        <div className="text-center mb-12">
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+            Subscription Plans
+          </h2>
+          <p className="text-gray-600 text-lg">
+            Choose the plan that best fits your business needs
+          </p>
+        </div>
+
         {/* Compare Button */}
         {comparisonPlans.length === 2 && !compareMode && (
           <div className="mb-8 text-center">
@@ -431,63 +558,12 @@ const NewSubscriptionPlans = () => {
         )}
 
         {/* Plans Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
           {PLANS.map((plan, index) => renderPlanCard(plan, index))}
         </div>
 
         {/* Comparison Table */}
-        {renderComparisonTable()}
-
-        {/* Why Choose Us */}
-        <div className="mt-12 sm:mt-16 bg-gradient-to-r from-pink-600 via-pink-500 to-purple-600 rounded-2xl p-6 sm:p-8 md:p-12">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center text-white mb-8 sm:mb-12">
-            Why Choose Local Moves?
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto mb-4">
-                <FaUsers className="text-2xl sm:text-3xl text-white" />
-              </div>
-              <h3 className="text-lg sm:text-xl font-bold text-white mb-2">
-                Trusted Platform
-              </h3>
-              <p className="text-sm sm:text-base text-pink-50">
-                Join thousands of moving companies across the UK
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto mb-4">
-                <FaChartLine className="text-2xl sm:text-3xl text-white" />
-              </div>
-              <h3 className="text-lg sm:text-xl font-bold text-white mb-2">
-                Grow Your Business
-              </h3>
-              <p className="text-sm sm:text-base text-pink-50">
-                Get more leads and bookings every month
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto mb-4">
-                <FaHeadset className="text-2xl sm:text-3xl text-white" />
-              </div>
-              <h3 className="text-lg sm:text-xl font-bold text-white mb-2">24/7 Support</h3>
-              <p className="text-sm sm:text-base text-pink-50">
-                Our team is here to help you succeed
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto mb-4">
-                <FaRocket className="text-2xl sm:text-3xl text-white" />
-              </div>
-              <h3 className="text-lg sm:text-xl font-bold text-white mb-2">
-                Easy Setup
-              </h3>
-              <p className="text-sm sm:text-base text-pink-50">
-                Get started in minutes, no technical skills needed
-              </p>
-            </div>
-          </div>
-        </div>
+        {compareMode && renderComparisonTable()}
       </div>
     </div>
   );
