@@ -77,6 +77,16 @@ function AppRouter() {
       return;
     }
 
+    // Check if user just paid - trust localStorage immediately
+    const justPaid = localStorage.getItem("justPaid");
+    if (justPaid === "true") {
+      console.log("✅ User just paid - trusting localStorage subscription status");
+      setIsCompanyRegistered(true);
+      setHasSubscription(true);
+      localStorage.removeItem("justPaid"); // Clear flag after use
+      return;
+    }
+
     try {
       const res = await api.get("localmoves.api.company.get_my_company", {
         params: { email: user.email },

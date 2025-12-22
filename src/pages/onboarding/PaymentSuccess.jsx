@@ -25,7 +25,9 @@ const PaymentSuccess = () => {
   }, []);
 
   const updateLocalSubscription = () => {
+    console.log("🔄 Starting subscription update...");
     const user = JSON.parse(localStorage.getItem("user"));
+    console.log("👤 Current user:", user);
 
     if (user) {
       const updatedUser = {
@@ -35,16 +37,24 @@ const PaymentSuccess = () => {
       };
 
       localStorage.setItem("user", JSON.stringify(updatedUser));
+      console.log("✅ Updated user in localStorage:", updatedUser);
     }
 
-    // Let AppRouter know
+    // Set multiple flags to ensure subscription is recognized
     localStorage.setItem("hasSubscription", "true");
+    localStorage.setItem("subscriptionActive", "true");
+    localStorage.setItem("justPaid", "true");
+
+    console.log("📢 Dispatching subscription-updated event");
     window.dispatchEvent(new Event("subscription-updated"));
 
-    // Add delay to allow state to update, then force refresh to dashboard
+    console.log("⏰ Waiting 1 second before redirect...");
+
+    // Increased delay and force reload
     setTimeout(() => {
+      console.log("🚀 Redirecting to dashboard...");
       window.location.href = "/logistic-dashboard/home";
-    }, 500);
+    }, 1000); // Increased to 1 second
   };
 
   if (!plan || !transactionId) return null;
