@@ -1,502 +1,1057 @@
-// import React, { useEffect, useState } from "react";
-// import { useNavigate } from "react-router-dom";
-// import { useAuthStore } from "../stores/useAuthStore";
-// import api from "../api/axios";
-// import HappyStories from "../components/HappyStoriesSection";
-// import { FaCrown, FaRupeeSign, FaCalendarAlt, FaCheckCircle } from "react-icons/fa";
-// import { toast } from "react-toastify";
-
-// // PUBLIC PLANS – MATCH NAMES FROM SUBSCRIPTION PAGE
-// const PLANS = [
-//   {
-//     id: "basic",
-//     name: "Basic",
-//     price: "£495/year",
-//     tagline: "Perfect for small local movers",
-//     bullets: [
-//       "Membership: 2 Months",
-//       "Free Entry Views: 20",
-//       "Map Display",
-//       "Quote Display",
-//       "Image Gallery",
-//       "Email Support",
-//     ],
-//   },
-//   {
-//     id: "standard",
-//     name: "Standard",
-//     price: "£995/year",
-//     tagline: "Ideal for expanding moving companies",
-//     bullets: [
-//       "Membership: 6 Months",
-//       "Free Entry Views: 50",
-//       "Phone/Email Support",
-//       "Profile Page",
-//       "Map Display",
-//       "Quote Display",
-//       "Image Gallery",
-//     ],
-//   },
-//   {
-//     id: "premium",
-//     name: "Premium",
-//     price: "£1595/year",
-//     tagline: "Best for high-volume UK logistics teams",
-//     bullets: [
-//       "Membership: 1 Year",
-//       "Free Entry Views: Unlimited",
-//       "Survey Bookings",
-//       "Hide Competitors",
-//       "Phone/Email Support",
-//       "Profile Page",
-//       "Map Display",
-//       "Quote Display",
-//       "Image Gallery",
-//     ],
-//   },
-// ];
-
-// const PricePlansDetails = () => {
-//   const { user, isAuthenticated } = useAuthStore();
-//   const navigate = useNavigate();
-
-//   const [companyData, setCompanyData] = useState(null);
-//   const [loading, setLoading] = useState(true);
-
-//   // FETCH USER PLAN DETAILS (IF LOGGED IN)
-//   useEffect(() => {
-//     const fetchData = async () => {
-//       if (!isAuthenticated) {
-//         setLoading(false);
-//         return;
-//       }
-
-//       try {
-//         const res = await api.get("localmoves.api.company.get_company_details", {
-//           params: { email: user?.email },
-//         });
-
-//         setCompanyData(res.data?.message?.data?.[0] || null);
-//       } catch (error) {
-//         console.error(error);
-//       }
-
-//       setLoading(false);
-//     };
-
-//     fetchData();
-//   }, [user, isAuthenticated]);
-
-//   if (loading) {
-//     return (
-//       <div className="p-6 text-center text-gray-500">
-//         Loading plan details…
-//       </div>
-//     );
-//   }
-
-//   // START BUTTON HANDLER
-//   const handleStartAction = () => {
-//     toast.info("Please login or register to start booking services.");
-//     navigate("/register");
-//   };
-
-//   return (
-//     <div className="min-h-screen bg-white pb-20">
-
-//       {/* HEADER */}
-//       <div className="bg-pink-600 text-white py-10 text-center">
-//         <h1 className="text-4xl font-bold">Price & Plans Details</h1>
-//         <p className="mt-2 text-sm opacity-90">Explore our UK-friendly plans & benefits</p>
-//       </div>
-
-//       {/* ALWAYS SHOW CTA BUTTON */}
-//       <div className="text-center mt-12">
-//         <button
-//           onClick={handleStartAction}
-//           className="bg-pink-600 hover:bg-pink-700 text-white px-8 py-3 rounded-xl text-lg font-semibold transition"
-//         >
-//           Click Me To Start
-//         </button>
-//       </div>
-
-//       {/* USER'S CURRENT PLAN – ONLY IF LOGGED IN */}
-//       {isAuthenticated && companyData && (
-//         <div className="max-w-4xl mx-auto px-4 mt-10">
-
-//           <div className="bg-white shadow-lg border rounded-3xl p-6 sm:p-10">
-
-//             {/* CURRENT PLAN CARD */}
-//             <div className="text-center mb-6">
-//               <FaCrown className="text-pink-600 text-5xl mx-auto mb-3" />
-//               <h2 className="text-3xl font-bold text-pink-600">
-//                 {companyData.subscription_plan}
-//               </h2>
-//             </div>
-
-//             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-//               <div className="p-4 rounded-xl bg-pink-50 shadow-sm">
-//                 <div className="font-semibold text-gray-700 mb-1 flex items-center gap-2">
-//                   <FaRupeeSign /> Price
-//                 </div>
-//                 <p className="text-xl font-bold text-pink-700">
-//                   ₹{companyData.price || 0}
-//                 </p>
-//               </div>
-
-//               <div className="p-4 rounded-xl bg-pink-50 shadow-sm">
-//                 <div className="font-semibold text-gray-700 mb-1 flex items-center gap-2">
-//                   <FaCalendarAlt /> Renewal Date
-//                 </div>
-//                 <p className="text-lg font-semibold text-pink-700">
-//                   {companyData.subscription_end_date || "N/A"}
-//                 </p>
-//               </div>
-
-//               <div className="p-4 rounded-xl bg-pink-50 shadow-sm sm:col-span-2">
-//                 <div className="font-semibold text-gray-700 mb-1 flex items-center gap-2">
-//                   <FaCheckCircle /> Free Entries
-//                 </div>
-//                 <p className="text-lg font-semibold text-pink-700">
-//                   {companyData.subscription_plan === "Premium"
-//                     ? "Unlimited"
-//                     : companyData.requests_viewed_this_month || 0}
-//                 </p>
-//               </div>
-//             </div>
-
-//             <div className="mt-10">
-//               <h3 className="text-xl font-bold text-pink-600 mb-3">Your Plan Features</h3>
-//               <ul className="space-y-2 text-gray-700">
-//                 {(JSON.parse(companyData.includes || "[]") || []).map((item, idx) => (
-//                   <li key={idx} className="flex items-center gap-2">
-//                     <FaCheckCircle className="text-pink-600" />
-//                     {item}
-//                   </li>
-//                 ))}
-//               </ul>
-//             </div>
-
-//           </div>
-//         </div>
-//       )}
-
-//       {/* PUBLIC PLANS – 3-CARD INLINE DISPLAY */}
-//       <div className="max-w-6xl mx-auto px-4 mt-16">
-//         <h2 className="text-3xl font-bold text-center text-pink-600 mb-10">
-//           All Available Subscription Plans
-//         </h2>
-
-//         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-//           {PLANS.map((plan) => (
-//             <div
-//               key={plan.id}
-//               className="bg-white shadow-lg border rounded-3xl p-6 hover:shadow-xl transition"
-//             >
-//               <h3 className="text-center text-2xl font-bold text-gray-800">
-//                 {plan.name}
-//               </h3>
-
-//               <p className="text-center text-pink-600 text-3xl font-extrabold mt-2">
-//                 {plan.price}
-//               </p>
-
-//               <p className="text-center text-gray-600 mt-1">{plan.tagline}</p>
-
-//               <ul className="mt-4 space-y-2 text-gray-700">
-//                 {plan.bullets.map((b, i) => (
-//                   <li key={i} className="flex items-start gap-2">
-//                     <FaCheckCircle className="text-pink-600 mt-1" />
-//                     {b}
-//                   </li>
-//                 ))}
-//               </ul>
-//             </div>
-//           ))}
-//         </div>
-//       </div>
-
-//       {/* HAPPY STORIES SECTION */}
-//       <div className="mt-16">
-//         <HappyStories />
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default PricePlansDetails;
-
-import React from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "../stores/useAuthStore";
+import api from "../api/axios";
 import HappyStories from "../components/HappyStoriesSection";
-import { FaCheckCircle } from "react-icons/fa";
+import {
+  FaCrown,
+  FaRupeeSign,
+  FaCalendarAlt,
+  FaCheckCircle,
+  FaStar,
+  FaRocket,
+  FaBullhorn,
+  FaChartLine,
+  FaBuilding,
+  FaUsers,
+  FaBriefcase,
+  FaHandshake,
+  FaCog,
+  FaShieldAlt,
+  FaClock,
+  FaEnvelope,
+  FaSms,
+  FaWhatsapp,
+  FaPhone,
+  FaCalendarCheck,
+  FaMoneyBillWave,
+  FaUserTie,
+  FaChartBar,
+  FaHeadset,
+  FaEye,
+  FaThumbsUp,
+  FaArrowRight,
+  FaTrophy,
+  FaChartPie,
+  FaLightbulb,
+  FaBolt,
+  FaGem,
+  FaRegCheckCircle,
+  FaTimes,
+  FaInfinity,
+  FaHeart,
+  FaSmile,
+  FaMedal,
+  FaRibbon,
+  FaInfoCircle,
+} from "react-icons/fa";
 import { toast } from "react-toastify";
+import { motion } from "framer-motion";
+
+// Professional Color Palette matching ComparePage
+const COLORS = {
+  primary: "#ffffff",
+  secondary: "#f9fafb",
+  accent: "#db2777", // pink-600
+  accentLight: "#f472b6",
+  text: "#111827",
+  textLight: "#6b7280",
+  border: "#e5e7eb",
+  success: "#10b981",
+  blue: "#3b82f6",
+  green: "#10b981",
+  purple: "#8b5cf6",
+};
+
+// PUBLIC PLANS
+const PLANS = [
+  {
+    id: "basic",
+    name: "Basic",
+    price: "£495",
+    period: "per year",
+    tagline: "Perfect for small local movers",
+    featured: false,
+    bullets: [
+      "Membership: 2 Months",
+      "Free Entry Views: 20",
+      "Map Display",
+      "Quote Display",
+      "Image Gallery",
+      "Email Support",
+    ],
+  },
+  {
+    id: "standard",
+    name: "Standard",
+    price: "£995",
+    period: "per year",
+    tagline: "Ideal for expanding moving companies",
+    featured: true,
+    highlight: "Most Popular",
+    bullets: [
+      "Membership: 6 Months",
+      "Free Entry Views: 50",
+      "Phone/Email Support",
+      "Profile Page",
+      "Map Display",
+      "Quote Display",
+      "Image Gallery",
+    ],
+  },
+  {
+    id: "premium",
+    name: "Premium",
+    price: "£1595",
+    period: "per year",
+    tagline: "Best for high-volume UK logistics teams",
+    featured: false,
+    bullets: [
+      "Membership: 1 Year",
+      "Free Entry Views: Unlimited",
+      "Survey Bookings",
+      "Hide Competitors",
+      "Phone/Email Support",
+      "Profile Page",
+      "Map Display",
+      "Quote Display",
+      "Image Gallery",
+    ],
+  },
+];
+
+// LEADS PLANS - Updated to match exact specification
+const LEADS_PLANS = [
+  {
+    id: "starter",
+    name: "Starter",
+    price: "£200",
+    period: "per month",
+    tagline: "Ideal for small businesses or those beginning structured lead generation",
+    featured: false,
+    bullets: [
+      "20 qualified leads per month (average)",
+      "Email support (48-hour response time)",
+      "Advanced reporting suite",
+      "Lead delivery by email",
+      "Enhanced lead verification (telephone verification)",
+      "Quarterly performance summary",
+    ],
+    bestFor: "Trading professionals, solo operators, and early-stage businesses",
+  },
+  {
+    id: "growth",
+    name: "Growth",
+    price: "£400",
+    period: "per month",
+    tagline: "Designed for growing teams needing more consistent volumes",
+    featured: true,
+    highlight: "Best Value",
+    bullets: [
+      "50 qualified leads per month",
+      "Priority email support (24-hour response time)",
+      "Advanced reporting suite",
+      "Lead delivery by email & SMS",
+      "Enhanced lead verification (telephone verification)",
+      "Monthly performance review",
+      "Dedicated account manager",
+      "Early access to product updates",
+    ],
+    bestFor: "Small to medium teams focused on predictable growth with higher monthly volume",
+  },
+  {
+    id: "pro",
+    name: "Pro",
+    price: "£700",
+    period: "per month",
+    tagline: "Built for scaling operations that require high-volume, high-quality lead flow",
+    featured: false,
+    bullets: [
+      "100 qualified leads per month",
+      "Priority support (same-day response)",
+      "Advanced reporting suite",
+      "Lead delivery by email & SMS or WhatsApp",
+      "Enhanced lead verification (telephone verification)",
+      "Twice-monthly performance review",
+      "Dedicated account manager",
+      "Early access to new lead channels",
+    ],
+    bestFor: "Businesses scaling aggressively, hiring new staff, or managing multiple locations",
+  },
+];
+
+// JOBS PLANS - Updated to match exact specification
+const JOBS_PLANS = [
+  {
+    id: "founder",
+    name: "Founder",
+    price: "£500",
+    period: "per month",
+    tagline: "Perfect for small or newly established businesses that need consistent, ready-to-deliver jobs without the workload of lead chasing",
+    featured: false,
+    bullets: [
+      "5 fully booked jobs per month",
+      "Each job includes verified customer details, confirmed booking date and deposit taken",
+      "Full handling of lead qualification → quote → booking → payment securing",
+      "Customer communication handled on your behalf",
+      "Advanced reporting dashboard",
+      "Email support (48-hour response time)",
+    ],
+    bestFor: "Small businesses, solo operators, and teams that can only handle a handful of guaranteed monthly jobs",
+  },
+  {
+    id: "advanced",
+    name: "Advanced",
+    price: "£900",
+    period: "per month",
+    tagline: "Designed for growing trades and service companies that want a stronger pipeline of confirmed jobs without internal admin burden",
+    featured: true,
+    highlight: "Recommended",
+    bullets: [
+      "10 fully booked jobs per month",
+      "Multi-step qualification and conversion process",
+      "Dedicated account manager",
+      "Deposit handling & payment confirmation",
+      "Advanced reporting dashboard",
+      "Priority email support (24-hour response)",
+      "Monthly performance review",
+      "Appointment scheduling with customer reminders",
+    ],
+    bestFor: "Growing companies aiming for predictable monthly revenue with minimal admin time",
+  },
+  {
+    id: "enterprise",
+    name: "Enterprise",
+    price: "£1700",
+    period: "per month",
+    tagline: "Built for larger or scaling businesses requiring high-volume, reliably converted jobs every month",
+    featured: false,
+    bullets: [
+      "20 fully booked jobs per month",
+      "Full sales pipeline handling: lead → qualification → consultation → booking → deposit",
+      "Dedicated account manager",
+      "Deposit handling & payment confirmation",
+      "Advanced reporting dashboard",
+      "Same-day priority support",
+      "Fortnightly performance reviews",
+      "Improved reporting & job forecasting tools",
+    ],
+    bestFor: "Multi-team operations, franchises, or businesses scaling fast and needing high output with minimal effort",
+  },
+];
 
 const PricePlansDetails = () => {
+  const { user, isAuthenticated } = useAuthStore();
   const navigate = useNavigate();
+  const planRef = useRef(null);
 
-  const handleStart = () => {
-    toast.info("Please login or register to get started.");
-    navigate("/register");
+  const [companyData, setCompanyData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("leads");
+  const [selectedPlan, setSelectedPlan] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [comparisonPlans, setComparisonPlans] = useState([]);
+  const [compareMode, setCompareMode] = useState(false);
+
+  // FETCH USER PLAN DETAILS
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!isAuthenticated) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const res = await api.get(
+          "localmoves.api.company.get_company_details",
+          {
+            params: { email: user?.email },
+          }
+        );
+        setCompanyData(res.data?.message?.data?.[0] || null);
+      } catch (error) {
+        console.error(error);
+      }
+      setLoading(false);
+    };
+
+    fetchData();
+  }, [user, isAuthenticated]);
+
+  const handleStartAction = () => {
+    toast.info("Please register your company first to get started!");
+    navigate("/");
   };
 
-  const Bullet = ({ text }) => (
-    <li className="flex gap-2 items-start">
-      <FaCheckCircle className="text-pink-600 mt-1" />
-      <span>{text}</span>
-    </li>
-  );
+  const handleViewDetails = (plan) => {
+    setSelectedPlan(plan);
+    setShowModal(true);
+  };
+
+  const handleCompareToggle = (planId) => {
+    if (comparisonPlans.includes(planId)) {
+      setComparisonPlans(comparisonPlans.filter(id => id !== planId));
+    } else {
+      if (comparisonPlans.length < 2) {
+        setComparisonPlans([...comparisonPlans, planId]);
+      } else {
+        toast.info("You can compare up to 2 plans at a time");
+      }
+    }
+  };
+
+  const handleCompareView = () => {
+    if (comparisonPlans.length === 2) {
+      setCompareMode(true);
+      planRef.current?.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      toast.info("Please select exactly 2 plans to compare");
+    }
+  };
+
+  const getBulletIcon = (bullet) => {
+    const bulletLower = bullet.toLowerCase();
+
+    const iconMap = [
+      { keywords: ["email"], icon: <FaEnvelope className="text-pink-600" /> },
+      { keywords: ["support", "headset"], icon: <FaHeadset className="text-blue-500" /> },
+      { keywords: ["reporting", "dashboard", "chart"], icon: <FaChartBar className="text-green-500" /> },
+      { keywords: ["lead"], icon: <FaBullhorn className="text-pink-600" /> },
+      { keywords: ["job", "briefcase"], icon: <FaBriefcase className="text-purple-500" /> },
+      { keywords: ["manager", "account"], icon: <FaUserTie className="text-gray-600" /> },
+      { keywords: ["deposit", "payment", "money"], icon: <FaMoneyBillWave className="text-green-600" /> },
+      { keywords: ["verification", "verified", "shield"], icon: <FaShieldAlt className="text-blue-600" /> },
+      { keywords: ["communication", "sms", "whatsapp", "phone"], icon: <FaSms className="text-green-500" /> },
+      { keywords: ["review", "summary", "eye"], icon: <FaEye className="text-gray-600" /> },
+      { keywords: ["access", "update", "cog"], icon: <FaCog className="text-gray-600" /> },
+      { keywords: ["scheduling", "appointment", "calendar"], icon: <FaCalendarCheck className="text-blue-500" /> },
+      { keywords: ["best for"], icon: <FaThumbsUp className="text-green-500" /> },
+      { keywords: ["membership"], icon: <FaGem className="text-purple-500" /> },
+      { keywords: ["unlimited"], icon: <FaInfinity className="text-pink-600" /> },
+      { keywords: ["priority"], icon: <FaBolt className="text-yellow-500" /> },
+    ];
+
+    const match = iconMap.find(item =>
+      item.keywords.some(keyword => bulletLower.includes(keyword))
+    );
+
+    return match ? match.icon : <FaRegCheckCircle className="text-pink-600" />;
+  };
+
+  const getPlanIcon = (planId, tab) => {
+    const icons = {
+      leads: {
+        starter: <span className="text-2xl">⭐</span>, // Star emoji
+        growth: <span className="text-2xl">📈</span>, // Chart emoji
+        pro: <span className="text-2xl">🚀</span>, // Rocket emoji
+      },
+      jobs: {
+        founder: <span className="text-2xl">🌱</span>, // Seedling emoji
+        advanced: <span className="text-2xl">📘</span>, // Blue book emoji
+        enterprise: <span className="text-2xl">🏆</span>, // Trophy emoji
+      },
+    };
+
+    return icons[tab]?.[planId] || <FaStar className="text-pink-600" />;
+  };
+
+  const renderPlanCard = (plan, index) => {
+    const isSelected = comparisonPlans.includes(plan.id);
+
+    return (
+      <motion.div
+        key={plan.id}
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: index * 0.1 }}
+        className={`relative rounded-2xl p-8 h-full flex flex-col transition-all duration-300 ${plan.featured
+          ? 'bg-gradient-to-br from-white to-gray-50 border-2 border-pink-200 shadow-xl transform hover:-translate-y-1'
+          : 'bg-white border border-gray-200 shadow-lg hover:shadow-xl hover:border-gray-300'
+          }`}
+      >
+        {/* Sparkle effect for featured */}
+        {plan.featured && (
+          <div className="absolute -top-2 -right-2">
+            <FaStar className="text-pink-400 text-2xl" />
+          </div>
+        )}
+
+        {/* Highlight badge */}
+        {plan.highlight && (
+          <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+            <div className="bg-gradient-to-r from-pink-600 to-pink-500 text-white px-4 py-1 rounded-full text-sm font-bold shadow-lg flex items-center gap-1">
+              <FaMedal className="text-yellow-300" />
+              {plan.highlight}
+            </div>
+          </div>
+        )}
+
+        {/* Compare checkbox */}
+        <div className="absolute top-4 right-4">
+          <label className="flex items-center space-x-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={isSelected}
+              onChange={() => handleCompareToggle(plan.id)}
+              className="w-5 h-5 text-pink-600 rounded focus:ring-pink-500 border-gray-300"
+            />
+            <span className="text-sm text-gray-600">Compare</span>
+          </label>
+        </div>
+
+        {/* Plan icon */}
+        <div className="text-center mb-6">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-gray-50 to-gray-100 mb-4">
+            {getPlanIcon(plan.id, activeTab)}
+          </div>
+          <h3 className="text-2xl font-bold text-gray-900">{plan.name} Plan</h3>
+          <p className="text-gray-600 mt-2 text-sm leading-relaxed">{plan.tagline}</p>
+        </div>
+
+        {/* Price */}
+        <div className="text-center mb-6">
+          <div className="flex items-end justify-center">
+            <span className="text-5xl font-bold text-gray-900">{plan.price}</span>
+            <span className="text-gray-600 ml-2">{plan.period}</span>
+          </div>
+        </div>
+
+        {/* Features list */}
+        <div className="flex-grow">
+          <ul className="space-y-3">
+            {plan.bullets.slice(0, 6).map((bullet, i) => (
+              <li key={i} className="flex items-start p-2 hover:bg-gray-50 rounded-lg transition-colors">
+                <span className="flex-shrink-0 mt-1 mr-3">
+                  {getBulletIcon(bullet)}
+                </span>
+                <span className="text-gray-700 text-sm">{bullet}</span>
+              </li>
+            ))}
+          </ul>
+
+          {plan.bestFor && (
+            <div className="mt-6 pt-6 border-t border-gray-100">
+              <div className="flex items-start">
+                <FaSmile className="text-gray-400 mt-1 mr-2 flex-shrink-0" />
+                <div>
+                  <p className="font-semibold text-gray-800">Best for:</p>
+                  <p className="text-gray-600 text-sm">{plan.bestFor}</p>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Action buttons */}
+        <div className="mt-8 space-y-3">
+          <button
+            onClick={() => handleViewDetails(plan)}
+            className="w-full bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 px-6 py-3 rounded-xl font-semibold transition duration-300 hover:border-gray-400"
+          >
+            View Details
+          </button>
+          <button
+            onClick={handleStartAction}
+            className="w-full bg-gradient-to-r from-pink-600 to-pink-500 hover:from-pink-700 hover:to-pink-600 text-white px-6 py-3 rounded-xl font-semibold transition duration-300 flex items-center justify-center shadow-md hover:shadow-lg"
+          >
+            Get Started <FaArrowRight className="ml-2" />
+          </button>
+        </div>
+      </motion.div>
+    );
+  };
+
+  const renderComparisonTable = () => {
+    const plans = activeTab === "leads" ? LEADS_PLANS : JOBS_PLANS;
+    const plan1 = plans.find(p => p.id === comparisonPlans[0]);
+    const plan2 = plans.find(p => p.id === comparisonPlans[1]);
+
+    if (!plan1 || !plan2) return null;
+
+    const allFeatures = [...new Set([...plan1.bullets, ...plan2.bullets])];
+
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-white rounded-2xl shadow-xl p-8 mt-8 border border-gray-200"
+      >
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h3 className="text-2xl font-bold text-gray-900">Plan Comparison</h3>
+            <p className="text-gray-600">Side-by-side feature comparison</p>
+          </div>
+          <button
+            onClick={() => {
+              setCompareMode(false);
+              setComparisonPlans([]);
+            }}
+            className="text-gray-400 hover:text-gray-600 bg-gray-50 hover:bg-gray-100 p-2 rounded-full transition-colors"
+          >
+            <FaTimes size={24} />
+          </button>
+        </div>
+
+        <div className="overflow-x-auto rounded-xl border border-gray-200">
+          <table className="w-full">
+            <thead>
+              <tr className="bg-gradient-to-r from-gray-50 to-gray-100">
+                <th className="text-left p-4 text-gray-800 font-bold">Features</th>
+                <th className="text-center p-4">
+                  <div className="font-bold text-xl text-gray-900">{plan1.name}</div>
+                  <div className="text-gray-600 font-bold">{plan1.price} {plan1.period}</div>
+                </th>
+                <th className="text-center p-4">
+                  <div className="font-bold text-xl text-gray-900">{plan2.name}</div>
+                  <div className="text-gray-600 font-bold">{plan2.price} {plan2.period}</div>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {allFeatures.map((feature, index) => (
+                <tr key={index} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
+                  <td className="p-4 font-medium text-gray-800">{feature}</td>
+                  <td className="p-4 text-center">
+                    {plan1.bullets.includes(feature) ? (
+                      <FaCheckCircle className="text-green-500 mx-auto text-xl" />
+                    ) : (
+                      <FaTimes className="text-gray-300 mx-auto text-xl" />
+                    )}
+                  </td>
+                  <td className="p-4 text-center">
+                    {plan2.bullets.includes(feature) ? (
+                      <FaCheckCircle className="text-green-500 mx-auto text-xl" />
+                    ) : (
+                      <FaTimes className="text-gray-300 mx-auto text-xl" />
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="flex justify-center space-x-4 mt-8">
+          <button
+            onClick={handleStartAction}
+            className="bg-gradient-to-r from-pink-600 to-pink-500 hover:from-pink-700 hover:to-pink-600 text-white px-8 py-3 rounded-xl font-semibold transition duration-300 shadow-md hover:shadow-lg"
+          >
+            Choose {plan1.name}
+          </button>
+          <button
+            onClick={handleStartAction}
+            className="bg-gradient-to-r from-pink-600 to-pink-500 hover:from-pink-700 hover:to-pink-600 text-white px-8 py-3 rounded-xl font-semibold transition duration-300 shadow-md hover:shadow-lg"
+          >
+            Choose {plan2.name}
+          </button>
+        </div>
+      </motion.div>
+    );
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-pink-600"></div>
+          <p className="mt-4 text-gray-600">Loading plan details...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-white pb-24">
+    <div className="min-h-screen bg-gray-50">
+      {/* Header Section */}
+      <div className="relative bg-gradient-to-r from-pink-600 to-pink-500 text-white py-20 overflow-hidden">
+        {/* Decorative background elements */}
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute top-0 left-0 w-72 h-72 bg-pink-700 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob"></div>
+          <div className="absolute top-0 right-0 w-72 h-72 bg-pink-800 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000"></div>
+          <div className="absolute -bottom-8 left-20 w-72 h-72 bg-pink-900 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-4000"></div>
+        </div>
 
-      {/* HEADER */}
-      <div className="bg-pink-600 text-white py-12 text-center">
-        <h1 className="text-4xl font-bold">UK Pricing & Plans</h1>
-        <p className="mt-3 opacity-90">
-          All plans are billed monthly · 12-month contract · Verified customers
-        </p>
+        <div className="relative max-w-7xl mx-auto px-4 text-center">
+          {/* Main Title */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-12"
+          >
+            <div className="inline-block mb-4 sm:mb-6">
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl sm:rounded-2xl px-4 sm:px-6 py-1.5 sm:py-2 border border-white/20 inline-flex items-center gap-2">
+                <FaStar className="text-yellow-300 text-sm sm:text-base" />
+                <span className="text-xs sm:text-sm font-semibold">TRUSTED BY 500+ BUSINESSES</span>
+              </div>
+            </div>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 leading-tight px-4">
+              Choose Your Perfect Plan
+            </h1>
+            <p className="text-base sm:text-xl md:text-2xl text-white/90 max-w-3xl mx-auto font-light px-4">
+              Flexible pricing designed to help your moving business grow
+            </p>
+          </motion.div>
+
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 max-w-6xl mx-auto mt-8 sm:mt-12 md:mt-16">
+            {/* Stat 1 */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="group"
+            >
+              <div className="bg-white rounded-xl sm:rounded-2xl p-6 sm:p-8 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-gradient-to-br from-pink-100 to-pink-50 group-hover:from-pink-200 group-hover:to-pink-100 transition-all">
+                    <FaUsers className="text-3xl text-pink-600" />
+                  </div>
+                  <div className="text-right">
+                    <div className="text-3xl sm:text-4xl font-bold text-gray-900 mb-1">500+</div>
+                    <div className="text-xs text-gray-500 font-medium uppercase">Companies</div>
+                  </div>
+                </div>
+                <div className="text-left">
+                  <h4 className="text-base sm:text-lg font-bold text-gray-900 mb-2">Trusted Partners</h4>
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    Professional moving companies across the UK trust our platform for their business growth.
+                  </p>
+                </div>
+                <div className="mt-6 pt-6 border-t border-gray-100">
+                  <div className="flex items-center text-sm text-gray-500">
+                    <FaChartLine className="mr-2 text-green-500" />
+                    <span>Growing network daily</span>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Stat 2 */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="group"
+            >
+              <div className="bg-white rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-green-100 to-green-50 group-hover:from-green-200 group-hover:to-green-100 transition-all">
+                    <FaChartLine className="text-3xl text-green-600" />
+                  </div>
+                  <div className="text-right">
+                    <div className="text-4xl font-bold text-gray-900 mb-1">98%</div>
+                    <div className="text-xs text-gray-500 font-medium">SATISFACTION</div>
+                  </div>
+                </div>
+                <div className="text-left">
+                  <h4 className="text-lg font-bold text-gray-900 mb-2">Client Satisfaction</h4>
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    Industry-leading satisfaction rate with our premium services and support.
+                  </p>
+                </div>
+                <div className="mt-6 pt-6 border-t border-gray-100">
+                  <div className="flex items-center text-sm text-gray-500">
+                    <FaThumbsUp className="mr-2 text-blue-500" />
+                    <span>Rated excellent by clients</span>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Stat 3 */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="group"
+            >
+              <div className="bg-white rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-100 to-blue-50 group-hover:from-blue-200 group-hover:to-blue-100 transition-all">
+                    <FaHeadset className="text-3xl text-blue-600" />
+                  </div>
+                  <div className="text-right">
+                    <div className="text-4xl font-bold text-gray-900 mb-1">24/7</div>
+                    <div className="text-xs text-gray-500 font-medium">SUPPORT</div>
+                  </div>
+                </div>
+                <div className="text-left">
+                  <h4 className="text-lg font-bold text-gray-900 mb-2">Always Available</h4>
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    Round-the-clock dedicated support for all your moving business needs.
+                  </p>
+                </div>
+                <div className="mt-6 pt-6 border-t border-gray-100">
+                  <div className="flex items-center text-sm text-gray-500">
+                    <FaClock className="mr-2 text-purple-500" />
+                    <span>Instant response guarantee</span>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* CTA Button */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="mt-12"
+          >
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 px-4">
+              <button
+                onClick={handleStartAction}
+                className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 bg-white text-pink-600 hover:bg-gray-50 rounded-xl font-bold text-base sm:text-lg transition-all duration-300 flex items-center justify-center gap-2 sm:gap-3 shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+              >
+                <FaRocket className="text-pink-500" />
+                Get Started Now
+                <FaArrowRight />
+              </button>
+              <button
+                onClick={() => planRef.current?.scrollIntoView({ behavior: 'smooth' })}
+                className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 bg-white/10 backdrop-blur-sm border border-white/30 text-white hover:bg-white/20 rounded-xl font-semibold transition-all duration-300"
+              >
+                View All Plans
+              </button>
+            </div>
+
+            {/* Trust badges */}
+            <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 text-white/80 px-4">
+              <div className="flex items-center gap-2">
+                <FaShieldAlt className="text-green-400" />
+                <span className="text-xs sm:text-sm">Secure Payments</span>
+              </div>
+              <div className="hidden sm:block h-4 w-px bg-white/30"></div>
+              <div className="flex items-center gap-2">
+                <FaCheckCircle className="text-blue-400" />
+                <span className="text-xs sm:text-sm">No Hidden Fees</span>
+              </div>
+              <div className="hidden sm:block h-4 w-px bg-white/30"></div>
+              <div className="flex items-center gap-2">
+                <FaCalendarCheck className="text-purple-400" />
+                <span className="text-xs sm:text-sm">Flexible Billing</span>
+              </div>
+            </div>
+          </motion.div>
+        </div>
       </div>
 
-      {/* CTA */}
-      <div className="text-center mt-10">
-        <button
-          onClick={handleStart}
-          className="bg-pink-600 hover:bg-pink-700 text-white px-10 py-4 rounded-xl text-lg font-semibold transition"
-        >
-          Start Getting Customers
-        </button>
+      {/* User Current Plan */}
+      {isAuthenticated && companyData && (
+        <div className="max-w-7xl mx-auto px-4 -mt-8 relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white rounded-xl sm:rounded-2xl shadow-xl p-4 sm:p-6 md:p-8 border border-gray-200"
+          >
+            <div className="flex flex-col md:flex-row justify-between items-center">
+              <div className="flex items-center mb-6 md:mb-0">
+                <div className="bg-gradient-to-r from-pink-600 to-pink-500 p-3 sm:p-4 rounded-lg sm:rounded-xl mr-4 sm:mr-6 shadow-md">
+                  <FaCrown className="text-white text-2xl sm:text-3xl" />
+                </div>
+                <div>
+                  <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Your Current Plan</h2>
+                  <p className="text-sm sm:text-base text-gray-600">{companyData.subscription_plan} Plan</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+                <div className="text-center">
+                  <div className="text-gray-600 text-sm mb-1">Price</div>
+                  <div className="text-2xl font-bold text-gray-800">₹{companyData.price || 0}</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-gray-600 text-sm mb-1">Renewal Date</div>
+                  <div className="text-lg font-semibold text-gray-900">
+                    {companyData.subscription_end_date || "N/A"}
+                  </div>
+                </div>
+                <div className="text-center">
+                  <div className="text-gray-600 text-sm mb-1">Free Entries</div>
+                  <div className="text-xl font-bold text-pink-600">
+                    {companyData.subscription_plan === "Premium"
+                      ? "Unlimited"
+                      : companyData.requests_viewed_this_month || 0}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-8 pt-8 border-t border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Your Plan Features</h3>
+              <div className="flex flex-wrap gap-3">
+                {(JSON.parse(companyData.includes || "[]") || []).map((item, idx) => (
+                  <div key={idx} className="bg-gray-100 text-gray-800 px-4 py-2 rounded-full text-sm flex items-center shadow-sm">
+                    <FaCheckCircle className="text-green-500 mr-2" />
+                    {item}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Tabs Section with Pink Toggle */}
+      <div className="flex flex-col items-center mb-8 sm:mb-12 pt-12 sm:pt-16 px-4">
+        <h2 className="text-2xl sm:text-3xl font-bold text-center text-gray-900 mb-6 sm:mb-8">
+          Choose Your Service Type
+        </h2>
+
+        <div className="inline-flex rounded-full bg-gray-100 p-2 shadow-inner relative">
+          {/* Pink toggle background indicator */}
+          <motion.div
+            layout
+            className="absolute bg-gradient-to-r from-pink-600 to-pink-500 rounded-full shadow-lg"
+            style={{
+              width: 'calc(50% - 4px)',
+              height: 'calc(100% - 8px)',
+              left: activeTab === "leads" ? '4px' : 'calc(50% + 4px)',
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+            }}
+          />
+
+          {/* Leads Tab */}
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setActiveTab("leads")}
+            className={`px-4 sm:px-6 md:px-8 py-2 sm:py-3 rounded-full font-semibold text-sm sm:text-base transition-all duration-300 flex items-center relative z-10 ${activeTab === "leads"
+              ? "text-white"
+              : "text-gray-700 hover:text-gray-900"
+              }`}
+          >
+            <FaBullhorn className="mr-1 sm:mr-2 text-sm sm:text-base" />
+            <span className="hidden sm:inline">Leads Generation</span>
+            <span className="sm:hidden">Leads</span>
+          </motion.button>
+
+          {/* Jobs Tab */}
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setActiveTab("jobs")}
+            className={`px-4 sm:px-6 md:px-8 py-2 sm:py-3 rounded-full font-semibold text-sm sm:text-base transition-all duration-300 flex items-center relative z-10 ${activeTab === "jobs"
+              ? "text-white"
+              : "text-gray-700 hover:text-gray-900"
+              }`}
+          >
+            <FaBriefcase className="mr-1 sm:mr-2 text-sm sm:text-base" />
+            <span className="hidden sm:inline">Jobs Booking</span>
+            <span className="sm:hidden">Jobs</span>
+          </motion.button>
+        </div>
       </div>
 
-      {/* ======================= */}
-      {/* 📊 LEADS SECTION */}
-      {/* ======================= */}
-      <section className="max-w-7xl mx-auto px-4 mt-20">
-        <h2 className="text-3xl font-bold text-center text-pink-600 mb-4">
-          📊 Leads
-        </h2>
-
-        <p className="text-center text-gray-600 max-w-3xl mx-auto mb-12">
-          All plans provide leads with verified phone numbers. <br />
-          All plans are billed monthly and require a 12-month contract. <br />
-          Lead figures shown represent average monthly volumes.
-        </p>
-
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-
-          {/* STARTER */}
-          <div className="border rounded-3xl shadow-lg p-6">
-            <h3 className="text-xl font-bold text-center">⭐ Starter Plan</h3>
-            <p className="text-center text-pink-600 text-2xl font-extrabold mt-2">
-              £200 per month
-            </p>
-            <p className="text-center text-gray-600 mt-2">
-              Ideal for small businesses or those beginning structured lead generation.
-            </p>
-
-            <h4 className="mt-4 font-semibold">Includes:</h4>
-            <ul className="mt-3 space-y-2 text-gray-700">
-              <Bullet text="20 qualified leads per month (average)" />
-              <Bullet text="Email support (48-hour response time)" />
-              <Bullet text="Advanced reporting suite" />
-              <Bullet text="Lead delivery by email" />
-              <Bullet text="Enhanced lead verification (telephone verification)" />
-              <Bullet text="Quarterly performance summary" />
-            </ul>
-
-            <p className="mt-4 font-semibold">Best for:</p>
-            <p className="text-sm text-gray-600 mt-1">
-              Trading professionals, solo operators, and early-stage businesses validating their pipeline.
-            </p>
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 py-8 sm:py-12 md:py-16" ref={planRef}>
+        {/* Tab Information Banner */}
+        <div className="mb-8 sm:mb-12 bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-gray-200 shadow-sm">
+          <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+            {activeTab === "leads" ? (
+              <>
+                <span className="text-xl sm:text-2xl">📊</span>
+                <h3 className="text-lg sm:text-xl font-bold text-gray-900">Leads</h3>
+              </>
+            ) : (
+              <>
+                <span className="text-xl sm:text-2xl">📦</span>
+                <h3 className="text-lg sm:text-xl font-bold text-gray-900">Jobs</h3>
+              </>
+            )}
           </div>
 
-          {/* GROWTH */}
-          <div className="border rounded-3xl shadow-lg p-6">
-            <h3 className="text-xl font-bold text-center">📈 Growth Plan</h3>
-            <p className="text-center text-pink-600 text-2xl font-extrabold mt-2">
-              £400 per month
-            </p>
-            <p className="text-center text-gray-600 mt-2">
-              Designed for growing teams needing more consistent volumes.
-            </p>
-
-            <h4 className="mt-4 font-semibold">Includes:</h4>
-            <ul className="mt-3 space-y-2 text-gray-700">
-              <Bullet text="50 qualified leads per month" />
-              <Bullet text="Priority email support (24-hour response time)" />
-              <Bullet text="Advanced reporting suite" />
-              <Bullet text="Lead delivery by email & SMS" />
-              <Bullet text="Enhanced lead verification (telephone verification)" />
-              <Bullet text="Monthly performance review" />
-            </ul>
-
-            <p className="mt-4 font-semibold">Best for:</p>
-            <p className="text-sm text-gray-600 mt-1">
-              Small to medium teams focused on predictable growth with higher monthly volume.
-            </p>
-          </div>
-
-          {/* PRO */}
-          <div className="border rounded-3xl shadow-lg p-6">
-            <h3 className="text-xl font-bold text-center">🚀 Pro Plan</h3>
-            <p className="text-center text-pink-600 text-2xl font-extrabold mt-2">
-              £700 per month
-            </p>
-            <p className="text-center text-gray-600 mt-2">
-              Built for scaling operations that require high-volume, high-quality lead flow.
-            </p>
-
-            <h4 className="mt-4 font-semibold">Includes:</h4>
-            <ul className="mt-3 space-y-2 text-gray-700">
-              <Bullet text="100 qualified leads per month" />
-              <Bullet text="Priority support (same-day response)" />
-              <Bullet text="Advanced reporting suite" />
-              <Bullet text="Lead delivery by email, SMS or WhatsApp" />
-              <Bullet text="Enhanced lead verification (telephone verification)" />
-              <Bullet text="Twice-monthly performance review" />
-              <Bullet text="Dedicated account manager" />
-              <Bullet text="Early access to product updates and new lead channels" />
-            </ul>
-
-            <p className="mt-4 font-semibold">Best for:</p>
-            <p className="text-sm text-gray-600 mt-1">
-              Businesses scaling aggressively, hiring new staff, or managing multiple locations.
-            </p>
-          </div>
-
-          {/* LEADS BOLT-ON */}
-          <div className="border rounded-3xl shadow-lg p-6 bg-pink-50">
-            <h3 className="text-xl font-bold text-center">⚡ Bolt-On: Extra Leads</h3>
-            <p className="text-center text-pink-600 text-2xl font-extrabold mt-2">
-              £400
-            </p>
-
-            <h4 className="mt-4 font-semibold">Includes:</h4>
-            <ul className="mt-3 space-y-2 text-gray-700">
-              <Bullet text="Plus 50 additional qualified leads per month" />
-              <Bullet text="Available on Starter, Growth, or Pro plans" />
-              <Bullet text="No change to support or reporting tier" />
-              <Bullet text="Can be added at any point during the 12-month contract" />
-            </ul>
-
-            <p className="mt-4 font-semibold">Best for:</p>
-            <p className="text-sm text-gray-600 mt-1">
-              Businesses experiencing seasonal peaks or expanding into new service areas.
-            </p>
+          <div className="space-y-2 sm:space-y-3 text-gray-700">
+            {activeTab === "leads" ? (
+              <>
+                <p className="text-sm sm:text-base text-gray-600">All plans provide leads with verified phone numbers.</p>
+                <p className="text-sm sm:text-base text-gray-600">All plans are billed monthly and require a 12-month contract.</p>
+                <p className="text-sm sm:text-base text-gray-600">Lead figures shown represent average monthly volumes.</p>
+              </>
+            ) : (
+              <>
+                <p className="text-sm sm:text-base text-gray-600">All plans provide fully booked-in jobs (deposit taken).</p>
+                <p className="text-sm sm:text-base text-gray-600">Pricing shown is per month, on a 12-month contract.</p>
+                <p className="text-sm sm:text-base text-gray-600">Job numbers represent an average per month.</p>
+              </>
+            )}
           </div>
         </div>
-      </section>
 
-      {/* ======================= */}
-      {/* 📦 JOBS SECTION */}
-      {/* ======================= */}
-      <section className="max-w-7xl mx-auto px-4 mt-28">
-        <h2 className="text-3xl font-bold text-center text-pink-600 mb-4">
-          📦 Jobs
-        </h2>
+        {/* Compare button */}
+        {comparisonPlans.length > 0 && !compareMode && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex justify-center mb-6 sm:mb-8"
+          >
+            <button
+              onClick={handleCompareView}
+              className="bg-gradient-to-r from-pink-600 to-pink-500 hover:from-pink-700 hover:to-pink-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl text-sm sm:text-base font-semibold transition duration-300 flex items-center shadow-md hover:shadow-lg"
+            >
+              <FaEye className="mr-2" />
+              Compare Plans ({comparisonPlans.length}/2)
+            </button>
+          </motion.div>
+        )}
 
-        <p className="text-center text-gray-600 max-w-3xl mx-auto mb-12">
-          All plans provide fully booked-in jobs (deposit taken). <br />
-          Pricing shown is per month, on a 12-month contract. <br />
-          Job numbers represent an average per month.
-        </p>
+        {/* Plans Grid */}
+        {!compareMode ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            {(activeTab === "leads" ? LEADS_PLANS : JOBS_PLANS).map((plan, index) =>
+              renderPlanCard(plan, index)
+            )}
+          </div>
+        ) : (
+          renderComparisonTable()
+        )}
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-
-          {/* FOUNDER */}
-          <div className="border rounded-3xl shadow-lg p-6">
-            <h3 className="text-xl font-bold text-center">🌱 Founder Plan</h3>
-            <p className="text-center text-pink-600 text-2xl font-extrabold mt-2">
-              £500 per month
-            </p>
-
-            <ul className="mt-4 space-y-2 text-gray-700">
-              <Bullet text="5 fully booked jobs per month" />
-              <Bullet text="Verified customer details, confirmed booking date & deposit taken" />
-              <Bullet text="Full handling of lead qualification → quote → booking → payment securing" />
-              <Bullet text="Customer communication handled on your behalf" />
-              <Bullet text="Advanced reporting dashboard" />
-              <Bullet text="Email support (48-hour response time)" />
-            </ul>
-
-            <p className="mt-4 font-semibold">Best for:</p>
-            <p className="text-sm text-gray-600">
-              Small businesses, solo operators, and teams handling a handful of guaranteed jobs.
-            </p>
+        {/* FAQ Section */}
+        <div className="mt-12 sm:mt-16 md:mt-20">
+          <div className="text-center mb-8 sm:mb-12 px-4">
+            <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 sm:mb-3">
+              Frequently Asked Questions
+            </h3>
+            <p className="text-sm sm:text-base text-gray-600">Find answers to common questions about our plans</p>
           </div>
 
-          {/* ADVANCED */}
-          <div className="border rounded-3xl shadow-lg p-6">
-            <h3 className="text-xl font-bold text-center">📘 Advanced Plan</h3>
-            <p className="text-center text-pink-600 text-2xl font-extrabold mt-2">
-              £900 per month
-            </p>
-
-            <ul className="mt-4 space-y-2 text-gray-700">
-              <Bullet text="10 fully booked jobs per month" />
-              <Bullet text="Multi-step qualification and conversion process" />
-              <Bullet text="Dedicated account manager" />
-              <Bullet text="Deposit handling & payment confirmation" />
-              <Bullet text="Monthly performance review" />
-              <Bullet text="Appointment scheduling with customer reminders" />
-              <Bullet text="Advanced reporting dashboard" />
-              <Bullet text="Priority email support (24-hour response)" />
-            </ul>
-
-            <p className="mt-4 font-semibold">Best for:</p>
-            <p className="text-sm text-gray-600">
-              Growing companies aiming for predictable monthly revenue with minimal admin time.
-            </p>
-          </div>
-
-          {/* ENTERPRISE */}
-          <div className="border rounded-3xl shadow-lg p-6">
-            <h3 className="text-xl font-bold text-center">🏆 Enterprise Plan</h3>
-            <p className="text-center text-pink-600 text-2xl font-extrabold mt-2">
-              £1700 per month
-            </p>
-
-            <ul className="mt-4 space-y-2 text-gray-700">
-              <Bullet text="20 fully booked jobs per month" />
-              <Bullet text="Full sales pipeline handling: lead → qualification → consultation → booking → deposit" />
-              <Bullet text="Dedicated account manager" />
-              <Bullet text="Deposit handling & payment confirmation" />
-              <Bullet text="Fortnightly performance reviews" />
-              <Bullet text="Improved reporting & job forecasting tools" />
-              <Bullet text="Advanced reporting dashboard" />
-              <Bullet text="Same-day priority support" />
-            </ul>
-
-            <p className="mt-4 font-semibold">Best for:</p>
-            <p className="text-sm text-gray-600">
-              Multi-team operations, franchises, or businesses scaling fast.
-            </p>
-          </div>
-
-          {/* JOBS BOLT-ON */}
-          <div className="border rounded-3xl shadow-lg p-6 bg-pink-50">
-            <h3 className="text-xl font-bold text-center">⚡ Bolt-On: Additional Jobs</h3>
-            <p className="text-center text-pink-600 text-2xl font-extrabold mt-2">
-              £600
-            </p>
-
-            <ul className="mt-4 space-y-2 text-gray-700">
-              <Bullet text="Plus 5 fully booked jobs" />
-              <Bullet text="Can be added to any plan" />
-              <Bullet text="No change to support tier" />
-              <Bullet text="Add or remove bolt-ons at renewal" />
-            </ul>
-
-            <p className="mt-4 font-semibold">Best for:</p>
-            <p className="text-sm text-gray-600">
-              Ideal for seasonal peaks or rapid expansion.
-            </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 max-w-4xl mx-auto">
+            {[
+              {
+                q: "Can I change my plan later?",
+                a: "Yes, you can upgrade or downgrade your plan at any time. Changes will be prorated based on your billing cycle.",
+                icon: <FaRibbon className="text-pink-600 text-xl" />
+              },
+              {
+                q: "Is there a setup fee?",
+                a: "No, there are no hidden setup fees. You only pay the monthly or annual subscription fee.",
+                icon: <FaGem className="text-purple-500 text-xl" />
+              },
+              {
+                q: "What if I exceed my lead/job limit?",
+                a: "You'll be notified and given options to upgrade or purchase additional credits.",
+                icon: <FaBolt className="text-yellow-500 text-xl" />
+              },
+              {
+                q: "Is there a contract period?",
+                a: "Yes, all plans require a 12-month commitment for the best pricing.",
+                icon: <FaShieldAlt className="text-blue-500 text-xl" />
+              }
+            ].map((faq, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.1 }}
+                className="bg-white p-4 sm:p-6 rounded-lg sm:rounded-xl shadow-lg border border-gray-200 hover:border-gray-300 transition-colors"
+              >
+                <div className="flex items-start">
+                  <div className="bg-gray-100 p-2 sm:p-3 rounded-lg mr-3 sm:mr-4 flex-shrink-0">
+                    {faq.icon}
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-base sm:text-lg text-gray-900 mb-2">{faq.q}</h4>
+                    <p className="text-sm sm:text-base text-gray-700">{faq.a}</p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
           </div>
         </div>
-      </section>
+      </div>
 
-      {/* HAPPY STORIES */}
-      <div className="mt-28">
+      {/* Plan Details Modal */}
+      {showModal && selectedPlan && (
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-gray-200 shadow-2xl"
+          >
+            <div className="sticky top-0 bg-white border-b border-gray-200 p-4 sm:p-6 flex justify-between items-start sm:items-center rounded-t-2xl">
+              <div className="flex items-start sm:items-center flex-1 mr-2">
+                <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-2 sm:p-3 rounded-lg sm:rounded-xl mr-3 sm:mr-4 flex-shrink-0">
+                  {getPlanIcon(selectedPlan.id, activeTab)}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 break-words">{selectedPlan.name} Plan – {selectedPlan.price} {selectedPlan.period}</h2>
+                  <p className="text-sm sm:text-base text-gray-600 mt-1">{selectedPlan.tagline}</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowModal(false)}
+                className="text-gray-400 hover:text-gray-600 bg-gray-50 hover:bg-gray-100 p-2 rounded-full transition-colors flex-shrink-0"
+              >
+                <FaTimes size={20} className="sm:w-6 sm:h-6" />
+              </button>
+            </div>
+
+            <div className="p-4 sm:p-6">
+              <div className="mb-6 sm:mb-8">
+                <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-3 flex items-center">
+                  <FaCheckCircle className="text-green-500 mr-2" />
+                  Includes:
+                </h3>
+                <ul className="space-y-2 sm:space-y-3">
+                  {selectedPlan.bullets.map((bullet, i) => (
+                    <li key={i} className="flex items-start p-2 sm:p-3 bg-white rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
+                      <span className="flex-shrink-0 mt-1 mr-3 sm:mr-4">
+                        <FaRegCheckCircle className="text-pink-600 text-sm sm:text-base" />
+                      </span>
+                      <span className="text-sm sm:text-base text-gray-800">{bullet}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {selectedPlan.bestFor && (
+                <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl p-6 mb-8 border border-gray-200">
+                  <h4 className="font-bold text-lg text-gray-900 mb-2 flex items-center">
+                    <FaSmile className="text-gray-600 mr-2" />
+                    Best for:
+                  </h4>
+                  <p className="text-gray-800">{selectedPlan.bestFor}</p>
+                </div>
+              )}
+
+              {/* Plan Note */}
+              <div className="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-xl">
+                <div className="flex items-start">
+                  <FaInfoCircle className="text-blue-500 mt-1 mr-3" />
+                  <div>
+                    <p className="font-semibold text-blue-800 mb-1">Important Note:</p>
+                    <p className="text-blue-700 text-sm">
+                      {activeTab === "leads"
+                        ? "Lead figures represent average monthly volumes. All plans require a 12-month contract."
+                        : "Job numbers represent average monthly volumes. All plans require a 12-month contract."}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="sticky bottom-0 bg-white border-t border-gray-200 p-6 rounded-b-2xl">
+              <div className="flex flex-col sm:flex-row justify-center space-y-3 sm:space-y-0 sm:space-x-4">
+                <button
+                  onClick={() => setShowModal(false)}
+                  className="px-8 py-3 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl font-semibold transition duration-300"
+                >
+                  Close
+                </button>
+                <button
+                  onClick={handleStartAction}
+                  className="px-8 py-3 bg-gradient-to-r from-pink-600 to-pink-500 hover:from-pink-700 hover:to-pink-600 text-white rounded-xl font-semibold transition duration-300 flex items-center justify-center shadow-md hover:shadow-lg"
+                >
+                  Get Started Now <FaArrowRight className="ml-2" />
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Happy Stories Section */}
+      <div className="mt-16">
         <HappyStories />
       </div>
     </div>
