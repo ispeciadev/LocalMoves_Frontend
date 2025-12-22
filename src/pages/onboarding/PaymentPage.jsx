@@ -91,7 +91,9 @@ const PaymentPage = () => {
     const container = document.getElementById("paypal-btn");
     if (!container) return;
 
-    const usd = convertINRtoUSD(plan.priceINR);
+    // Use fallback price calculation
+    const priceInINR = plan.priceINR || plan.price?.replace(/[^0-9]/g, '') || 0;
+    const usd = convertINRtoUSD(priceInINR);
     const backendPlan = PLAN_NAME_MAPPING[plan.name] || plan.name;
 
     window.paypal
@@ -148,6 +150,10 @@ const PaymentPage = () => {
 
   if (!plan) return <p>No plan selected.</p>;
 
+  // Handle different plan structures - add fallbacks
+  const displayPrice = plan.priceDisplay || `${plan.price}${plan.period ? '/' + plan.period : ''}`;
+  const priceInINR = plan.priceINR || plan.price?.replace(/[^0-9]/g, '') || 0;
+
   return (
     <div className="flex justify-center min-h-screen p-6 bg-gray-100">
       <div className="bg-white p-8 rounded-xl shadow w-full max-w-md text-center">
@@ -158,8 +164,8 @@ const PaymentPage = () => {
         <p className="text-gray-700 mb-1">Company: {companyName}</p>
         <p className="font-bold text-xl">{plan.name}</p>
 
-        {/* FIXED LINE HERE */}
-        <p className="text-2xl text-pink-600 font-bold">{plan.priceDisplay}</p>
+        {/* Display price with fallback */}
+        <p className="text-2xl text-pink-600 font-bold">{displayPrice}</p>
 
         <div id="paypal-btn" className="mt-6"></div>
       </div>
