@@ -141,29 +141,10 @@ const PLANS = [
   },
 ];
 
-// FAQ DATA
-const FAQ_DATA = [
-  {
-    question: "Can I upgrade or downgrade my plan?",
-    answer: "Yes! You can upgrade or downgrade your plan at any time. Changes take effect immediately, and we'll prorate the difference.",
-  },
-  {
-    question: "What happens when my plan expires?",
-    answer: "Your listing will remain active but with reduced visibility. You'll receive reminders before expiration to renew your plan.",
-  },
-  {
-    question: "Do you offer refunds?",
-    answer: "We offer a 30-day money-back guarantee if you're not satisfied with our service. No questions asked.",
-  },
-  {
-    question: "How do I cancel my subscription?",
-    answer: "You can cancel anytime from your dashboard. Your plan will remain active until the end of the billing period.",
-  },
-];
+
 
 const NewSubscriptionPlans = () => {
   const navigate = useNavigate();
-  const [showFaq, setShowFaq] = useState({});
   const [comparisonPlans, setComparisonPlans] = useState([]);
   const [compareMode, setCompareMode] = useState(false);
 
@@ -232,8 +213,8 @@ const NewSubscriptionPlans = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, delay: index * 0.1 }}
         className={`relative rounded-2xl p-6 sm:p-8 h-full flex flex-col transition-all duration-300 ${plan.featured
-            ? "bg-gradient-to-br from-white to-gray-50 border-2 border-pink-200 shadow-xl transform hover:-translate-y-1"
-            : "bg-white border border-gray-200 shadow-lg hover:shadow-xl hover:border-gray-300"
+          ? "bg-gradient-to-br from-white to-gray-50 border-2 border-pink-200 shadow-xl transform hover:-translate-y-1"
+          : "bg-white border border-gray-200 shadow-lg hover:shadow-xl hover:border-gray-300"
           }`}
       >
         {/* Sparkle effect for featured */}
@@ -309,8 +290,8 @@ const NewSubscriptionPlans = () => {
         <button
           onClick={() => handleSubscribe(plan)}
           className={`w-full py-3 sm:py-4 rounded-xl font-bold text-sm sm:text-base transition-all duration-300 flex items-center justify-center gap-2 ${plan.featured
-              ? "bg-gradient-to-r from-pink-600 to-pink-500 text-white hover:from-pink-700 hover:to-pink-600 shadow-lg hover:shadow-xl transform hover:scale-105"
-              : "bg-gray-900 text-white hover:bg-gray-800 shadow-md hover:shadow-lg"
+            ? "bg-gradient-to-r from-pink-600 to-pink-500 text-white hover:from-pink-700 hover:to-pink-600 shadow-lg hover:shadow-xl transform hover:scale-105"
+            : "bg-gray-900 text-white hover:bg-gray-800 shadow-md hover:shadow-lg"
             }`}
         >
           Subscribe Now
@@ -458,106 +439,54 @@ const NewSubscriptionPlans = () => {
         {renderComparisonTable()}
 
         {/* Why Choose Us */}
-        <div className="mt-12 sm:mt-16 bg-gradient-to-br from-pink-50 to-purple-50 rounded-2xl p-6 sm:p-8 md:p-12">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center text-gray-900 mb-8 sm:mb-12">
+        <div className="mt-12 sm:mt-16 bg-gradient-to-r from-pink-600 via-pink-500 to-purple-600 rounded-2xl p-6 sm:p-8 md:p-12">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center text-white mb-8 sm:mb-12">
             Why Choose Local Moves?
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
             <div className="text-center">
-              <div className="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <FaUsers className="text-2xl sm:text-3xl text-pink-600" />
+              <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto mb-4">
+                <FaUsers className="text-2xl sm:text-3xl text-white" />
               </div>
-              <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2">
+              <h3 className="text-lg sm:text-xl font-bold text-white mb-2">
                 Trusted Platform
               </h3>
-              <p className="text-sm sm:text-base text-gray-600">
+              <p className="text-sm sm:text-base text-pink-50">
                 Join thousands of moving companies across the UK
               </p>
             </div>
             <div className="text-center">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <FaChartLine className="text-2xl sm:text-3xl text-blue-600" />
+              <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto mb-4">
+                <FaChartLine className="text-2xl sm:text-3xl text-white" />
               </div>
-              <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2">
+              <h3 className="text-lg sm:text-xl font-bold text-white mb-2">
                 Grow Your Business
               </h3>
-              <p className="text-sm sm:text-base text-gray-600">
+              <p className="text-sm sm:text-base text-pink-50">
                 Get more leads and bookings every month
               </p>
             </div>
             <div className="text-center">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <FaHeadset className="text-2xl sm:text-3xl text-green-600" />
+              <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto mb-4">
+                <FaHeadset className="text-2xl sm:text-3xl text-white" />
               </div>
-              <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2">24/7 Support</h3>
-              <p className="text-sm sm:text-base text-gray-600">
+              <h3 className="text-lg sm:text-xl font-bold text-white mb-2">24/7 Support</h3>
+              <p className="text-sm sm:text-base text-pink-50">
                 Our team is here to help you succeed
               </p>
             </div>
             <div className="text-center">
-              <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <FaRocket className="text-2xl sm:text-3xl text-purple-600" />
+              <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto mb-4">
+                <FaRocket className="text-2xl sm:text-3xl text-white" />
               </div>
-              <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2">
+              <h3 className="text-lg sm:text-xl font-bold text-white mb-2">
                 Easy Setup
               </h3>
-              <p className="text-sm sm:text-base text-gray-600">
+              <p className="text-sm sm:text-base text-pink-50">
                 Get started in minutes, no technical skills needed
               </p>
             </div>
           </div>
-        </div>
-
-        {/* FAQ Section */}
-        <div className="mt-12 sm:mt-16">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center text-gray-900 mb-8 sm:mb-12">
-            Frequently Asked Questions
-          </h2>
-          <div className="max-w-3xl mx-auto space-y-4">
-            {FAQ_DATA.map((faq, index) => (
-              <div
-                key={index}
-                className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden"
-              >
-                <button
-                  onClick={() =>
-                    setShowFaq((prev) => ({ ...prev, [index]: !prev[index] }))
-                  }
-                  className="w-full px-4 sm:px-6 py-4 sm:py-5 flex items-center justify-between hover:bg-gray-50 transition-colors"
-                >
-                  <span className="text-left text-sm sm:text-base md:text-lg font-semibold text-gray-900">
-                    {faq.question}
-                  </span>
-                  <FaInfoCircle
-                    className={`text-pink-600 text-lg sm:text-xl flex-shrink-0 ml-4 transition-transform ${showFaq[index] ? "rotate-180" : ""
-                      }`}
-                  />
-                </button>
-                {showFaq[index] && (
-                  <div className="px-4 sm:px-6 pb-4 sm:pb-5 text-sm sm:text-base text-gray-600">
-                    {faq.answer}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* CTA Section */}
-        <div className="mt-12 sm:mt-16 text-center bg-gradient-to-r from-pink-600 to-purple-600 rounded-2xl p-8 sm:p-12 text-white">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">
-            Ready to Grow Your Moving Business?
-          </h2>
-          <p className="text-base sm:text-lg md:text-xl mb-6 sm:mb-8 text-pink-100">
-            Join Local Moves today and start getting more customers
-          </p>
-          <button
-            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            className="bg-white text-pink-600 px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg hover:bg-gray-100 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105 inline-flex items-center gap-2"
-          >
-            View Plans
-            <FaArrowRight />
-          </button>
         </div>
       </div>
     </div>
