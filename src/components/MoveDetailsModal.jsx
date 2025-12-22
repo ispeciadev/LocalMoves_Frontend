@@ -237,8 +237,8 @@ const MoveDetailsModal = ({ isOpen, onClose, onSubmit, companyCount = 0 }) => {
       <div className="relative w-[95%] max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl">
 
         {/* Decorative Layers */}
-        <div className="absolute top-2 sm:top-3 left-1 w-full h-[70vh] sm:h-[73vh] md:h-[75vh] bg-white rounded-2xl sm:rounded-3xl shadow-md -rotate-3" />
-        <div className="absolute top-1 left-1 w-full h-[70vh] sm:h-[73vh] md:h-[75vh] bg-white rounded-2xl sm:rounded-3xl shadow-md rotate-3" />
+        <div className="absolute top-2 sm:top-3 left-1 w-full h-full bg-white rounded-2xl sm:rounded-3xl shadow-md -rotate-3" />
+        <div className="absolute top-1 left-1 w-full h-full bg-white rounded-2xl sm:rounded-3xl shadow-md rotate-3" />
 
         {/* Floating Count Badge - Only show in login mode */}
         {!isRegisterMode && companyCount > 0 && (
