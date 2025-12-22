@@ -244,6 +244,7 @@ const NewSubscriptionPlans = () => {
   const { user, isAuthenticated } = useAuthStore();
   const navigate = useNavigate();
   const planRef = useRef(null);
+  const tabsRef = useRef(null); // Ref for tabs section
 
   const [companyData, setCompanyData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -282,7 +283,7 @@ const NewSubscriptionPlans = () => {
   useEffect(() => {
     // Wait for page to render, then scroll to tabs
     const timer = setTimeout(() => {
-      planRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      tabsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 500); // 500ms delay to allow page to render
 
     return () => clearTimeout(timer);
@@ -698,7 +699,7 @@ const NewSubscriptionPlans = () => {
       )}
 
       {/* Tabs Section with Pink Toggle */}
-      <div className="flex flex-col items-center mb-8 sm:mb-12 pt-12 sm:pt-16 px-4">
+      <div ref={tabsRef} className="flex flex-col items-center mb-8 sm:mb-12 pt-12 sm:pt-16 px-4">
         <h2 className="text-2xl sm:text-3xl font-bold text-center text-gray-900 mb-6 sm:mb-8">
           Choose Your Service Type
         </h2>
