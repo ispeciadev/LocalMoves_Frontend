@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import api from "../api/axios";
+import axios from "axios";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/solid";
 import {
   FaBuilding,
@@ -607,15 +608,22 @@ const RegisterCompany = () => {
       setSendingOtp(true);
 
       // Debug: log what we're sending
-      console.log("Sending OTP request with phone:", cleanedPhone);
-      console.log("Request payload:", { phone: cleanedPhone });
+      console.log("=== OTP REQUEST DEBUG ===");
+      console.log("1. Raw phone from form:", formData.contactNumber);
+      console.log("2. Cleaned phone:", cleanedPhone);
+      console.log("3. Phone length:", cleanedPhone.length);
+      console.log("4. Request payload:", { phone: cleanedPhone });
+      console.log("5. API Base URL:", env.API_BASE_URL);
+      console.log("6. Full URL:", `${env.API_BASE_URL}localmoves.api.auth.send_otp`);
 
-      // Use api instance (now properly configured for public send_otp endpoint)
-      const res = await api.post("localmoves.api.auth.send_otp", {
-        phone: cleanedPhone,
-      });
+      // Use axios directly (matches working RegisterPage.jsx implementation)
+      const res = await axios.post(
+        `${env.API_BASE_URL}localmoves.api.auth.send_otp`,
+        { phone: cleanedPhone }
+      );
 
-      console.log("OTP Response:", res.data);
+      console.log("7. OTP Response:", res.data);
+      console.log("=== END DEBUG ===");
 
       const apiRes = res.data?.message || res.data;
       if (!apiRes) {
