@@ -815,15 +815,15 @@ const ManagePayments = () => {
                           </td>
                           <td className={`py-2 px-3 font-semibold transition ${isDarkMode ? "text-slate-100" : "text-gray-900"
                             }`}>
-                          €{total.toLocaleString("en-IN")}
+                            €{total.toLocaleString("en-IN")}
                           </td>
                           <td className={`py-2 px-3 hidden md:table-cell transition ${isDarkMode ? "text-slate-300" : "text-gray-700"
                             }`}>
-                          €{deposit.toLocaleString("en-IN")}
+                            €{deposit.toLocaleString("en-IN")}
                           </td>
                           <td className={`py-2 px-3 hidden md:table-cell transition ${isDarkMode ? "text-slate-300" : "text-gray-700"
                             }`}>
-                          €{balance.toLocaleString("en-IN")}
+                            €{balance.toLocaleString("en-IN")}
                           </td>
                           <td className="py-2 px-3">
                             <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium transition ${p.payment_status === "Paid"
@@ -846,7 +846,7 @@ const ManagePayments = () => {
                                       ? "bg-gray-900/30 text-gray-300 border border-gray-800"
                                       : "bg-gray-50 text-gray-700 border border-gray-200"
                               }`}>
-                              {p.payment_status || "-"}
+                              {p.payment_status === "Paid" ? "Deposit paid" : (p.payment_status || "-")}
                             </span>
                           </td>
                           <td className="py-2 px-3">
