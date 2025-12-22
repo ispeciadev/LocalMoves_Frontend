@@ -112,11 +112,18 @@ const PaymentPage = () => {
         // ALL FIXED — USE DASHBOARD PAYMENT LOGIC
         onApprove: async (data, actions) => {
           try {
+            console.log("💳 PayPal payment approved, capturing...");
             const details = await actions.order.capture();
             const transactionId = details.id;
+            console.log("✅ PayPal capture successful:", transactionId);
+
+            console.log("📤 Sending payment to backend...");
+            console.log("Company:", companyName);
+            console.log("Plan:", backendPlan);
+            console.log("Transaction ID:", transactionId);
 
             // SAME backend call dashboard uses
-            await api.post("localmoves.api.payment.process_payment", {
+            const response = await api.post("localmoves.api.payment.process_payment", {
               company_name: companyName,
               subscription_plan: backendPlan,
               billing_cycle: "monthly",
@@ -126,6 +133,7 @@ const PaymentPage = () => {
               notes: "PayPal Order " + transactionId,
             });
 
+            console.log("✅ Backend payment processed successfully:", response.data);
             toast.success("Payment Successful!");
 
             navigate("/onboarding/payment-success", {
@@ -133,8 +141,24 @@ const PaymentPage = () => {
               state: { plan, transactionId },
             });
           } catch (err) {
-            console.error("Payment error:", err);
-            toast.error("Server error while saving payment.");
+            console.error("❌ Payment processing error:", err);
+            console.error("Error details:", {
+              message: err.message,
+              status: err.response?.status,
+              statusText: err.response?.statusText,
+              data: err.response?.data,
+            });
+
+            // Show specific error message
+            if (err.response?.status === 417) {
+              toast.error("Payment failed: Server rejected the request (417). Please contact support.");
+            } else if (err.response?.data?.message) {
+              toast.error(`Payment failed: ${err.response.data.message}`);
+            } else {
+              toast.error("Server error while saving payment. Please contact support.");
+            }
+
+            // DO NOT navigate on error - stay on payment page
           }
         },
 
