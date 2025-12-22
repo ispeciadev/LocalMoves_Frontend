@@ -605,9 +605,16 @@ const RegisterCompany = () => {
 
     try {
       setSendingOtp(true);
+
+      // Debug: log what we're sending
+      console.log("Sending OTP request with phone:", cleanedPhone);
+      console.log("Request payload:", { phone: cleanedPhone });
+
       const res = await api.post("localmoves.api.auth.send_otp", {
         phone: cleanedPhone,
       });
+
+      console.log("OTP Response:", res.data);
 
       const apiRes = res.data?.message || res.data;
       if (!apiRes) {
@@ -625,7 +632,8 @@ const RegisterCompany = () => {
       toast.success("OTP sent to your phone.");
     } catch (err) {
       console.error("sendOtp error:", err);
-      toast.error("Failed to send OTP.");
+      console.error("Error response:", err.response?.data);
+      toast.error(err.response?.data?.message || "Failed to send OTP.");
     } finally {
       setSendingOtp(false);
     }
