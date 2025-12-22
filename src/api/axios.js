@@ -22,6 +22,7 @@ const PUBLIC_ROUTES = [
   "localmoves.api.auth.signup",
   "localmoves.api.auth.send_otp",
   "localmoves.api.auth.send_password_email",
+  "localmoves.api.company.create_company",
 ];
 
 // Remove Expect header from all requests (fixes 417 error)
