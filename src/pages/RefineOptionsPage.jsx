@@ -389,6 +389,21 @@ const RefineOptionsPage = () => {
   // State for API data
   const [_inventoryDataLoaded, setInventoryDataLoaded] = useState(false);
   const [_apiInventoryData, setApiInventoryData] = useState([]);
+  
+  // State for multiplier configuration from API
+  const [multiplierConfig, setMultiplierConfig] = useState({
+    notice_period_multipliers: {
+      within_3_days: 1.3,
+      within_week: 1.2,
+      within_2_weeks: 1.1,
+      within_month: 1.0,
+      over_month: 0.9,
+    },
+    move_day_multipliers: {
+      sun_to_thurs: 1.0,
+      friday_saturday: 1.15,
+    },
+  });
 
   // Fetch inventory data from API on component mount
   useEffect(() => {
@@ -433,7 +448,35 @@ const RefineOptionsPage = () => {
       }
     };
 
+    const fetchMultiplierConfig = async () => {
+      try {
+        console.log("⚙️ Fetching multiplier configuration from API...");
+        const response = await api.get("localmoves.api.dashboard.get_multiplier_configuration");
+        console.log("✅ Multiplier Config API Response:", response.data);
+        
+        const config = response.data?.message || {};
+        
+        if (config.notice_period_multipliers || config.move_day_multipliers) {
+          setMultiplierConfig({
+            notice_period_multipliers: config.notice_period_multipliers || multiplierConfig.notice_period_multipliers,
+            move_day_multipliers: config.move_day_multipliers || multiplierConfig.move_day_multipliers,
+          });
+          console.log("✅ Multiplier configuration loaded successfully");
+        } else {
+          console.warn("⚠️ No multiplier configuration found, using default values");
+        }
+      } catch (error) {
+        console.error("❌ Failed to fetch multiplier configuration:", {
+          message: error.message,
+          response: error.response?.data,
+          status: error.response?.status,
+        });
+        // Keep using default multiplierConfig on error
+      }
+    };
+
     fetchInventoryData();
+    fetchMultiplierConfig();
   }, []);
 
   // Load all previously stored data from localStorage
@@ -1709,25 +1752,28 @@ const RefineOptionsPage = () => {
     const dayOfWeek = date.getDay();
     const isFridayOrSaturday = dayOfWeek === 5 || dayOfWeek === 6;
 
-    // Apply weekend multiplier (15% surcharge)
-    const weekendMultiplier = isFridayOrSaturday ? 1.15 : 1.0;
+    // Apply weekend multiplier from configuration (instead of hardcoded 1.15)
+    const weekendMultiplier = isFridayOrSaturday 
+      ? (multiplierConfig.move_day_multipliers?.friday_saturday || 1.15)
+      : (multiplierConfig.move_day_multipliers?.sun_to_thurs || 1.0);
 
     // Calculate notice period multiplier based on days until move
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const daysUntilMove = Math.floor((date - today) / (1000 * 60 * 60 * 24));
 
+    // Use configuration values instead of hardcoded multipliers
     let noticeMultiplier = 1.0;
     if (daysUntilMove <= 3) {
-      noticeMultiplier = 1.3; // Within 3 days
+      noticeMultiplier = multiplierConfig.notice_period_multipliers?.within_3_days || 1.3;
     } else if (daysUntilMove <= 7) {
-      noticeMultiplier = 1.2; // Within 1 week
+      noticeMultiplier = multiplierConfig.notice_period_multipliers?.within_week || 1.2;
     } else if (daysUntilMove <= 14) {
-      noticeMultiplier = 1.1; // Within 2 weeks
+      noticeMultiplier = multiplierConfig.notice_period_multipliers?.within_2_weeks || 1.1;
     } else if (daysUntilMove <= 30) {
-      noticeMultiplier = 1.0; // Within 1 month
+      noticeMultiplier = multiplierConfig.notice_period_multipliers?.within_month || 1.0;
     } else {
-      noticeMultiplier = 0.9; // Over 1 month
+      noticeMultiplier = multiplierConfig.notice_period_multipliers?.over_month || 0.9;
     }
 
     // Combined multiplier
