@@ -240,8 +240,8 @@ const MoveDetailsModal = ({ isOpen, onClose, onSubmit, companyCount = 0 }) => {
         <div className="absolute top-2 sm:top-3 left-1 w-full h-full bg-white rounded-2xl sm:rounded-3xl shadow-md -rotate-3" />
         <div className="absolute top-1 left-1 w-full h-full bg-white rounded-2xl sm:rounded-3xl shadow-md rotate-3" />
 
-        {/* Floating Count Badge - Only show in login mode */}
-        {!isRegisterMode && companyCount > 0 && (
+        {/* Floating Count Badge - Show in both login and register modes */}
+        {companyCount > 0 && (
           <div className="absolute -top-6 right-5 z-20 flex flex-col items-center justify-center bg-pink-600 text-white rounded-full w-13 h-13 shadow-xl border-4 border-white">
             <span className="text-[15px] font-bold leading-none">{companyCount}</span>
             <span className="text-[9px] mt-0.5">Results</span>
@@ -254,25 +254,25 @@ const MoveDetailsModal = ({ isOpen, onClose, onSubmit, companyCount = 0 }) => {
           {!isRegisterMode ? (
             <>
               {/* LOGIN MODE */}
-              <div className="flex items-center justify-center mb-2 sm:mb-3 mt-2 sm:mt-4 text-pink-600 font-semibold text-[10px] sm:text-[12px] md:text-[14px]">
-                <Search size={14} className="mr-1 sm:mr-2 w-3 h-3 sm:w-4 sm:h-4" />
+              <div className="flex items-center justify-center mb-3 mt-3 text-pink-600 font-semibold text-sm">
+                <Search size={16} className="mr-2" />
                 <span>
                   We found {companyCount} transport providers for your move
                 </span>
               </div>
 
-              <h2 className="text-[13px] sm:text-[15px] md:text-[16px] font-semibold text-gray-800 mb-1 text-center">
+              <h2 className="text-lg font-semibold text-gray-800 mb-1 text-center">
                 To view your moving quotes,
               </h2>
-              <p className="text-[11px] sm:text-[12px] md:text-[13px] text-gray-500 text-center mb-3 sm:mb-4">
+              <p className="text-sm text-gray-500 text-center mb-5">
                 please login using your details below:
               </p>
 
               <form onSubmit={handleLogin} className="space-y-2 sm:space-y-3">
                 {/* Email */}
                 <div className="flex flex-col">
-                  <label className="text-[11px] sm:text-[12px] font-medium text-gray-700 mb-1 flex items-center gap-1">
-                    <Mail size={13} className="text-pink-600" /> Email
+                  <label className="text-sm font-medium text-gray-700 mb-1.5 flex items-center gap-1.5">
+                    <Mail size={16} className="text-pink-600" /> Email
                   </label>
                   <input
                     type="email"
@@ -280,15 +280,15 @@ const MoveDetailsModal = ({ isOpen, onClose, onSubmit, companyCount = 0 }) => {
                     placeholder="Enter your email"
                     value={form.email}
                     onChange={handleChange}
-                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-[12px] sm:text-[13px] focus:ring-2 focus:ring-pink-500 outline-none"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-pink-500 focus:border-pink-500 outline-none"
                     required
                   />
                 </div>
 
                 {/* Password */}
                 <div className="flex flex-col">
-                  <label className="text-[11px] sm:text-[12px] font-medium text-gray-700 mb-1 flex items-center gap-1">
-                    <Lock size={13} className="text-pink-600" /> Password
+                  <label className="text-sm font-medium text-gray-700 mb-1.5 flex items-center gap-1.5">
+                    <Lock size={16} className="text-pink-600" /> Password
                   </label>
                   <input
                     type="password"
@@ -296,7 +296,7 @@ const MoveDetailsModal = ({ isOpen, onClose, onSubmit, companyCount = 0 }) => {
                     placeholder="Enter your password"
                     value={form.password}
                     onChange={handleChange}
-                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-[12px] sm:text-[13px] focus:ring-2 focus:ring-pink-500 outline-none"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-pink-500 focus:border-pink-500 outline-none"
                     required
                   />
                 </div>
@@ -304,15 +304,15 @@ const MoveDetailsModal = ({ isOpen, onClose, onSubmit, companyCount = 0 }) => {
                 {/* Login Button */}
                 <button
                   type="submit"
-                  className="w-full bg-pink-600 hover:bg-pink-700 text-white text-[13px] sm:text-[14px] md:text-[15px] font-semibold py-2.5 sm:py-3 rounded-lg flex items-center justify-center gap-2 transition-transform hover:scale-[1.02] mt-2"
+                  className="w-full bg-pink-600 hover:bg-pink-700 text-white text-base font-semibold py-3 rounded-lg flex items-center justify-center gap-2 transition-all hover:scale-[1.02] shadow-lg hover:shadow-xl mt-1"
                 >
                   Login & View Quotes
-                  <ChevronRight size={14} className="sm:w-4 sm:h-4" />
+                  <ChevronRight size={18} />
                 </button>
               </form>
 
               {/* Switch to Register */}
-              <p className="text-[10px] sm:text-[11px] md:text-[12px] text-gray-600 text-center mt-3">
+              <p className="text-sm text-gray-600 text-center mt-4">
                 New user?{" "}
                 <button
                   onClick={() => {
@@ -328,29 +328,29 @@ const MoveDetailsModal = ({ isOpen, onClose, onSubmit, companyCount = 0 }) => {
           ) : (
             <>
               {/* REGISTER MODE (DEFAULT) */}
-              <div className="flex items-center justify-center mb-2 text-pink-600">
-                <UserPlus size={18} className="sm:w-5 sm:h-5 md:w-6 md:h-6" />
+              <div className="flex items-center justify-center mb-3 text-pink-600">
+                <UserPlus size={24} />
               </div>
               
-              <h2 className="text-[15px] sm:text-[17px] md:text-[19px] font-bold text-gray-900 mb-1 text-center">
+              <h2 className="text-xl font-bold text-gray-900 mb-1 text-center">
                 Create Your Account
               </h2>
               
               {companyCount > 0 && (
-                <p className="text-[10px] sm:text-[11px] md:text-[12px] text-center text-pink-600 font-medium mb-2">
+                <p className="text-sm text-center text-pink-600 font-medium mb-2">
                   Register to view {companyCount} transport providers for your move
                 </p>
               )}
               
-              <p className="text-[11px] sm:text-[12px] md:text-[13px] text-gray-500 text-center mb-3 sm:mb-4">
+              <p className="text-sm text-gray-500 text-center mb-5">
                 Join <span className="text-pink-600 font-semibold">Local Moves</span> to get started!
               </p>
 
               <form onSubmit={handleRegister} className="space-y-2 sm:space-y-3">
                 {/* Name */}
                 <div className="flex flex-col">
-                  <label className="text-[11px] sm:text-[12px] font-medium text-gray-700 mb-1 flex items-center gap-1">
-                    <User size={13} className="text-pink-600" /> Full Name
+                  <label className="text-sm font-medium text-gray-700 mb-1.5 flex items-center gap-1.5">
+                    <User size={16} className="text-pink-600" /> Full Name
                   </label>
                   <input
                     type="text"
@@ -358,15 +358,15 @@ const MoveDetailsModal = ({ isOpen, onClose, onSubmit, companyCount = 0 }) => {
                     placeholder="Enter your full name"
                     value={form.name}
                     onChange={handleChange}
-                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-[12px] sm:text-[13px] focus:ring-2 focus:ring-pink-500 outline-none"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-pink-500 focus:border-pink-500 outline-none"
                     required
                   />
                 </div>
 
                 {/* Email */}
                 <div className="flex flex-col">
-                  <label className="text-[11px] sm:text-[12px] font-medium text-gray-700 mb-1 flex items-center gap-1">
-                    <Mail size={13} className="text-pink-600" /> Email
+                  <label className="text-sm font-medium text-gray-700 mb-1.5 flex items-center gap-1.5">
+                    <Mail size={16} className="text-pink-600" /> Email
                   </label>
                   <input
                     type="email"
@@ -374,15 +374,15 @@ const MoveDetailsModal = ({ isOpen, onClose, onSubmit, companyCount = 0 }) => {
                     placeholder="Enter your email"
                     value={form.email}
                     onChange={handleChange}
-                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-[12px] sm:text-[13px] focus:ring-2 focus:ring-pink-500 outline-none"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-pink-500 focus:border-pink-500 outline-none"
                     required
                   />
                 </div>
 
                 {/* Password */}
                 <div className="flex flex-col">
-                  <label className="text-[11px] sm:text-[12px] font-medium text-gray-700 mb-1 flex items-center gap-1">
-                    <Lock size={13} className="text-pink-600" /> Password
+                  <label className="text-sm font-medium text-gray-700 mb-1.5 flex items-center gap-1.5">
+                    <Lock size={16} className="text-pink-600" /> Password
                   </label>
                   <div className="relative">
                     <input
@@ -391,7 +391,7 @@ const MoveDetailsModal = ({ isOpen, onClose, onSubmit, companyCount = 0 }) => {
                       placeholder="Create a password (min. 6 characters)"
                       value={form.password}
                       onChange={handleChange}
-                      className="w-full border border-gray-200 rounded-lg px-3 py-2 pr-10 text-[12px] sm:text-[13px] focus:ring-2 focus:ring-pink-500 outline-none"
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2.5 pr-10 text-sm focus:ring-2 focus:ring-pink-500 focus:border-pink-500 outline-none"
                       required
                     />
                     <button
@@ -400,9 +400,9 @@ const MoveDetailsModal = ({ isOpen, onClose, onSubmit, companyCount = 0 }) => {
                       onClick={() => setShowPassword(!showPassword)}
                     >
                       {showPassword ? (
-                        <EyeOff size={15} className="text-gray-500" />
+                        <EyeOff size={18} className="text-gray-500" />
                       ) : (
-                        <Eye size={15} className="text-gray-500" />
+                        <Eye size={18} className="text-gray-500" />
                       )}
                     </button>
                   </div>
@@ -410,8 +410,8 @@ const MoveDetailsModal = ({ isOpen, onClose, onSubmit, companyCount = 0 }) => {
 
                 {/* Phone + OTP */}
                 <div className="flex flex-col">
-                  <label className="text-[11px] sm:text-[12px] font-medium text-gray-700 mb-1 flex items-center gap-1">
-                    <Phone size={13} className="text-pink-600" /> Phone Number
+                  <label className="text-sm font-medium text-gray-700 mb-1.5 flex items-center gap-1.5">
+                    <Phone size={16} className="text-pink-600" /> Phone Number
                   </label>
                   <div className="flex flex-col sm:flex-row gap-2">
                     <input
@@ -420,7 +420,7 @@ const MoveDetailsModal = ({ isOpen, onClose, onSubmit, companyCount = 0 }) => {
                       placeholder="10-digit phone number"
                       value={form.phone}
                       onChange={handleChange}
-                      className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-[12px] sm:text-[13px] focus:ring-2 focus:ring-pink-500 outline-none"
+                      className="flex-1 border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-pink-500 focus:border-pink-500 outline-none"
                       required
                     />
                     {!isVerified ? (
@@ -428,33 +428,32 @@ const MoveDetailsModal = ({ isOpen, onClose, onSubmit, companyCount = 0 }) => {
                         type="button"
                         onClick={handleSendOtp}
                         disabled={otpStep}
-                        className={`px-3 py-2 rounded-lg text-[11px] sm:text-[12px] text-white whitespace-nowrap ${
+                        className={`px-4 py-2.5 rounded-lg text-sm text-white font-medium whitespace-nowrap ${
                           otpStep ? "bg-gray-400" : "bg-pink-600 hover:bg-pink-700"
                         }`}
                       >
                         {otpStep ? "Sent" : "Send OTP"}
                       </button>
                     ) : (
-                      <span className="bg-pink-600 text-white px-3 py-2 rounded-lg flex items-center justify-center gap-1 text-[11px] sm:text-[12px] whitespace-nowrap">
-                        <CheckCircle size={12} /> Verified
+                      <span className="bg-pink-600 text-white px-4 py-2.5 rounded-lg flex items-center justify-center gap-1.5 text-sm font-medium whitespace-nowrap">
+                        <CheckCircle size={16} /> Verified
                       </span>
-                    )}
-                  </div>
+                    )}</div>
                   
                   {otpStep && !isVerified && (
-                    <div className="flex gap-2 mt-2">
+                    <div className="flex flex-col sm:flex-row gap-2 mt-2">
                       <input
                         type="text"
                         placeholder="Enter 6-digit OTP"
                         value={otp}
                         onChange={(e) => setOtp(e.target.value)}
-                        className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-[12px] sm:text-[13px] focus:ring-2 focus:ring-pink-500 outline-none"
+                        className="flex-1 border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-pink-500 focus:border-pink-500 outline-none"
                         maxLength={6}
                       />
                       <button
                         type="button"
                         onClick={handleVerifyOtp}
-                        className="px-4 py-2 border rounded-lg text-pink-600 border-pink-500 hover:bg-pink-50 text-[11px] sm:text-[12px]"
+                        className="px-5 py-2.5 border-2 rounded-lg text-pink-600 border-pink-500 hover:bg-pink-50 text-sm font-medium whitespace-nowrap"
                       >
                         Verify
                       </button>
@@ -541,15 +540,15 @@ const MoveDetailsModal = ({ isOpen, onClose, onSubmit, companyCount = 0 }) => {
                 {/* Register Button */}
                 <button
                   type="submit"
-                  className="w-full bg-pink-600 hover:bg-pink-700 text-white text-[13px] sm:text-[14px] md:text-[15px] font-semibold py-2.5 sm:py-3 rounded-lg flex items-center justify-center gap-2 transition-transform hover:scale-[1.02] mt-2"
+                  className="w-full bg-pink-600 hover:bg-pink-700 text-white text-base font-semibold py-3 rounded-lg flex items-center justify-center gap-2 transition-all hover:scale-[1.02] shadow-lg hover:shadow-xl mt-1"
                 >
                   Create Account & Continue
-                  <ChevronRight size={14} className="sm:w-4 sm:h-4" />
+                  <ChevronRight size={18} />
                 </button>
               </form>
 
               {/* Switch to Login */}
-              <p className="text-[10px] sm:text-[11px] md:text-[12px] text-gray-600 text-center mt-3">
+              <p className="text-sm text-gray-600 text-center mt-4">
                 Already have an account?{" "}
                 <button
                   onClick={() => {
@@ -565,7 +564,7 @@ const MoveDetailsModal = ({ isOpen, onClose, onSubmit, companyCount = 0 }) => {
           )}
 
           {/* Footer text */}
-          <p className="text-[9px] sm:text-[10px] md:text-[11px] text-gray-500 text-center mt-3 sm:mt-4 px-2">
+          <p className="text-xs text-gray-500 text-center mt-5 px-2">
             We aim to redefine local and long-distance moving by making it transparent, customer-friendly, and supported by modern digital tools.
           </p>
 
