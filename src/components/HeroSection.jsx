@@ -505,6 +505,20 @@ const HeroSection = () => {
           return [];
         }
 
+        const userEmail = localStorage.getItem("user_email") || localStorage.getItem("email");
+
+        // DEBUG: Log email retrieval
+        console.log("🔍 Email Debug:");
+        console.log("  - user_email from localStorage:", localStorage.getItem("user_email"));
+        console.log("  - email from localStorage:", localStorage.getItem("email"));
+        console.log("  - Final userEmail:", userEmail);
+
+        // Validate email exists
+        if (!userEmail) {
+          showToast("Please log in to receive quotes via email", "warning");
+          console.warn("⚠️ No email found in localStorage");
+        }
+
         const payload = {
           pincode: pincode,
           property_type: serviceType,
@@ -512,9 +526,12 @@ const HeroSection = () => {
           distance_miles: distanceMiles ? Number(distanceMiles) : 1,
           quantity: quantity,
           additional_spaces: additionalSpaces || [],
-          user_email: localStorage.getItem("user_email") || localStorage.getItem("email"),
+          user_email: userEmail,
           send_email: "True",
         };
+
+        // DEBUG: Log complete payload
+        console.log("📤 API Payload:", JSON.stringify(payload, null, 2));
 
         const res = await axios.post(
           `${env.API_BASE_URL}localmoves.api.company.search_companies_by_pincode`,
@@ -528,10 +545,19 @@ const HeroSection = () => {
           }
         );
 
+        // DEBUG: Log API response
+        console.log("📥 API Response:", res.data);
+
         const msg = res.data?.message;
         const data = msg?.success && Number(msg?.count) > 0 ? msg.data : [];
 
         setCompanies(data || []);
+
+        // Show success message if email was provided
+        if (userEmail && msg?.success) {
+          showToast(`Quotes will be sent to ${userEmail}`, "success");
+        }
+
         return data;
       } catch (err) {
         if (err.response) {

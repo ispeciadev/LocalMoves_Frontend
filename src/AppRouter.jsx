@@ -59,6 +59,7 @@ import AdminSettings from "./pages/admin/AdminSettings";
 import AdminSupport from "./pages/admin/AdminSupport";
 import ManageInventory from "./pages/admin/ManageInventory";
 import Configuration from "./pages/admin/Configuration";
+import ManageEmailTemplates from "./pages/admin/ManageEmailTemplates";
 
 import api from "./api/axios";
 import { useAuthStore } from "./stores/useAuthStore";
@@ -306,6 +307,7 @@ function AppRouter() {
           <Route path="payments" element={<ManagePayments />} />
           <Route path="ManageInventory" element={<ManageInventory />} />
           <Route path="configuration" element={<Configuration />} />
+          <Route path="email-templates" element={<ManageEmailTemplates />} />
           <Route path="support" element={<AdminSupport />} />
           <Route path="settings" element={<AdminSettings />} />
         </Route>

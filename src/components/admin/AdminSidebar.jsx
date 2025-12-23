@@ -12,6 +12,7 @@ import {
   FaCog,
   FaSignOutAlt,
   FaTools,
+  FaEnvelope,
 } from "react-icons/fa";
 
 import { useAdminThemeStore } from "../../stores/useAdminThemeStore";
@@ -128,6 +129,10 @@ const AdminSidebar = ({ forcedHidden, onClose }) => {
 
           <NavLink to="/admin/configuration" className={navLinkClasses} onClick={handleMenuClick}>
             <FaTools /> Configuration
+          </NavLink>
+
+          <NavLink to="/admin/email-templates" className={navLinkClasses} onClick={handleMenuClick}>
+            <FaEnvelope /> Email Templates
           </NavLink>
 
           <NavLink to="/admin/settings" className={navLinkClasses} onClick={handleMenuClick}>
