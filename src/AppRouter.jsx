@@ -40,6 +40,7 @@ import PaymentSuccess from "./pages/logistic/PaymentSuccess";
 import Settings from "./pages/logistic/Settings";
 import RegisterCompany from "./pages/RegisterCompany";
 import EditCompany from "./pages/logistic/EditCompany";
+import BoltOnUpgrade from "./pages/logistic/BoltOnUpgrade";
 // import AvailableRequests from "./pages/logistic/AvailableRequests";
 
 // Onboarding Pages
@@ -245,8 +246,24 @@ function AppRouter() {
             </ProtectedRoute>
           }
         >
-          <Route index element={<DashboardHome />} />
+          {/* Redirect to bolt-on upgrade if user hasn't seen it and has paid plan */}
+          <Route
+            index
+            element={
+              (() => {
+                const boltOnSeen = localStorage.getItem("boltOnOfferSeen");
+                const user = JSON.parse(localStorage.getItem("user") || "{}");
+                const hasPaidPlan = user.subscription_plan && user.subscription_plan !== "Free";
+
+                if (hasPaidPlan && !boltOnSeen) {
+                  return <Navigate to="/logistic-dashboard/bolt-on-upgrade" replace />;
+                }
+                return <Navigate to="/logistic-dashboard/home" replace />;
+              })()
+            }
+          />
           <Route path="home" element={<DashboardHome />} />
+          <Route path="bolt-on-upgrade" element={<BoltOnUpgrade />} />
           <Route path="customers" element={<Customers />} />
           <Route path="customers/:id" element={<RequestDetails />} />
           <Route path="subscription-plan" element={<SubscriptionPlans />} />

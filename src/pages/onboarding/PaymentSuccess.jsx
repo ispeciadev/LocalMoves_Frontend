@@ -53,6 +53,9 @@ const PaymentSuccess = () => {
     localStorage.setItem("subscriptionActive", "true");
     localStorage.setItem("justPaid", "true");
 
+    // Reset bolt-on offer flag so user sees it again with new subscription
+    localStorage.removeItem("boltOnOfferSeen");
+
     console.log("📢 Dispatching subscription-updated event");
     window.dispatchEvent(new Event("subscription-updated"));
   };
