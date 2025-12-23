@@ -720,12 +720,25 @@ const NewSubscriptionPlans = () => {
             <div className="mt-8 pt-8 border-t border-gray-200">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Your Plan Features</h3>
               <div className="flex flex-wrap gap-3">
-                {(JSON.parse(companyData.includes || "[]") || []).map((item, idx) => (
-                  <div key={idx} className="bg-gray-100 text-gray-800 px-4 py-2 rounded-full text-sm flex items-center shadow-sm">
-                    <FaCheckCircle className="text-green-500 mr-2" />
-                    {item}
-                  </div>
-                ))}
+                {(() => {
+                  try {
+                    // Try to parse as JSON first
+                    const features = companyData.includes
+                      ? (companyData.includes.startsWith('[')
+                        ? JSON.parse(companyData.includes)
+                        : companyData.includes.split(',').map(f => f.trim()))
+                      : [];
+                    return features.map((item, idx) => (
+                      <div key={idx} className="bg-gray-100 text-gray-800 px-4 py-2 rounded-full text-sm flex items-center shadow-sm">
+                        <FaCheckCircle className="text-green-500 mr-2" />
+                        {item}
+                      </div>
+                    ));
+                  } catch (error) {
+                    console.error("Error parsing features:", error);
+                    return null;
+                  }
+                })()}
               </div>
             </div>
           </motion.div>
