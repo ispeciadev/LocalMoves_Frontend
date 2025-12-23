@@ -1,10 +1,8 @@
-```javascript
 // src/pages/onboarding/PaymentSuccess.jsx
 import React, { useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { CheckCircle2 } from "lucide-react";
 import { toast } from "react-toastify";
-import api from "../../api/axios";
 
 const PaymentSuccess = () => {
   const location = useLocation();
@@ -19,7 +17,7 @@ const PaymentSuccess = () => {
     hasHandled.current = true;
 
     console.log("✅ Payment successful, updating localStorage and redirecting...");
-    
+
     // Backend payment already processed in PaymentPage
     toast.success("Payment Successful! Redirecting to dashboard...");
 
@@ -31,7 +29,7 @@ const PaymentSuccess = () => {
       console.log("🚀 Redirecting to dashboard...");
       window.location.href = "/logistic-dashboard/home";
     }, 1500);
-    
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
