@@ -292,13 +292,14 @@ const NewSubscriptionPlans = () => {
       }
 
       try {
-        const res = await api.get(
-          "localmoves.api.company.get_company_details",
+        const userEmail = user?.email;
+        const response = await api.get(
+          "localmoves.api.company.get_my_company",
           {
-            params: { email: user?.email },
+            params: { email: userEmail },
           }
         );
-        setCompanyData(res.data?.message?.data?.[0] || null);
+        setCompanyData(response.data?.message?.data?.[0] || null);
       } catch (error) {
         console.error(error);
       }
