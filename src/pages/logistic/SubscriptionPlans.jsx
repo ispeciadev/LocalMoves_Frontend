@@ -1,131 +1,394 @@
-import React from "react";
+// src/pages/logistic/SubscriptionPlans.jsx
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "../../stores/useAuthStore";
+import api from "../../api/axios";
+import {
+  FaCrown,
+  FaCheckCircle,
+  FaStar,
+  FaRocket,
+  FaBullhorn,
+  FaBriefcase,
+  FaShieldAlt,
+  FaEnvelope,
+  FaSms,
+  FaMoneyBillWave,
+  FaUserTie,
+  FaChartBar,
+  FaHeadset,
+  FaEye,
+  FaThumbsUp,
+  FaArrowRight,
+  FaBolt,
+  FaGem,
+  FaRegCheckCircle,
+  FaTimes,
+  FaInfinity,
+  FaSmile,
+  FaMedal,
+  FaCog,
+  FaCalendarCheck,
+} from "react-icons/fa";
+import { toast } from "react-toastify";
+import { motion } from "framer-motion";
 
-//  Map UI plan names → Backend required names
-const PLAN_NAME_MAPPING = {
-  Starter: "Basic",
-  Growth: "Standard",
-  Pro: "Premium",
+// Professional Color Palette
+const COLORS = {
+  primary: "#ffffff",
+  secondary: "#f9fafb",
+  accent: "#db2777", // pink-600
+  accentLight: "#f472b6",
+  text: "#111827",
+  textLight: "#6b7280",
+  border: "#e5e7eb",
+  success: "#10b981",
+  blue: "#3b82f6",
+  green: "#10b981",
+  purple: "#8b5cf6",
 };
 
+// PUBLIC PLANS
+const PLANS = [
+  {
+    id: "basic",
+    name: "Basic",
+    backendName: "Basic",
+    price: "£495",
+    period: "per year",
+    priceINR: 495,
+    priceDisplay: "£495/year",
+    tagline: "Perfect for small local movers",
+    featured: false,
+    bullets: [
+      "Membership: 2 Months",
+      "Free Entry Views: 20",
+      "Map Display",
+      "Quote Display",
+      "Image Gallery",
+      "Email Support",
+    ],
+  },
+  {
+    id: "standard",
+    name: "Standard",
+    backendName: "Standard",
+    price: "£995",
+    period: "per year",
+    priceINR: 995,
+    priceDisplay: "£995/year",
+    tagline: "Ideal for expanding moving companies",
+    featured: true,
+    highlight: "Most Popular",
+    bullets: [
+      "Membership: 6 Months",
+      "Free Entry Views: 50",
+      "Phone/Email Support",
+      "Profile Page",
+      "Map Display",
+      "Quote Display",
+      "Image Gallery",
+    ],
+  },
+  {
+    id: "premium",
+    name: "Premium",
+    backendName: "Premium",
+    price: "£1595",
+    period: "per year",
+    priceINR: 1595,
+    priceDisplay: "£1595/year",
+    tagline: "Best for high-volume UK logistics teams",
+    featured: false,
+    bullets: [
+      "Membership: 1 Year",
+      "Free Entry Views: Unlimited",
+      "Survey Bookings",
+      "Hide Competitors",
+      "Phone/Email Support",
+      "Profile Page",
+      "Map Display",
+      "Quote Display",
+      "Image Gallery",
+    ],
+  },
+];
+
 const SubscriptionPlans = () => {
+  const { user, isAuthenticated } = useAuthStore();
   const navigate = useNavigate();
+  const planRef = useRef(null);
 
-  const plans = [
-    {
-      name: "Starter",
-      backendName: PLAN_NAME_MAPPING["Starter"],
-      priceINR: 495,
-      price: "£495/year",
-      features: [
-        "Membership : 2 Months",
-        "Free Entries : 20",
-        "Map Display",
-        "Quote Display",
-        "Image Gallery",
-        "Email Support",
-      ],
-    },
-    {
-      name: "Growth",
-      backendName: PLAN_NAME_MAPPING["Growth"],
-      priceINR: 995,
-      price: "£995/year",
-      features: [
-        "Membership : 6 Months",
-        "Free Entries : 50",
-        "Phone/Email Support",
-        "Profile Page",
-        "Map Display",
-        "Quote Display",
-        "Image Gallery",
-      ],
-    },
-    {
-      name: "Pro",
-      backendName: PLAN_NAME_MAPPING["Pro"],
-      priceINR: 1595,
-      price: "£1595/year",
-      features: [
-        "Membership : 1 Year",
-        "Free Entries : Unlimited",
-        "Survey Bookings",
-        "Hide Competitors",
-        "Phone/Email Support",
-        "Profile Page",
-        "Map Display",
-        "Quote Display",
-        "Image Gallery",
-      ],
-    },
-  ];
+  const [companyData, setCompanyData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const handleSubscribe = (plan) => {
-    const finalPlan = {
-      ...plan,
-      name: plan.backendName,
+  // FETCH USER PLAN DETAILS
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!isAuthenticated) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const userEmail = user?.email;
+        const response = await api.get(
+          "localmoves.api.company.get_my_company",
+          {
+            params: { email: userEmail },
+          }
+        );
+        setCompanyData(response.data?.message?.data?.[0] || null);
+      } catch (error) {
+        console.error(error);
+      }
+      setLoading(false);
     };
 
-    navigate("/logistic-dashboard/payment", { state: { plan: finalPlan } });
+    fetchData();
+  }, [user, isAuthenticated]);
+
+  // PAYMENT HANDLER
+  const handleStartAction = (plan) => {
+    if (plan) {
+      const finalPlan = {
+        ...plan,
+        name: plan.backendName,
+      };
+      navigate("/logistic-dashboard/payment", { state: { plan: finalPlan } });
+    } else {
+      toast.info("Please select a plan to continue");
+    }
   };
 
+  const getBulletIcon = (bullet) => {
+    const bulletLower = bullet.toLowerCase();
+
+    const iconMap = [
+      { keywords: ["email"], icon: <FaEnvelope className="text-pink-600" /> },
+      { keywords: ["support", "headset"], icon: <FaHeadset className="text-blue-500" /> },
+      { keywords: ["membership"], icon: <FaGem className="text-purple-500" /> },
+      { keywords: ["unlimited"], icon: <FaInfinity className="text-pink-600" /> },
+      { keywords: ["priority"], icon: <FaBolt className="text-yellow-500" /> },
+    ];
+
+    const match = iconMap.find(item =>
+      item.keywords.some(keyword => bulletLower.includes(keyword))
+    );
+
+    return match ? match.icon : <FaRegCheckCircle className="text-pink-600" />;
+  };
+
+  const renderPlanCard = (plan, index) => {
+    return (
+      <motion.div
+        key={plan.id}
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: index * 0.1 }}
+        className={`relative rounded-2xl p-6 sm:p-8 h-full flex flex-col transition-all duration-300 ${plan.featured
+          ? 'bg-gradient-to-br from-white to-gray-50 border-2 border-pink-200 shadow-xl transform hover:-translate-y-1'
+          : 'bg-white border border-gray-200 shadow-lg hover:shadow-xl hover:border-gray-300'
+          }`}
+      >
+        {/* Sparkle effect for featured */}
+        {plan.featured && (
+          <div className="absolute -top-2 -right-2">
+            <FaStar className="text-pink-400 text-2xl" />
+          </div>
+        )}
+
+        {/* Highlight badge */}
+        {plan.highlight && (
+          <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+            <div className="bg-gradient-to-r from-pink-600 to-pink-500 text-white px-4 py-1 rounded-full text-xs sm:text-sm font-bold shadow-lg flex items-center gap-1">
+              <FaMedal className="text-yellow-300" />
+              {plan.highlight}
+            </div>
+          </div>
+        )}
+
+        {/* Plan icon */}
+        <div className="text-center mb-4 sm:mb-6">
+          <div className="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-r from-gray-50 to-gray-100 mb-3 sm:mb-4">
+            <FaCrown className="text-2xl text-pink-600" />
+          </div>
+          <h3 className="text-xl sm:text-2xl font-bold text-gray-900">{plan.name} Plan</h3>
+          <p className="text-gray-600 mt-2 text-xs sm:text-sm leading-relaxed">{plan.tagline}</p>
+        </div>
+
+        {/* Price */}
+        <div className="text-center mb-4 sm:mb-6">
+          <div className="flex items-end justify-center">
+            <span className="text-4xl sm:text-5xl font-bold text-gray-900">{plan.price}</span>
+            <span className="text-gray-600 ml-2 text-sm sm:text-base">{plan.period}</span>
+          </div>
+        </div>
+
+        {/* Features list */}
+        <div className="flex-grow">
+          <ul className="space-y-2 sm:space-y-3">
+            {plan.bullets.map((bullet, i) => (
+              <li key={i} className="flex items-start p-2 hover:bg-gray-50 rounded-lg transition-colors">
+                <span className="flex-shrink-0 mt-1 mr-2 sm:mr-3">
+                  {getBulletIcon(bullet)}
+                </span>
+                <span className="text-gray-700 text-xs sm:text-sm">{bullet}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Action button */}
+        <div className="mt-6 sm:mt-8">
+          <button
+            onClick={() => handleStartAction(plan)}
+            className="w-full bg-gradient-to-r from-pink-600 to-pink-500 hover:from-pink-700 hover:to-pink-600 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl text-sm sm:text-base font-semibold transition duration-300 flex items-center justify-center shadow-md hover:shadow-lg"
+          >
+            Subscribe Now <FaArrowRight className="ml-2" />
+          </button>
+        </div>
+      </motion.div>
+    );
+  };
+
+  if (loading) {
+    return (
+      <div className="dashboard-scrollbar w-full h-full overflow-auto bg-gray-50 flex items-center justify-center">
+        <style>{`
+          .dashboard-scrollbar::-webkit-scrollbar { display: none; }
+          .dashboard-scrollbar { scrollbar-width: none; }
+        `}</style>
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-pink-600"></div>
+          <p className="mt-4 text-gray-600">Loading plan details...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="dashboard-scrollbar w-full h-full overflow-auto bg-pink-50 flex flex-col items-center py-12 px-4">
-      
+    <div className="dashboard-scrollbar w-full h-full overflow-auto bg-gray-50">
       <style>{`
         .dashboard-scrollbar::-webkit-scrollbar { display: none; }
         .dashboard-scrollbar { scrollbar-width: none; }
       `}</style>
 
-      {/* Header */}
-      <div className="text-center mb-10">
-        <h2 className="text-3xl font-bold text-pink-600">
-          Choose Your Subscription Plan
-        </h2>
-        <p className="text-gray-600 text-sm mt-2">
-          Upgrade your plan anytime as your business grows.
-        </p>
-      </div>
-
-      {/* Plans Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-6xl">
-        {plans.map((plan, index) => (
-          <div
-            key={index}
-            className="bg-white border border-pink-100 rounded-xl shadow-md hover:shadow-lg transition-all p-6 flex flex-col justify-between"
+      <div className="max-w-7xl mx-auto px-4 py-8 sm:py-12">
+        {/* Page Header */}
+        <div className="text-center mb-8 sm:mb-12">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-4 sm:mb-6"
           >
-            <div>
-              <h3 className="text-xl font-semibold text-gray-800 mb-2 text-center">
-                {plan.name} Plan
-              </h3>
-
-              <p className="text-2xl font-bold text-pink-600 text-center mb-4">
-                {plan.price}
-              </p>
-
-              <ul className="text-gray-600 text-sm space-y-2 mb-6">
-                {plan.features.map((feature, i) => (
-                  <li key={i} className="flex items-center gap-2">
-                    <span className="text-pink-600">✔</span> {feature}
-                  </li>
-                ))}
-              </ul>
+            <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-r from-pink-600 to-pink-500 rounded-2xl border-2 border-pink-300 shadow-xl mb-4">
+              <FaCrown className="text-3xl sm:text-4xl text-white" />
             </div>
+          </motion.div>
 
-            <button
-              onClick={() => handleSubscribe(plan)}
-              className="w-full bg-pink-600 text-white py-2 rounded-lg font-medium hover:bg-pink-700 transition"
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 mb-4 sm:mb-6"
+          >
+            Subscription Plans
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="text-base sm:text-lg md:text-xl text-gray-600 max-w-2xl mx-auto"
+          >
+            Choose the perfect plan for your moving business and start growing today
+          </motion.p>
+        </div>
+
+        {/* User Current Plan */}
+        {isAuthenticated && companyData && (
+          <div className="mb-8 sm:mb-12">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white rounded-xl sm:rounded-2xl shadow-xl p-4 sm:p-6 md:p-8 border border-gray-200"
             >
-              Subscribe Now
-            </button>
-          </div>
-        ))}
-      </div>
+              <div className="flex flex-col md:flex-row justify-between items-center">
+                <div className="flex items-center mb-6 md:mb-0">
+                  <div className="bg-gradient-to-r from-pink-600 to-pink-500 p-3 sm:p-4 rounded-lg sm:rounded-xl mr-4 sm:mr-6 shadow-md">
+                    <FaCrown className="text-white text-2xl sm:text-3xl" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Your Current Plan</h2>
+                    <p className="text-sm sm:text-base text-gray-600">{companyData.subscription_plan} Plan</p>
+                  </div>
+                </div>
 
-      {/* Footer Note */}
-      <p className="mt-10 text-gray-500 text-xs text-center">
-        All subscriptions auto-renew yearly. Cancel anytime from your dashboard.
-      </p>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+                  <div className="text-center">
+                    <div className="text-gray-600 text-sm mb-1">Price</div>
+                    <div className="text-2xl font-bold text-gray-800">£{companyData.price || 0}</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-gray-600 text-sm mb-1">Renewal Date</div>
+                    <div className="text-lg font-semibold text-gray-900">
+                      {companyData.subscription_end_date || "N/A"}
+                    </div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-gray-600 text-sm mb-1">Free Entries</div>
+                    <div className="text-xl font-bold text-pink-600">
+                      {companyData.subscription_plan === "Premium"
+                        ? "Unlimited"
+                        : companyData.requests_viewed_this_month || 0}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-8 pt-8 border-t border-gray-200">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Your Plan Features</h3>
+                <div className="flex flex-wrap gap-3">
+                  {(() => {
+                    try {
+                      const features = companyData.includes
+                        ? (companyData.includes.startsWith('[')
+                          ? JSON.parse(companyData.includes)
+                          : companyData.includes.split(',').map(f => f.trim()))
+                        : [];
+                      return features.map((item, idx) => (
+                        <div key={idx} className="bg-gray-100 text-gray-800 px-4 py-2 rounded-full text-sm flex items-center shadow-sm">
+                          <FaCheckCircle className="text-green-500 mr-2" />
+                          {item}
+                        </div>
+                      ));
+                    } catch (error) {
+                      console.error("Error parsing features:", error);
+                      return null;
+                    }
+                  })()}
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {/* Plans Grid */}
+        <div ref={planRef} className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+          {PLANS.map((plan, index) => renderPlanCard(plan, index))}
+        </div>
+
+        {/* Footer Note */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          className="mt-10 text-gray-500 text-xs sm:text-sm text-center"
+        >
+          All subscriptions auto-renew yearly. Cancel anytime from your dashboard.
+        </motion.p>
+      </div>
     </div>
   );
 };
