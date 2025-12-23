@@ -114,13 +114,147 @@ const PLANS = [
   },
 ];
 
+// LEADS PLANS
+const LEADS_PLANS = [
+  {
+    id: "starter",
+    name: "Starter",
+    backendName: "Starter",
+    price: "£200",
+    period: "per month",
+    priceINR: 200,
+    tagline: "Ideal for small businesses or those beginning structured lead generation",
+    featured: false,
+    bullets: [
+      "20 qualified leads per month (average)",
+      "Email support (48-hour response time)",
+      "Advanced reporting suite",
+      "Lead delivery by email",
+      "Enhanced lead verification (telephone verification)",
+      "Quarterly performance summary",
+    ],
+    bestFor: "Trading professionals, solo operators, and early-stage businesses",
+  },
+  {
+    id: "growth",
+    name: "Growth",
+    backendName: "Growth",
+    price: "£400",
+    period: "per month",
+    priceINR: 400,
+    tagline: "Designed for growing teams needing more consistent volumes",
+    featured: true,
+    highlight: "Best Value",
+    bullets: [
+      "50 qualified leads per month",
+      "Priority email support (24-hour response time)",
+      "Advanced reporting suite",
+      "Lead delivery by email & SMS",
+      "Enhanced lead verification (telephone verification)",
+      "Monthly performance review",
+      "Dedicated account manager",
+      "Early access to product updates",
+    ],
+    bestFor: "Small to medium teams focused on predictable growth with higher monthly volume",
+  },
+  {
+    id: "pro",
+    name: "Pro",
+    backendName: "Pro",
+    price: "£700",
+    period: "per month",
+    priceINR: 700,
+    tagline: "Built for scaling operations that require high-volume, high-quality lead flow",
+    featured: false,
+    bullets: [
+      "100 qualified leads per month",
+      "Priority support (same-day response)",
+      "Advanced reporting suite",
+      "Lead delivery by email & SMS or WhatsApp",
+      "Enhanced lead verification (telephone verification)",
+      "Twice-monthly performance review",
+      "Dedicated account manager",
+      "Early access to new lead channels",
+    ],
+    bestFor: "Businesses scaling aggressively, hiring new staff, or managing multiple locations",
+  },
+];
+
+// JOBS PLANS
+const JOBS_PLANS = [
+  {
+    id: "founder",
+    name: "Founder",
+    backendName: "Founder",
+    price: "£500",
+    period: "per month",
+    priceINR: 500,
+    tagline: "Perfect for small or newly established businesses that need consistent, ready-to-deliver jobs without the workload of lead chasing",
+    featured: false,
+    bullets: [
+      "5 fully booked jobs per month",
+      "Each job includes verified customer details, confirmed booking date and deposit taken",
+      "Full handling of lead qualification → quote → booking → payment securing",
+      "Customer communication handled on your behalf",
+      "Advanced reporting dashboard",
+      "Email support (48-hour response time)",
+    ],
+    bestFor: "Small businesses, solo operators, and teams that can only handle a handful of guaranteed monthly jobs",
+  },
+  {
+    id: "advanced",
+    name: "Advanced",
+    backendName: "Advanced",
+    price: "£900",
+    period: "per month",
+    priceINR: 900,
+    tagline: "Designed for growing trades and service companies that want a stronger pipeline of confirmed jobs without internal admin burden",
+    featured: true,
+    highlight: "Recommended",
+    bullets: [
+      "10 fully booked jobs per month",
+      "Multi-step qualification and conversion process",
+      "Dedicated account manager",
+      "Deposit handling & payment confirmation",
+      "Advanced reporting dashboard",
+      "Priority email support (24-hour response)",
+      "Monthly performance review",
+      "Appointment scheduling with customer reminders",
+    ],
+    bestFor: "Growing companies aiming for predictable monthly revenue with minimal admin time",
+  },
+  {
+    id: "enterprise",
+    name: "Enterprise",
+    backendName: "Enterprise",
+    price: "£1700",
+    period: "per month",
+    priceINR: 1700,
+    tagline: "Built for larger or scaling businesses requiring high-volume, reliably converted jobs every month",
+    featured: false,
+    bullets: [
+      "20 fully booked jobs per month",
+      "Full sales pipeline handling: lead → qualification → consultation → booking → deposit",
+      "Dedicated account manager",
+      "Deposit handling & payment confirmation",
+      "Advanced reporting dashboard",
+      "Same-day priority support",
+      "Fortnightly performance reviews",
+      "Improved reporting & job forecasting tools",
+    ],
+    bestFor: "Multi-team operations, franchises, or businesses scaling fast and needing high output with minimal effort",
+  },
+];
+
 const SubscriptionPlans = () => {
   const { user, isAuthenticated } = useAuthStore();
   const navigate = useNavigate();
   const planRef = useRef(null);
+  const tabsRef = useRef(null);
 
   const [companyData, setCompanyData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("leads");
 
   // FETCH USER PLAN DETAILS
   useEffect(() => {
@@ -167,6 +301,17 @@ const SubscriptionPlans = () => {
     const iconMap = [
       { keywords: ["email"], icon: <FaEnvelope className="text-pink-600" /> },
       { keywords: ["support", "headset"], icon: <FaHeadset className="text-blue-500" /> },
+      { keywords: ["reporting", "dashboard", "chart"], icon: <FaChartBar className="text-green-500" /> },
+      { keywords: ["lead"], icon: <FaBullhorn className="text-pink-600" /> },
+      { keywords: ["job", "briefcase"], icon: <FaBriefcase className="text-purple-500" /> },
+      { keywords: ["manager", "account"], icon: <FaUserTie className="text-gray-600" /> },
+      { keywords: ["deposit", "payment", "money"], icon: <FaMoneyBillWave className="text-green-600" /> },
+      { keywords: ["verification", "verified", "shield"], icon: <FaShieldAlt className="text-blue-600" /> },
+      { keywords: ["communication", "sms", "whatsapp", "phone"], icon: <FaSms className="text-green-500" /> },
+      { keywords: ["review", "summary", "eye"], icon: <FaEye className="text-gray-600" /> },
+      { keywords: ["access", "update", "cog"], icon: <FaCog className="text-gray-600" /> },
+      { keywords: ["scheduling", "appointment", "calendar"], icon: <FaCalendarCheck className="text-blue-500" /> },
+      { keywords: ["best for"], icon: <FaThumbsUp className="text-green-500" /> },
       { keywords: ["membership"], icon: <FaGem className="text-purple-500" /> },
       { keywords: ["unlimited"], icon: <FaInfinity className="text-pink-600" /> },
       { keywords: ["priority"], icon: <FaBolt className="text-yellow-500" /> },
@@ -177,6 +322,23 @@ const SubscriptionPlans = () => {
     );
 
     return match ? match.icon : <FaRegCheckCircle className="text-pink-600" />;
+  };
+
+  const getPlanIcon = (planId, tab) => {
+    const icons = {
+      leads: {
+        starter: <span className="text-2xl">⭐</span>,
+        growth: <span className="text-2xl">📈</span>,
+        pro: <span className="text-2xl">🚀</span>,
+      },
+      jobs: {
+        founder: <span className="text-2xl">🌱</span>,
+        advanced: <span className="text-2xl">📘</span>,
+        enterprise: <span className="text-2xl">🏆</span>,
+      },
+    };
+
+    return icons[tab]?.[planId] || <FaCrown className="text-2xl text-pink-600" />;
   };
 
   const renderPlanCard = (plan, index) => {
@@ -211,7 +373,7 @@ const SubscriptionPlans = () => {
         {/* Plan icon */}
         <div className="text-center mb-4 sm:mb-6">
           <div className="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-r from-gray-50 to-gray-100 mb-3 sm:mb-4">
-            <FaCrown className="text-2xl text-pink-600" />
+            {getPlanIcon(plan.id, activeTab)}
           </div>
           <h3 className="text-xl sm:text-2xl font-bold text-gray-900">{plan.name} Plan</h3>
           <p className="text-gray-600 mt-2 text-xs sm:text-sm leading-relaxed">{plan.tagline}</p>
@@ -228,7 +390,7 @@ const SubscriptionPlans = () => {
         {/* Features list */}
         <div className="flex-grow">
           <ul className="space-y-2 sm:space-y-3">
-            {plan.bullets.map((bullet, i) => (
+            {plan.bullets.slice(0, 6).map((bullet, i) => (
               <li key={i} className="flex items-start p-2 hover:bg-gray-50 rounded-lg transition-colors">
                 <span className="flex-shrink-0 mt-1 mr-2 sm:mr-3">
                   {getBulletIcon(bullet)}
@@ -237,6 +399,18 @@ const SubscriptionPlans = () => {
               </li>
             ))}
           </ul>
+
+          {plan.bestFor && (
+            <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-gray-100">
+              <div className="flex items-start">
+                <FaSmile className="text-gray-400 mt-1 mr-2 flex-shrink-0" />
+                <div>
+                  <p className="font-semibold text-gray-800 text-xs sm:text-sm">Best for:</p>
+                  <p className="text-gray-600 text-xs sm:text-sm">{plan.bestFor}</p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Action button */}
@@ -374,9 +548,66 @@ const SubscriptionPlans = () => {
           </div>
         )}
 
+        {/* Tabs Section */}
+        <div ref={tabsRef} className="flex flex-col items-center mb-8 sm:mb-12">
+          <h2 className="text-2xl sm:text-3xl font-bold text-center text-gray-900 mb-6 sm:mb-8">
+            Choose Your Service Type
+          </h2>
+
+          <div className="inline-flex rounded-full bg-gray-100 p-2 shadow-inner relative">
+            {/* Pink toggle background indicator */}
+            <motion.div
+              layout
+              className="absolute bg-gradient-to-r from-pink-600 to-pink-500 rounded-full shadow-lg"
+              style={{
+                width: 'calc(50% - 4px)',
+                height: 'calc(100% - 8px)',
+                left: activeTab === "leads" ? '4px' : 'calc(50% + 4px)',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+              }}
+            />
+
+            {/* Leads Tab */}
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => {
+                setActiveTab("leads");
+                planRef.current?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className={`px-4 sm:px-6 md:px-8 py-2 sm:py-3 rounded-full font-semibold text-sm sm:text-base transition-all duration-300 flex items-center relative z-10 ${activeTab === "leads"
+                ? "text-white"
+                : "text-gray-700 hover:text-gray-900"
+                }`}
+            >
+              <FaBullhorn className="mr-1 sm:mr-2 text-sm sm:text-base" />
+              <span className="hidden sm:inline">Leads Generation</span>
+              <span className="sm:hidden">Leads</span>
+            </motion.button>
+
+            {/* Jobs Tab */}
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => {
+                setActiveTab("jobs");
+                planRef.current?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className={`px-4 sm:px-6 md:px-8 py-2 sm:py-3 rounded-full font-semibold text-sm sm:text-base transition-all duration-300 flex items-center relative z-10 ${activeTab === "jobs"
+                ? "text-white"
+                : "text-gray-700 hover:text-gray-900"
+                }`}
+            >
+              <FaBriefcase className="mr-1 sm:mr-2 text-sm sm:text-base" />
+              <span className="hidden sm:inline">Jobs Booking</span>
+              <span className="sm:hidden">Jobs</span>
+            </motion.button>
+          </div>
+        </div>
+
         {/* Plans Grid */}
         <div ref={planRef} className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
-          {PLANS.map((plan, index) => renderPlanCard(plan, index))}
+          {(activeTab === "leads" ? LEADS_PLANS : JOBS_PLANS).map((plan, index) => renderPlanCard(plan, index))}
         </div>
 
         {/* Footer Note */}
