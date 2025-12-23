@@ -246,18 +246,29 @@ function AppRouter() {
             </ProtectedRoute>
           }
         >
-          {/* Redirect to bolt-on upgrade if user hasn't seen it and has paid plan */}
+          {/* Redirect to bolt-on upgrade if user hasn't seen it and has paid plan (but no bolt-on) */}
           <Route
             index
             element={
               (() => {
                 const boltOnSeen = localStorage.getItem("boltOnOfferSeen");
                 const user = JSON.parse(localStorage.getItem("user") || "{}");
-                const hasPaidPlan = user.subscription_plan && user.subscription_plan !== "Free";
+                const subscriptionPlan = user.subscription_plan || "Free";
+                const hasPaidPlan = subscriptionPlan !== "Free";
 
+                // Check if user already has a bolt-on plan
+                const hasBoltOn = subscriptionPlan.includes("Extra Leads") || subscriptionPlan.includes("Additional Jobs");
+
+                // If user has bolt-on, always go to home
+                if (hasBoltOn) {
+                  return <Navigate to="/logistic-dashboard/home" replace />;
+                }
+
+                // If user has paid plan but no bolt-on and hasn't seen the offer, show bolt-on page
                 if (hasPaidPlan && !boltOnSeen) {
                   return <Navigate to="/logistic-dashboard/bolt-on-upgrade" replace />;
                 }
+
                 return <Navigate to="/logistic-dashboard/home" replace />;
               })()
             }

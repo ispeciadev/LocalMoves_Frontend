@@ -26,7 +26,7 @@ const makeEmptyUser = () => ({
   fullName: "",
   role: "",
   phone: "",
-  
+
   token: "",
   company_registered: false,
   company_name: "",
@@ -162,12 +162,27 @@ export const useAuthStore = create((set, get) => ({
             return { success: true, user: get().user, redirect: "/register-company" };
           }
 
-          const plan = (get().user?.subscription_plan || "Free").toLowerCase();
+          const subscriptionPlan = get().user?.subscription_plan || "Free";
+          const plan = subscriptionPlan.toLowerCase();
+
+          // If user has Free plan, redirect to onboarding subscription page
           if (plan === "free" || plan === "") {
             return { success: true, user: get().user, redirect: "/onboarding-subscription" };
           }
 
-          return { success: true, user: get().user, redirect: "/logistic-dashboard/home" };
+          // Check if user has a bolt-on plan (Extra Leads or Additional Jobs)
+          const hasBoltOn = subscriptionPlan.includes("Extra Leads") || subscriptionPlan.includes("Additional Jobs");
+
+          if (hasBoltOn) {
+            // User has bolt-on plan, go directly to dashboard
+            localStorage.setItem("boltOnOfferSeen", "true");
+            return { success: true, user: get().user, redirect: "/logistic-dashboard/home" };
+          } else {
+            // User has paid plan but no bolt-on, show bolt-on upgrade page
+            // Clear the flag so they see the bolt-on offer
+            localStorage.removeItem("boltOnOfferSeen");
+            return { success: true, user: get().user, redirect: "/logistic-dashboard/bolt-on-upgrade" };
+          }
         } catch (err) {
           console.error("login -> fetchCompany failed:", err);
           return { success: true, user: get().user, redirect: "/register-company" };
