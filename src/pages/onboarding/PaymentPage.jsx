@@ -134,11 +134,26 @@ const PaymentPage = () => {
             });
 
             console.log("✅ Backend payment processed successfully:", response.data);
+
+            // Verify backend actually processed the payment
+            const backendResponse = response.data?.message || response.data;
+            if (!backendResponse || backendResponse.success === false) {
+              console.error("❌ Backend payment processing failed:", backendResponse);
+              toast.error("Payment failed to process on server. Please contact support.");
+              return;
+            }
+
             toast.success("Payment Successful!");
 
+            // Pass backend response to success page for verification
             navigate("/onboarding/payment-success", {
               replace: true,
-              state: { plan, transactionId },
+              state: {
+                plan,
+                transactionId,
+                backendResponse,
+                companyName
+              },
             });
           } catch (err) {
             console.error("❌ Payment processing error:", err);

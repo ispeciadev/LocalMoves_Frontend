@@ -83,7 +83,13 @@ function AppRouter() {
       console.log("✅ User just paid - trusting localStorage subscription status");
       setIsCompanyRegistered(true);
       setHasSubscription(true);
-      localStorage.removeItem("justPaid"); // Clear flag after use
+
+      // Clear flag after 5 seconds to allow redirect to complete
+      setTimeout(() => {
+        console.log("🧹 Clearing justPaid flag after delay");
+        localStorage.removeItem("justPaid");
+      }, 5000);
+
       return;
     }
 
