@@ -254,10 +254,15 @@ function AppRouter() {
                 const boltOnSeen = localStorage.getItem("boltOnOfferSeen");
                 const user = JSON.parse(localStorage.getItem("user") || "{}");
                 const subscriptionPlan = user.subscription_plan || "Free";
-                const hasPaidPlan = subscriptionPlan !== "Free";
+                const planLower = subscriptionPlan.toLowerCase().trim();
+                const hasPaidPlan = planLower !== "free" && planLower !== "";
 
-                // Check if user already has a bolt-on plan
-                const hasBoltOn = subscriptionPlan.includes("Extra Leads") || subscriptionPlan.includes("Additional Jobs");
+                // Check if user already has a bolt-on plan (case-insensitive)
+                const hasBoltOn =
+                  planLower.includes("extra leads") ||
+                  planLower.includes("additional jobs") ||
+                  planLower.includes("extra_leads") ||
+                  planLower.includes("additional_jobs");
 
                 // If user has bolt-on, always go to home
                 if (hasBoltOn) {

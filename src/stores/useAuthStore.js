@@ -163,15 +163,20 @@ export const useAuthStore = create((set, get) => ({
           }
 
           const subscriptionPlan = get().user?.subscription_plan || "Free";
-          const plan = subscriptionPlan.toLowerCase();
+          const planLower = subscriptionPlan.toLowerCase().trim();
 
-          // If user has Free plan, redirect to onboarding subscription page
-          if (plan === "free" || plan === "") {
+          // If user has Free plan or empty plan, redirect to onboarding subscription page
+          if (planLower === "free" || planLower === "") {
             return { success: true, user: get().user, redirect: "/onboarding-subscription" };
           }
 
           // Check if user has a bolt-on plan (Extra Leads or Additional Jobs)
-          const hasBoltOn = subscriptionPlan.includes("Extra Leads") || subscriptionPlan.includes("Additional Jobs");
+          // Case-insensitive check for bolt-on plans
+          const hasBoltOn =
+            planLower.includes("extra leads") ||
+            planLower.includes("additional jobs") ||
+            planLower.includes("extra_leads") ||
+            planLower.includes("additional_jobs");
 
           if (hasBoltOn) {
             // User has bolt-on plan, go directly to dashboard
