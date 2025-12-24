@@ -591,15 +591,21 @@ const HeroSection = () => {
     [serviceType, propertySize, distanceMiles, quantity, additionalSpaces, lastEmailedSearchKey]
   );
 
-  // Auto-fetch companies when all required fields are filled
+  // Auto-fetch companies when all required fields are filled (with debounce)
   useEffect(() => {
-    const fetchIfReady = async () => {
+    // Debounce the API call to prevent multiple rapid calls
+    const timeoutId = setTimeout(async () => {
       if (pickupPincode && serviceType && propertySize && quantity) {
+        console.log("⏰ Debounced auto-fetch triggered");
         await fetchCompaniesByPincode(pickupPincode);
       }
-    };
+    }, 800); // Wait 800ms after last change before calling API
 
-    fetchIfReady();
+    // Cleanup: cancel the timeout if dependencies change before it fires
+    return () => {
+      console.log("🚫 Debounce cancelled (form changed)");
+      clearTimeout(timeoutId);
+    };
   }, [pickupPincode, serviceType, propertySize, quantity, fetchCompaniesByPincode]);
 
   const fetchCityFromPincode = async (
