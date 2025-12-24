@@ -32,31 +32,21 @@ const LoginPage = () => {
     setSending(true);
 
     try {
-      console.log("=== SENDING PASSWORD RESET EMAIL ===");
-      console.log("Email:", forgotEmail);
-
-      // This endpoint should use the password reset template from ManageEmailTemplates
       const res = await axios.post(
         `${env.API_BASE_URL}localmoves.api.auth.forgot_password`,
         { email: forgotEmail }
       );
 
-      console.log("Password reset response:", res.data);
-      console.log("=== END PASSWORD RESET ===");
-
       if (res.data?.message?.success) {
-        toast.success(res.data.message.message || "Password reset link sent to your email!");
+        toast.success(res.data.message.message);
 
         setShowForgotModal(false);
         setForgotEmail("");
       } else {
-        toast.error(res.data?.message?.message || "Unable to send reset link.");
+        toast.error("Unable to send reset link.");
       }
-    } catch (err) {
-      console.error("=== PASSWORD RESET FAILED ===");
-      console.error("Error:", err);
-      console.error("Error response:", err.response?.data);
-      toast.error(err.response?.data?.message?.message || "Something went wrong. Try again.");
+    } catch {
+      toast.error("Something went wrong. Try again.");
     } finally {
       setSending(false);
     }
