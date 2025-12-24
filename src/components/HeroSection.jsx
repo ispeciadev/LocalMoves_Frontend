@@ -43,6 +43,9 @@ const HeroSection = () => {
   const [_loadingCount, setLoadingCount] = useState(false);
   const [companyCount, setCompanyCount] = useState(null);
 
+  // Track if email has been sent to prevent duplicates
+  const [emailSent, setEmailSent] = useState(false);
+
   // Save to localStorage helper
   const saveToStorage = (key, value) => {
     try {
@@ -494,9 +497,9 @@ const HeroSection = () => {
       </html>`;
   };
 
-  // API call for companies (unchanged)
+  // API call for companies
   const fetchCompaniesByPincode = useCallback(
-    async (pincode) => {
+    async (pincode, shouldSendEmail = true) => {
       setLoadingCompanies(true);
 
       try {
@@ -512,12 +515,17 @@ const HeroSection = () => {
         console.log("  - user_email from localStorage:", localStorage.getItem("user_email"));
         console.log("  - email from localStorage:", localStorage.getItem("email"));
         console.log("  - Final userEmail:", userEmail);
+        console.log("  - Email already sent:", emailSent);
+        console.log("  - Should send email:", shouldSendEmail);
 
         // Validate email exists
         if (!userEmail) {
           showToast("Please log in to receive quotes via email", "warning");
           console.warn("⚠️ No email found in localStorage");
         }
+
+        // Only send email if it hasn't been sent yet and shouldSendEmail is true
+        const sendEmailNow = shouldSendEmail && !emailSent && userEmail;
 
         const payload = {
           pincode: pincode,
@@ -527,7 +535,7 @@ const HeroSection = () => {
           quantity: quantity,
           additional_spaces: additionalSpaces || [],
           user_email: userEmail,
-          send_email: "True",
+          send_email: sendEmailNow ? "True" : "False",
         };
 
         // DEBUG: Log complete payload
@@ -553,9 +561,10 @@ const HeroSection = () => {
 
         setCompanies(data || []);
 
-        // Show success message if email was provided
-        if (userEmail && msg?.success) {
-          showToast(`Quotes will be sent to ${userEmail}`, "success");
+        // Show success message if email was sent
+        if (sendEmailNow && msg?.success) {
+          showToast(`Quotes sent to ${userEmail}`, "success");
+          setEmailSent(true); // Mark email as sent
         }
 
         return data;
@@ -575,6 +584,11 @@ const HeroSection = () => {
     },
     [serviceType, propertySize, distanceMiles, quantity, additionalSpaces]
   );
+
+  // Reset emailSent flag when search criteria changes
+  useEffect(() => {
+    setEmailSent(false);
+  }, [pickupPincode, serviceType, propertySize, quantity]);
 
   // Auto-fetch companies when all required fields are filled
   useEffect(() => {
@@ -720,7 +734,8 @@ const HeroSection = () => {
       let companyList = companies;
 
       if (!companyList.length && /^[1-9][0-9]{5}$/.test(pickupPincode)) {
-        companyList = await fetchCompaniesByPincode(pickupPincode);
+        // Don't send email again when clicking Compare (email already sent during auto-fetch)
+        companyList = await fetchCompaniesByPincode(pickupPincode, false);
       }
 
       navigate("/compare", {
