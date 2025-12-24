@@ -44,7 +44,8 @@ const HeroSection = () => {
   const [companyCount, setCompanyCount] = useState(null);
 
   // Track if email has been sent to prevent duplicates
-  const [emailSent, setEmailSent] = useState(false);
+  // Store the search key for which email was last sent
+  const [lastEmailedSearchKey, setLastEmailedSearchKey] = useState(null);
 
   // Save to localStorage helper
   const saveToStorage = (key, value) => {
@@ -510,12 +511,16 @@ const HeroSection = () => {
 
         const userEmail = localStorage.getItem("user_email") || localStorage.getItem("email");
 
+        // Create a unique key for this search
+        const searchKey = `${pincode}-${serviceType}-${propertySize}-${quantity}`;
+
         // DEBUG: Log email retrieval
         console.log("🔍 Email Debug:");
         console.log("  - user_email from localStorage:", localStorage.getItem("user_email"));
         console.log("  - email from localStorage:", localStorage.getItem("email"));
         console.log("  - Final userEmail:", userEmail);
-        console.log("  - Email already sent:", emailSent);
+        console.log("  - Current search key:", searchKey);
+        console.log("  - Last emailed search key:", lastEmailedSearchKey);
         console.log("  - Should send email:", shouldSendEmail);
 
         // Validate email exists
@@ -524,8 +529,9 @@ const HeroSection = () => {
           console.warn("⚠️ No email found in localStorage");
         }
 
-        // Only send email if it hasn't been sent yet and shouldSendEmail is true
-        const sendEmailNow = shouldSendEmail && !emailSent && userEmail;
+        // Only send email if it hasn't been sent for this specific search
+        const sendEmailNow = shouldSendEmail && (searchKey !== lastEmailedSearchKey) && userEmail;
+        console.log("  - Will send email:", sendEmailNow);
 
         const payload = {
           pincode: pincode,
@@ -564,7 +570,7 @@ const HeroSection = () => {
         // Show success message if email was sent
         if (sendEmailNow && msg?.success) {
           showToast(`Quotes sent to ${userEmail}`, "success");
-          setEmailSent(true); // Mark email as sent
+          setLastEmailedSearchKey(searchKey); // Remember this search key
         }
 
         return data;
@@ -582,13 +588,8 @@ const HeroSection = () => {
         setLoadingCompanies(false);
       }
     },
-    [serviceType, propertySize, distanceMiles, quantity, additionalSpaces]
+    [serviceType, propertySize, distanceMiles, quantity, additionalSpaces, lastEmailedSearchKey]
   );
-
-  // Reset emailSent flag when search criteria changes
-  useEffect(() => {
-    setEmailSent(false);
-  }, [pickupPincode, serviceType, propertySize, quantity]);
 
   // Auto-fetch companies when all required fields are filled
   useEffect(() => {
