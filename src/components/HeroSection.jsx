@@ -712,12 +712,8 @@ const HeroSection = () => {
   // Handle quantity change
   const handleQuantityChange = (value) => {
     setQuantity(value);
-
-    if (pickupPincode && serviceType && propertySize) {
-      setTimeout(() => {
-        fetchCompaniesByPincode(pickupPincode);
-      }, 300);
-    }
+    // Note: fetchCompaniesByPincode is called automatically by the auto-fetch useEffect
+    // No need to call it here to avoid duplicate API calls
   };
 
   // Compare handler - also save form data before navigating
