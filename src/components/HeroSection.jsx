@@ -529,9 +529,8 @@ const HeroSection = () => {
           console.warn("⚠️ No email found in localStorage");
         }
 
-        // DISABLED: Let backend handle email sending to prevent duplicates
-        // Frontend no longer sends send_email: "True"
-        const sendEmailNow = false;
+        // Send email only when explicitly requested (when clicking Compare button)
+        const sendEmailNow = shouldSendEmail && userEmail;
 
         const payload = {
           pincode: pincode,
@@ -541,7 +540,7 @@ const HeroSection = () => {
           quantity: quantity,
           additional_spaces: additionalSpaces || [],
           user_email: userEmail,
-          send_email: "False", // Backend handles email sending
+          send_email: sendEmailNow ? "True" : "False",
         };
 
         // DEBUG: Log complete payload
@@ -587,7 +586,10 @@ const HeroSection = () => {
     [serviceType, propertySize, distanceMiles, quantity, additionalSpaces, lastEmailedSearchKey]
   );
 
-  // Auto-fetch companies when all required fields are filled (with debounce)
+  // DISABLED: Auto-fetch companies when all required fields are filled
+  // This was causing emails to be sent twice (once on auto-fetch, once on Compare click)
+  // Now companies are only fetched when user clicks Compare button
+  /*
   useEffect(() => {
     // Debounce the API call to prevent multiple rapid calls
     const timeoutId = setTimeout(async () => {
@@ -595,14 +597,14 @@ const HeroSection = () => {
         console.log("⏰ Debounced auto-fetch triggered");
         await fetchCompaniesByPincode(pickupPincode);
       }
-    }, 800); // Wait 800ms after last change before calling API
+    }, 800);
 
-    // Cleanup: cancel the timeout if dependencies change before it fires
     return () => {
       console.log("🚫 Debounce cancelled (form changed)");
       clearTimeout(timeoutId);
     };
   }, [pickupPincode, serviceType, propertySize, quantity, fetchCompaniesByPincode]);
+  */
 
   const fetchCityFromPincode = async (
     pincode,
@@ -733,8 +735,8 @@ const HeroSection = () => {
       let companyList = companies;
 
       if (!companyList.length && /^[1-9][0-9]{5}$/.test(pickupPincode)) {
-        // Don't send email again when clicking Compare (email already sent during auto-fetch)
-        companyList = await fetchCompaniesByPincode(pickupPincode, false);
+        // Fetch companies and send email when clicking Compare
+        companyList = await fetchCompaniesByPincode(pickupPincode, true);
       }
 
       navigate("/compare", {
