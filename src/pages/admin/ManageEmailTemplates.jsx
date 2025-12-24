@@ -419,18 +419,20 @@ const ManageEmailTemplates = () => {
             setLoading(true);
             setError("");
 
-            // Fetch all 4 templates in parallel
-            const [signupRes, passwordResetRes, propertySearchRes, paymentConfirmationRes] = await Promise.all([
+            // Fetch all 5 templates in parallel
+            const [signupRes, passwordResetRes, propertySearchRes, paymentConfirmationRes, requestConfirmationRes] = await Promise.all([
                 api.get("localmoves.api.dashboard.manage_signup_verification_template"),
                 api.get("localmoves.api.dashboard.manage_password_reset_template"),
                 api.get("localmoves.api.dashboard.manage_property_search_template"),
-                api.get("localmoves.api.dashboard.manage_payment_confirmation_template")
+                api.get("localmoves.api.dashboard.manage_payment_confirmation_template"),
+                api.get("localmoves.api.dashboard.manage_request_confirmation_template")
             ]);
 
             const signupData = signupRes.data?.message || {};
             const passwordResetData = passwordResetRes.data?.message || {};
             const propertySearchData = propertySearchRes.data?.message || {};
             const paymentConfirmationData = paymentConfirmationRes.data?.message || {};
+            const requestConfirmationData = requestConfirmationRes.data?.message || {};
 
             // Create signup template object
             const signupTemplate = {
@@ -492,14 +494,14 @@ const ManageEmailTemplates = () => {
                 line: propertySearchData.template?.line || 0,
             };
 
-            // Create payment confirmation template object
+            // Create payment confirmation template object (NEW - simpler deposit payment confirmation)
             const paymentConfirmationTemplate = {
                 id: "payment_confirmation",
                 name: paymentConfirmationData.template?.name || "payment_confirmation",
-                title: paymentConfirmationData.template?.title || "Payment Confirmation Receipt",
+                title: paymentConfirmationData.template?.title || "Payment Confirmation",
                 description:
-                    "Email sent to users after successful payment with transaction details and booking confirmation",
-                type: "Transactions",
+                    "Email sent to users after successful deposit payment with payment details and remaining balance",
+                type: "Payments",
                 endpoint: "localmoves.api.dashboard.manage_payment_confirmation_template",
                 email_subject: paymentConfirmationData.email_subject || paymentConfirmationData.template?.default_subject || "",
                 email_body: paymentConfirmationData.email_body || paymentConfirmationData.template?.default_body || "",
@@ -512,7 +514,27 @@ const ManageEmailTemplates = () => {
                 line: paymentConfirmationData.template?.line || 0,
             };
 
-            setTemplates([signupTemplate, passwordResetTemplate, propertySearchTemplate, paymentConfirmationTemplate]);
+            // Create request confirmation template object (NEW - logistics request confirmation)
+            const requestConfirmationTemplate = {
+                id: "request_confirmation",
+                name: requestConfirmationData.template_name || "request_confirmation",
+                title: "Logistics Request Confirmation",
+                description:
+                    "Email sent to users when their logistics request is created with request details, pickup/delivery locations, and route map",
+                type: "Bookings",
+                endpoint: "localmoves.api.dashboard.manage_request_confirmation_template",
+                email_subject: requestConfirmationData.email_subject || "",
+                email_body: requestConfirmationData.email_body || "",
+                default_subject: requestConfirmationData.email_subject || "",
+                default_body: requestConfirmationData.email_body || "",
+                variables: ["user_name", "request_id", "status", "item_description", "service_type", "company_name", "delivery_date", "pickup_address", "pickup_city", "pickup_pincode", "delivery_address", "delivery_city", "delivery_pincode", "route_map_url"],
+                is_custom: requestConfirmationData.is_custom || false,
+                last_updated: new Date().toISOString(),
+                file: "",
+                line: 0,
+            };
+
+            setTemplates([signupTemplate, passwordResetTemplate, propertySearchTemplate, paymentConfirmationTemplate, requestConfirmationTemplate]);
         } catch (err) {
             console.error(err);
             setError("Failed to load email templates. Please check the server.");
