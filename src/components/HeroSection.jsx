@@ -529,9 +529,9 @@ const HeroSection = () => {
           console.warn("⚠️ No email found in localStorage");
         }
 
-        // Only send email if it hasn't been sent for this specific search
-        const sendEmailNow = shouldSendEmail && (searchKey !== lastEmailedSearchKey) && userEmail;
-        console.log("  - Will send email:", sendEmailNow);
+        // DISABLED: Let backend handle email sending to prevent duplicates
+        // Frontend no longer sends send_email: "True"
+        const sendEmailNow = false;
 
         const payload = {
           pincode: pincode,
@@ -541,7 +541,7 @@ const HeroSection = () => {
           quantity: quantity,
           additional_spaces: additionalSpaces || [],
           user_email: userEmail,
-          send_email: sendEmailNow ? "True" : "False",
+          send_email: "False", // Backend handles email sending
         };
 
         // DEBUG: Log complete payload
@@ -567,11 +567,7 @@ const HeroSection = () => {
 
         setCompanies(data || []);
 
-        // Show success message if email was sent
-        if (sendEmailNow && msg?.success) {
-          showToast(`Quotes sent to ${userEmail}`, "success");
-          setLastEmailedSearchKey(searchKey); // Remember this search key
-        }
+        // Backend handles email sending, no toast needed from frontend
 
         return data;
       } catch (err) {
