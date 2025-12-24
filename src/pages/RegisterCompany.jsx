@@ -797,17 +797,37 @@ const RegisterCompany = () => {
         return;
       }
 
-      // try to email the generated password (best-effort; backend endpoint may not exist)
+      // Send welcome email using the configured email template
       try {
-        await api.post("localmoves.api.auth.send_password_email", {
-          email: formData.companyEmail,
+        console.log("=== SENDING WELCOME EMAIL ===");
+        console.log("Recipient:", formData.companyEmail);
+        console.log("User name:", formData.contactPerson);
+        console.log("Password:", generatedPassword);
+
+        // Use the signup verification email endpoint that uses the template
+        const emailRes = await api.post("localmoves.api.auth.send_signup_verification_email", {
+          user_name: formData.contactPerson,
+          user_email: formData.companyEmail,
+          phone: formData.contactNumber,
           password: generatedPassword,
         });
-        toast.success("Generated password emailed to company contact.");
+
+        console.log("Email sent successfully:", emailRes.data);
+        toast.success("Welcome email sent to " + formData.companyEmail);
       } catch (emailErr) {
-        // If backend does not support this endpoint, inform the admin
-        console.warn("send_password_email failed:", emailErr);
-        toast.info("Account created successfully. The login password has been emailed to the user.");
+        console.error("=== WELCOME EMAIL FAILED ===");
+        console.error("Error:", emailErr);
+        console.error("Error response:", emailErr.response?.data);
+        console.error("Error status:", emailErr.response?.status);
+
+        // Show different messages based on error type
+        if (emailErr.response?.status === 404) {
+          toast.warning("Email service not configured. Please save this password: " + generatedPassword);
+        } else if (emailErr.response?.status === 500) {
+          toast.error("Failed to send welcome email. Password: " + generatedPassword);
+        } else {
+          toast.info("Account created successfully. Password: " + generatedPassword);
+        }
       }
 
       // 2) Login newly created account to obtain token (so create_company call will be authenticated)

@@ -419,35 +419,62 @@ const ManageEmailTemplates = () => {
             setLoading(true);
             setError("");
 
-            const res = await api.get(
-                "localmoves.api.dashboard.manage_signup_verification_template"
-            );
+            // Fetch both templates in parallel
+            const [signupRes, passwordResetRes] = await Promise.all([
+                api.get("localmoves.api.dashboard.manage_signup_verification_template"),
+                api.get("localmoves.api.dashboard.manage_password_reset_template")
+            ]);
 
-            const data = res.data?.message || {};
+            const signupData = signupRes.data?.message || {};
+            const passwordResetData = passwordResetRes.data?.message || {};
 
-            // Create template object from the actual API response structure
+            // Create signup template object
             const signupTemplate = {
                 id: "signup_verification",
-                name: data.template?.name || "signup_verification",
-                title: data.template?.title || "Logistics Manager Welcome Email",
+                name: signupData.template?.name || "signup_verification",
+                title: signupData.template?.title || "Logistics Manager Welcome Email",
                 description:
                     "Welcome email sent to new logistics managers with their account details and login credentials",
                 type: "Account Creation",
+                endpoint: "localmoves.api.dashboard.manage_signup_verification_template",
                 // Current template being sent to users (custom or default)
-                email_subject: data.email_subject || data.template?.default_subject || "",
-                email_body: data.email_body || data.template?.default_body || "",
+                email_subject: signupData.email_subject || signupData.template?.default_subject || "",
+                email_body: signupData.email_body || signupData.template?.default_body || "",
                 // Default template from code
-                default_subject: data.template?.default_subject || "",
-                default_body: data.template?.default_body || "",
+                default_subject: signupData.template?.default_subject || "",
+                default_body: signupData.template?.default_body || "",
                 // Other metadata
-                variables: data.template?.variables || [],
-                is_custom: data.is_custom || false,
-                last_updated: data.last_updated || new Date().toISOString(),
-                file: data.template?.file || "",
-                line: data.template?.line || 0,
+                variables: signupData.template?.variables || [],
+                is_custom: signupData.is_custom || false,
+                last_updated: signupData.last_updated || new Date().toISOString(),
+                file: signupData.template?.file || "",
+                line: signupData.template?.line || 0,
             };
 
-            setTemplates([signupTemplate]);
+            // Create password reset template object
+            const passwordResetTemplate = {
+                id: "password_reset",
+                name: passwordResetData.template?.name || "password_reset",
+                title: passwordResetData.template?.title || "Password Reset Request",
+                description:
+                    "Email sent to users when they request a password reset with a secure reset link",
+                type: "Security",
+                endpoint: "localmoves.api.dashboard.manage_password_reset_template",
+                // Current template being sent to users (custom or default)
+                email_subject: passwordResetData.email_subject || passwordResetData.template?.default_subject || "",
+                email_body: passwordResetData.email_body || passwordResetData.template?.default_body || "",
+                // Default template from code
+                default_subject: passwordResetData.template?.default_subject || "",
+                default_body: passwordResetData.template?.default_body || "",
+                // Other metadata
+                variables: passwordResetData.template?.variables || [],
+                is_custom: passwordResetData.is_custom || false,
+                last_updated: passwordResetData.last_updated || new Date().toISOString(),
+                file: passwordResetData.template?.file || "",
+                line: passwordResetData.template?.line || 0,
+            };
+
+            setTemplates([signupTemplate, passwordResetTemplate]);
         } catch (err) {
             console.error(err);
             setError("Failed to load email templates. Please check the server.");
@@ -471,6 +498,8 @@ const ManageEmailTemplates = () => {
             setActionLoading(true);
 
             console.log("=== SAVING TEMPLATE ===");
+            console.log("Template:", selectedTemplate?.name);
+            console.log("Endpoint:", selectedTemplate?.endpoint);
             console.log("Current formData state:", formData);
 
             const payload = {
@@ -481,10 +510,10 @@ const ManageEmailTemplates = () => {
 
             console.log("Payload being sent:", payload);
 
-            const res = await api.post(
-                "localmoves.api.dashboard.manage_signup_verification_template",
-                payload
-            );
+            // Use the template's specific endpoint
+            const endpoint = selectedTemplate?.endpoint || "localmoves.api.dashboard.manage_signup_verification_template";
+
+            const res = await api.post(endpoint, payload);
 
             console.log("Save response:", res.data);
             console.log("=== END SAVE ===");
