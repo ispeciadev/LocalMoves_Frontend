@@ -348,6 +348,51 @@ export default function PaymentPage() {
                   company: companyName,
                   payload: payloadToSend,
                 }));
+
+                // Send payment confirmation email
+                try {
+                  console.log("📧 Sending payment confirmation email...");
+
+                  const emailPayload = {
+                    user_name: userDetails.full_name || payloadToSend.user_details.full_name,
+                    user_email: userDetails.email || payloadToSend.user_details.email,
+                    company_name: companyName,
+                    request_id: response.data.message.booking_id || paymentDetails.id,
+                    total_amount: totalAmount.toFixed(2),
+                    deposit_amount: depositAmount.toFixed(2),
+                    remaining_amount: (totalAmount - depositAmount).toFixed(2),
+                    amount: depositAmount.toFixed(2), // For backward compatibility
+                    transaction_id: paymentDetails.id,
+                    payment_gateway: "PayPal",
+                    payment_date: new Date().toLocaleString('en-GB', {
+                      dateStyle: 'medium',
+                      timeStyle: 'short'
+                    }),
+                    pickup_address: payloadToSend.addresses.pickup_address,
+                    pickup_city: payloadToSend.addresses.pickup_city,
+                    pickup_pincode: payloadToSend.addresses.pickup_pincode,
+                    delivery_address: payloadToSend.addresses.delivery_address,
+                    delivery_city: payloadToSend.addresses.delivery_city,
+                    delivery_pincode: payloadToSend.addresses.delivery_pincode,
+                  };
+
+                  await axios.post(
+                    `${env.API_BASE_URL}localmoves.api.payment.send_payment_confirmation_email`,
+                    emailPayload,
+                    {
+                      headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                      },
+                    }
+                  );
+
+                  console.log("✅ Payment confirmation email sent successfully");
+                } catch (emailErr) {
+                  console.error("❌ Failed to send payment confirmation email:", emailErr);
+                  console.error("Email error details:", emailErr.response?.data);
+                  // Don't fail the booking if email fails - just log it
+                }
               } else {
                 throw new Error(response.data?.message?.message || "Failed to create booking");
               }
