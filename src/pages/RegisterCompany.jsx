@@ -616,16 +616,31 @@ const RegisterCompany = () => {
       console.log("5. API Base URL:", env.API_BASE_URL);
       console.log("6. Full URL:", `${env.API_BASE_URL}localmoves.api.auth.send_otp`);
 
-      // Use axios directly (matches working RegisterPage.jsx implementation)
-      const res = await axios.post(
-        `${env.API_BASE_URL}localmoves.api.auth.send_otp`,
-        { phone: cleanedPhone }
-      );
+      // Use native fetch instead of axios to avoid Expect header (417 error workaround)
+      // Fetch API doesn't automatically add Expect: 100-continue header
+      const response = await fetch(`${env.API_BASE_URL}localmoves.api.auth.send_otp`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          // Explicitly ensure no Expect header
+        },
+        body: JSON.stringify({ phone: cleanedPhone })
+      });
 
-      console.log("7. OTP Response:", res.data);
+      console.log("7. Response status:", response.status);
+
+      // Handle non-OK responses
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error("Error response:", errorData);
+        throw new Error(errorData.message || `Server error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log("8. OTP Response:", data);
       console.log("=== END DEBUG ===");
 
-      const apiRes = res.data?.message || res.data;
+      const apiRes = data?.message || data;
       if (!apiRes) {
         toast.error("Unexpected server response.");
         setSendingOtp(false);
@@ -641,8 +656,7 @@ const RegisterCompany = () => {
       toast.success("OTP sent to your phone.");
     } catch (err) {
       console.error("sendOtp error:", err);
-      console.error("Error response:", err.response?.data);
-      toast.error(err.response?.data?.message || "Failed to send OTP.");
+      toast.error(err.message || "Failed to send OTP.");
     } finally {
       setSendingOtp(false);
     }

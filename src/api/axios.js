@@ -2,14 +2,51 @@
 import axios from "axios";
 import env from "../config/env";
 
+// Global axios configuration to prevent 417 errors
+// Remove Expect header from all axios instances globally
+if (axios.defaults.headers.common) {
+  delete axios.defaults.headers.common['Expect'];
+  delete axios.defaults.headers.common['expect'];
+}
+if (axios.defaults.headers.post) {
+  delete axios.defaults.headers.post['Expect'];
+  delete axios.defaults.headers.post['expect'];
+}
+if (axios.defaults.headers.put) {
+  delete axios.defaults.headers.put['Expect'];
+  delete axios.defaults.headers.put['expect'];
+}
+
+
 const api = axios.create({
   baseURL: env.API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
-    "Expect": "" // Disable Expect header to prevent 417 errors
   },
   maxBodyLength: Infinity,
   maxContentLength: Infinity,
+  // Transform request to forcefully remove Expect header before sending
+  transformRequest: [
+    function (data, headers) {
+      // Remove Expect header at transformation level (before interceptors)
+      if (headers) {
+        delete headers['Expect'];
+        delete headers['expect'];
+
+        // Safely delete from common headers if it exists
+        if (headers.common) {
+          delete headers.common['Expect'];
+          delete headers.common['expect'];
+        }
+      }
+
+      // Return data as JSON string if it's an object
+      if (data && typeof data === 'object') {
+        return JSON.stringify(data);
+      }
+      return data;
+    }
+  ],
 });
 
 // Public (no token needed)
@@ -26,10 +63,24 @@ const PUBLIC_ROUTES = [
 ];
 
 // Remove Expect header from all requests (fixes 417 error)
+// This interceptor runs after transformRequest
 api.interceptors.request.use(
   (config) => {
+    // Remove from all possible header locations
     delete config.headers['Expect'];
     delete config.headers['expect'];
+    delete config.headers.common?.['Expect'];
+    delete config.headers.common?.['expect'];
+    delete config.headers.post?.['Expect'];
+    delete config.headers.post?.['expect'];
+    delete config.headers.put?.['Expect'];
+    delete config.headers.put?.['expect'];
+
+    // Ensure Content-Type is set for JSON
+    if (!config.headers['Content-Type']) {
+      config.headers['Content-Type'] = 'application/json';
+    }
+
     return config;
   },
   (error) => Promise.reject(error)

@@ -9,14 +9,16 @@ import { useAdminThemeStore } from "../../stores/useAdminThemeStore";
 function RichTextEditor({ content, onChange, isDarkMode, variables }) {
     const editorRef = useRef(null);
     const [showVariableMenu, setShowVariableMenu] = useState(false);
-    const [initialized, setInitialized] = useState(false);
 
+    // Update editor content when prop changes
     useEffect(() => {
-        if (editorRef.current && content && !initialized) {
-            editorRef.current.innerHTML = content;
-            setInitialized(true);
+        if (editorRef.current && content !== undefined) {
+            // Only update if the content is different from what's currently in the editor
+            if (editorRef.current.innerHTML !== content) {
+                editorRef.current.innerHTML = content;
+            }
         }
-    }, [content, initialized]);
+    }, [content]);
 
     const handleInput = () => {
         if (editorRef.current) {
@@ -227,12 +229,22 @@ function TemplateEditorModal({ isOpen, template, onClose, onSave, loading }) {
 
     useEffect(() => {
         if (isOpen && template) {
-            // Use the default template - this is the professionally designed email
-            // with purple banner, account details, credentials box, and support info
-            setFormData({
-                email_subject: template.default_subject || "",
-                email_body: template.default_body || "",
-            });
+            console.log("=== MODAL OPENING ===");
+            console.log("Template data:", template);
+            console.log("Loading email_subject:", template.email_subject);
+            console.log("Loading email_body length:", template.email_body?.length);
+            console.log("Default subject:", template.default_subject);
+
+            // Load the current template being used (custom if exists, otherwise default)
+            // This ensures we show what's actually being sent to users
+            const newFormData = {
+                email_subject: template.email_subject || template.default_subject || "",
+                email_body: template.email_body || template.default_body || "",
+            };
+
+            console.log("Setting formData to:", newFormData);
+            setFormData(newFormData);
+            console.log("=== END MODAL OPENING ===");
         }
     }, [isOpen, template]);
 
@@ -296,12 +308,17 @@ function TemplateEditorModal({ isOpen, template, onClose, onSave, loading }) {
                             <input
                                 type="text"
                                 value={formData.email_subject}
-                                onChange={(e) =>
-                                    setFormData((prev) => ({
-                                        ...prev,
-                                        email_subject: e.target.value,
-                                    }))
-                                }
+                                onChange={(e) => {
+                                    console.log("Subject input changed to:", e.target.value);
+                                    setFormData((prev) => {
+                                        const newData = {
+                                            ...prev,
+                                            email_subject: e.target.value,
+                                        };
+                                        console.log("New formData:", newData);
+                                        return newData;
+                                    });
+                                }}
                                 required
                                 className={`w-full rounded-lg border px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-pink-400 transition-colors ${isDarkMode
                                     ? "border-slate-600 bg-slate-700 text-slate-100 placeholder-slate-400"
@@ -320,6 +337,7 @@ function TemplateEditorModal({ isOpen, template, onClose, onSave, loading }) {
                                 Email Content
                             </label>
                             <RichTextEditor
+                                key={`${template?.id}-${formData.email_body?.substring(0, 50)}`}
                                 content={formData.email_body}
                                 onChange={(newContent) =>
                                     setFormData((prev) => ({ ...prev, email_body: newContent }))
@@ -452,15 +470,24 @@ const ManageEmailTemplates = () => {
         try {
             setActionLoading(true);
 
+            console.log("=== SAVING TEMPLATE ===");
+            console.log("Current formData state:", formData);
+
             const payload = {
+                action: "update", // Backend requires this to know we're updating
                 email_subject: formData.email_subject,
                 email_body: formData.email_body,
             };
+
+            console.log("Payload being sent:", payload);
 
             const res = await api.post(
                 "localmoves.api.dashboard.manage_signup_verification_template",
                 payload
             );
+
+            console.log("Save response:", res.data);
+            console.log("=== END SAVE ===");
 
             toast.success(
                 res.data?.message?.message || "Template updated successfully"
@@ -468,9 +495,14 @@ const ManageEmailTemplates = () => {
 
             setShowEditorModal(false);
             setSelectedTemplate(null);
-            fetchTemplates();
+
+            // Wait a bit before fetching to ensure backend has processed the update
+            setTimeout(() => {
+                fetchTemplates();
+            }, 500);
         } catch (err) {
-            console.error(err);
+            console.error("Save template error:", err);
+            console.error("Error response:", err.response?.data);
             toast.error("Failed to update template. Please try again.");
         } finally {
             setActionLoading(false);
