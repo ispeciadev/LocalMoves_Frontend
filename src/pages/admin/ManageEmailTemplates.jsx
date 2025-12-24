@@ -419,14 +419,18 @@ const ManageEmailTemplates = () => {
             setLoading(true);
             setError("");
 
-            // Fetch both templates in parallel
-            const [signupRes, passwordResetRes] = await Promise.all([
+            // Fetch all 4 templates in parallel
+            const [signupRes, passwordResetRes, propertySearchRes, paymentConfirmationRes] = await Promise.all([
                 api.get("localmoves.api.dashboard.manage_signup_verification_template"),
-                api.get("localmoves.api.dashboard.manage_password_reset_template")
+                api.get("localmoves.api.dashboard.manage_password_reset_template"),
+                api.get("localmoves.api.dashboard.manage_property_search_template"),
+                api.get("localmoves.api.dashboard.manage_payment_confirmation_template")
             ]);
 
             const signupData = signupRes.data?.message || {};
             const passwordResetData = passwordResetRes.data?.message || {};
+            const propertySearchData = propertySearchRes.data?.message || {};
+            const paymentConfirmationData = paymentConfirmationRes.data?.message || {};
 
             // Create signup template object
             const signupTemplate = {
@@ -437,13 +441,10 @@ const ManageEmailTemplates = () => {
                     "Welcome email sent to new logistics managers with their account details and login credentials",
                 type: "Account Creation",
                 endpoint: "localmoves.api.dashboard.manage_signup_verification_template",
-                // Current template being sent to users (custom or default)
                 email_subject: signupData.email_subject || signupData.template?.default_subject || "",
                 email_body: signupData.email_body || signupData.template?.default_body || "",
-                // Default template from code
                 default_subject: signupData.template?.default_subject || "",
                 default_body: signupData.template?.default_body || "",
-                // Other metadata
                 variables: signupData.template?.variables || [],
                 is_custom: signupData.is_custom || false,
                 last_updated: signupData.last_updated || new Date().toISOString(),
@@ -460,13 +461,10 @@ const ManageEmailTemplates = () => {
                     "Email sent to users when they request a password reset with a secure reset link",
                 type: "Security",
                 endpoint: "localmoves.api.dashboard.manage_password_reset_template",
-                // Current template being sent to users (custom or default)
                 email_subject: passwordResetData.email_subject || passwordResetData.template?.default_subject || "",
                 email_body: passwordResetData.email_body || passwordResetData.template?.default_body || "",
-                // Default template from code
                 default_subject: passwordResetData.template?.default_subject || "",
                 default_body: passwordResetData.template?.default_body || "",
-                // Other metadata
                 variables: passwordResetData.template?.variables || [],
                 is_custom: passwordResetData.is_custom || false,
                 last_updated: passwordResetData.last_updated || new Date().toISOString(),
@@ -474,7 +472,47 @@ const ManageEmailTemplates = () => {
                 line: passwordResetData.template?.line || 0,
             };
 
-            setTemplates([signupTemplate, passwordResetTemplate]);
+            // Create property search template object
+            const propertySearchTemplate = {
+                id: "property_search_results",
+                name: propertySearchData.template?.name || "property_search_results",
+                title: propertySearchData.template?.title || "Property Search Results",
+                description:
+                    "Email sent to users with their moving company search results and comparison options",
+                type: "Search Results",
+                endpoint: "localmoves.api.dashboard.manage_property_search_template",
+                email_subject: propertySearchData.email_subject || propertySearchData.template?.default_subject || "",
+                email_body: propertySearchData.email_body || propertySearchData.template?.default_body || "",
+                default_subject: propertySearchData.template?.default_subject || "",
+                default_body: propertySearchData.template?.default_body || "",
+                variables: propertySearchData.template?.variables || [],
+                is_custom: propertySearchData.is_custom || false,
+                last_updated: propertySearchData.last_updated || new Date().toISOString(),
+                file: propertySearchData.template?.file || "",
+                line: propertySearchData.template?.line || 0,
+            };
+
+            // Create payment confirmation template object
+            const paymentConfirmationTemplate = {
+                id: "payment_confirmation",
+                name: paymentConfirmationData.template?.name || "payment_confirmation",
+                title: paymentConfirmationData.template?.title || "Payment Confirmation Receipt",
+                description:
+                    "Email sent to users after successful payment with transaction details and booking confirmation",
+                type: "Transactions",
+                endpoint: "localmoves.api.dashboard.manage_payment_confirmation_template",
+                email_subject: paymentConfirmationData.email_subject || paymentConfirmationData.template?.default_subject || "",
+                email_body: paymentConfirmationData.email_body || paymentConfirmationData.template?.default_body || "",
+                default_subject: paymentConfirmationData.template?.default_subject || "",
+                default_body: paymentConfirmationData.template?.default_body || "",
+                variables: paymentConfirmationData.template?.variables || [],
+                is_custom: paymentConfirmationData.is_custom || false,
+                last_updated: paymentConfirmationData.last_updated || new Date().toISOString(),
+                file: paymentConfirmationData.template?.file || "",
+                line: paymentConfirmationData.template?.line || 0,
+            };
+
+            setTemplates([signupTemplate, passwordResetTemplate, propertySearchTemplate, paymentConfirmationTemplate]);
         } catch (err) {
             console.error(err);
             setError("Failed to load email templates. Please check the server.");
